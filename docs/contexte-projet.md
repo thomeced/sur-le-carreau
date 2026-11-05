@@ -1,0 +1,62 @@
+# Projet : jeu web inspiré de The Floor ("Sur le carreau")
+
+## Objectif
+Réaliser un jeu web inspiré du jeu télévisé The Floor : des duels de catégories sur une grille de territoires. Nom de travail : « Sur le carreau » (nom et identité visuelle propres, pour ne pas reprendre ceux de l'émission, qui sont protégés).
+
+## Règles du duel retenues
+- Deux joueurs, une catégorie (animaux, fruits et légumes, transports…), des images qui défilent.
+- Chaque joueur a un chrono (30, 45 ou 60 s) qui ne tourne que pendant son tour.
+- Il faut nommer ce qu'on voit. Une bonne réponse passe la main à l'adversaire.
+- On peut passer : la réponse est révélée et le joueur perd 3 s.
+- Celui dont le temps tombe à zéro perd.
+- Dans le jeu complet, le gagnant récupère le territoire et la catégorie de l'adversaire sur une grille.
+
+## Plan de développement
+1. Duel jouable à deux sur le même écran, une catégorie. **(fait)**
+2. Plusieurs catégories et validation de réponses robuste. **(fait en partie : 3 catégories, tolérance aux accents, articles et petites fautes via distance de Levenshtein)**
+3. Grille de cases et conquête de territoires.
+4. Mode solo contre l'ordinateur ou mode défi.
+5. Multijoueur en ligne : Node.js + WebSocket (Socket.IO), le serveur arbitre les chronos et les réponses.
+6. Finitions : sons, animations, mobile, éventuellement réponse vocale (Web Speech API).
+
+## Mode arbitre (ajouté en novembre 2026)
+- Besoin : réponses données à l'oral, un arbitre valide avec des boutons (« Bonne réponse » ou « Passé », −3 s), sur une page à part qui communique avec le jeu.
+- Réalisation : même fichier, la vue arbitre s'ouvre en ajoutant `#arbitre` à l'adresse de la page. Le jeu affiche un code à 4 caractères (choix « À l'oral, validées par un arbitre » au départ), l'arbitre le saisit, voit l'image, la réponse attendue et les chronos, puis valide. Le duel démarre quand l'arbitre est connecté.
+- Transport : capacité `room` d'Artifact (appareils différents, comptes claude.ai uniquement) et `BroadcastChannel` (deux onglets du même navigateur). Messages : `st` (état du jeu), `act` (décision de l'arbitre), `hi` (présence de l'arbitre).
+- Limite connue : pour un vrai multijoueur hors claude.ai, il faudra un serveur (étape 5 du plan).
+
+## Décisions prises
+- Premier prototype : duel à deux joueurs sur le même écran.
+- Images du prototype : emojis (les images externes ne se chargent pas dans une page publiée). À remplacer plus tard par des visuels libres de droits (Wikimedia Commons) ou originaux. Les logos et marques posent des questions de droits.
+- Contenu : un objet JSON par catégorie, avec une liste de réponses acceptées par image (séparées par `|`).
+
+## État du prototype
+Style mis à jour (novembre 2026) pour correspondre à l'ambiance du plateau.
+Fichier : `index.html` (une seule page HTML autonome, sans dépendance hormis une police Google Fonts).
+- Écran de départ : noms des joueurs, catégorie, durée.
+- Duel : chronos, carte d'image, champ de réponse (ou arbitre), bouton « Passer (−3 s) », écran de fin.
+- Validation : minuscules, accents retirés, articles retirés, tolérance de 1 faute (mots de 5 lettres ou plus) ou 2 fautes (9 lettres ou plus).
+
+## Direction visuelle (référence : photo du plateau de l'émission)
+- Ambiance : plateau de télévision, sol bleu électrique quadrillé de lignes blanches, ciel noir étoilé, projecteurs, grand écran lumineux bleu, animateur en veste blanche.
+- Traduit dans le prototype : fond noir étoilé avec halo de lumière, sol bleu en perspective et grille blanche, panneaux sombres translucides aux angles peu arrondis, carte d'image encadrée comme un écran lumineux, joueur actif entouré d'un halo (ambre pour le joueur 1, cyan pour le joueur 2). Thème sombre uniquement, pour garder l'ambiance plateau.
+- On reprend l'ambiance, pas l'identité : pas de logo, pas de police ni de nom de l'émission. Le visuel de référence sert uniquement de moodboard et n'est pas intégré au jeu.
+
+## Vue arbitre (novembre 2026)
+- Mode « Réponses : à l'oral, validées par un arbitre » : les joueurs répondent de vive voix, l'arbitre juge depuis sa propre page.
+- La vue arbitre est dans le même fichier que le jeu (`index.html`), accessible par le bouton « Je suis l'arbitre » de l'écran de départ (ou par `#arbitre` dans l'adresse).
+- Appairage : l'écran du duel affiche un code à 4 caractères ; l'arbitre le saisit sur sa page. Le duel ne démarre que sur clic du bouton « Démarrer le duel », activé une fois l'arbitre connecté.
+- L'arbitre voit les deux chronos, l'image en cours et la réponse attendue avec ses variantes. Deux boutons : « Bonne réponse » (passe la main) et « Passé (−3 s) » (révèle la réponse).
+- Communication : capacité `room` des artefacts claude.ai (messages `st`, `act`, `hi` dans une salle nommée d'après le code), avec `BroadcastChannel` en secours entre deux onglets du même navigateur. Chaque verdict porte l'image concernée pour ignorer les doubles clics ou les retards.
+- Limites connues : pas de bouton « mauvaise réponse » ni de pause ; l'arbitre doit recharger sa page entre deux parties ; la communication entre deux appareils n'a pas encore été testée en conditions réelles.
+
+## Niveaux de difficulté et thèmes (novembre 2026)
+- Chaque image porte un niveau de 1 à 3 : `['🐘','éléphant',1]`. Le niveau monte avec le nombre total de bonnes réponses du duel (+1 tous les 4), et le niveau en cours est affiché aux joueurs et à l'arbitre. Un niveau épuisé est recyclé plutôt que de redescendre.
+- Thèmes : animaux, fruits et légumes, transports, drapeaux, films en rébus d'emojis, jeux vidéo. Les rébus n'utilisent que des titres et des emojis génériques (pas de personnages ni de logos protégés).
+- Limite : les drapeaux en emoji ne s'affichent pas sous Windows (les lettres du pays apparaissent à la place).
+- Idées non faites : image floue qui se précise avec bonus de vitesse, pénalité de « passer » croissante, vraies images (Wikimedia Commons ou originales), thèmes monuments et plats du monde.
+
+## Prochaines étapes suggérées
+- Ajouter la grille de territoires et le choix du duel (qui défie qui, quelle catégorie).
+- Enrichir les catégories (drapeaux, monuments, marques, etc.).
+- Séparer les données (JSON) du code pour faciliter l'ajout de catégories.

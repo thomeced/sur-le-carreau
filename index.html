@@ -1,0 +1,272 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Sur le carreau</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Poppins:wght@500;600;700&family=DM+Sans:wght@400;600;700&display=swap">
+<style>
+:root{--disp:'Poppins','DM Sans',system-ui,sans-serif;--sky:#03040E;--floor:#1740C8;--floor2:#0A1F7A;--tile:rgba(4,8,36,.82);--ink:#F4F6FF;--p1:#FFC53D;--p2:#5CE1FF;--ok:#3DDC97;--ko:#FF6B6B;--line:rgba(255,255,255,.22);box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);color-scheme:dark}
+*,*::before,*::after{box-sizing:inherit}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+html,body{min-height:100%;margin:0}
+body{background:var(--sky);color:var(--ink);font:400 16px/1.5 'DM Sans',system-ui,sans-serif;position:relative}
+body::before{content:"";position:fixed;inset:0 0 40% 0;z-index:-2;background:radial-gradient(ellipse 60% 50% at 50% 0,rgba(120,150,255,.28),transparent 70%),radial-gradient(circle,#fff 0 1px,transparent 1.6px) 0 0/46px 46px,radial-gradient(circle,rgba(255,255,255,.7) 0 1px,transparent 1.6px) 23px 17px/61px 61px,var(--sky)}
+body::after{content:"";position:fixed;left:-60%;right:-60%;bottom:0;height:62vh;z-index:-1;background:linear-gradient(rgba(255,255,255,.55) 2px,transparent 2px),linear-gradient(90deg,rgba(255,255,255,.55) 2px,transparent 2px),linear-gradient(180deg,var(--floor2),var(--floor));background-size:90px 90px,90px 90px,100% 100%;background-position:center bottom;transform:perspective(520px) rotateX(58deg);transform-origin:50% 100%;-webkit-mask-image:linear-gradient(transparent,#000 35%);mask-image:linear-gradient(transparent,#000 35%)}
+[hidden]{display:none!important}
+main{max-width:980px;margin:0 auto;padding:20px 16px 32px}
+h1{font:400 clamp(2.6rem,9vw,4.6rem)/1 var(--disp);margin:8px 0 12px;letter-spacing:.02em;text-shadow:0 0 28px rgba(110,150,255,.7)}
+p.lead{max-width:56ch;margin:0 0 24px}
+.panel{background:var(--tile);border:2px solid var(--line);border-radius:6px;padding:20px;backdrop-filter:blur(4px)}
+form.setup{display:grid;gap:14px;max-width:520px}
+label{display:grid;gap:4px;font-weight:600}
+input,select,button{font:inherit;color:inherit}
+input,select{background:#050A2C;border:2px solid var(--line);border-radius:4px;padding:10px 12px;min-width:0}
+input:focus-visible,select:focus-visible,button:focus-visible{outline:3px solid var(--p1);outline-offset:2px}
+.row2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+button{cursor:pointer;border:0;border-radius:4px;padding:12px 18px;font-weight:700;background:var(--p1);color:#101B4D;box-shadow:0 0 18px rgba(255,197,61,.45)}
+button.alt{background:transparent;border:2px solid var(--line);color:var(--ink);box-shadow:none}
+.arena{display:grid;grid-template-columns:1fr 1fr;grid-template-areas:"a b" "c c";gap:12px}
+@media(min-width:760px){.arena{grid-template-columns:1fr minmax(0,1.7fr) 1fr;grid-template-areas:"a c b"}}
+#s0{grid-area:a;--c:var(--p1)}#s1{grid-area:b;--c:var(--p2)}.center{grid-area:c}
+.side{background:var(--tile);border:2px solid var(--line);border-radius:6px;padding:14px;text-align:center;align-self:start;transition:border-color .2s,box-shadow .2s}
+.side.on{border-color:var(--c);box-shadow:0 0 0 4px color-mix(in srgb,var(--c) 30%,transparent),0 0 32px color-mix(in srgb,var(--c) 55%,transparent)}
+.nm{display:inline-block;max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;background:var(--c);color:#101B4D;font-weight:700;border-radius:4px;padding:2px 12px}
+.tm{font:400 clamp(2.8rem,9vw,4.6rem)/1.1 var(--disp);font-variant-numeric:tabular-nums;margin-top:6px}
+.side:not(.on) .tm{opacity:.55}
+.side.low .tm{color:var(--ko)}
+.center{text-align:center}
+#who{font-weight:700;min-height:1.6em}
+#card,#acard{font-size:clamp(6rem,24vw,11rem);line-height:1.15;background:linear-gradient(#0B1B7E,#13309F);border:3px solid #9DB8FF;border-radius:6px;box-shadow:0 0 0 3px #050A2C,0 0 38px rgba(110,150,255,.65);margin:8px 0;padding:8px 0;user-select:none}
+#msg{min-height:1.6em;font-weight:700}
+#msg.ok{color:var(--ok)}#msg.ko{color:var(--ko)}
+#msg.ko{animation:shake .3s}
+@keyframes shake{25%{transform:translateX(-6px)}75%{transform:translateX(6px)}}
+@media(prefers-reduced-motion:reduce){#msg.ko{animation:none}.side{transition:none}}
+.answer{display:flex;gap:8px;max-width:460px;margin:8px auto}
+.answer input{flex:1;font-size:1.2rem}
+#end .panel{max-width:520px}
+#end h2{font:400 2rem/1.1 var(--disp);margin:0 0 8px}
+#acard{font-size:clamp(4rem,18vw,7rem)}
+#aans{font-weight:700;font-size:1.3rem;min-height:1.6em}
+#code{font:400 2.6rem/1 var(--disp);letter-spacing:.2em;color:var(--p1);margin:0 0 12px}
+.big{display:block;width:100%;margin:10px 0;padding:22px;font-size:1.4rem}
+.good{background:var(--ok);box-shadow:0 0 18px rgba(61,220,151,.45)}
+.skip{background:var(--ko);box-shadow:0 0 18px rgba(255,107,107,.45)}
+button:disabled{opacity:.4;cursor:not-allowed}
+button,.nm,#who,#aans,label{font-family:var(--disp);font-weight:600}
+h1,.tm,#code,#end h2{font-weight:700}
+h1{font-size:clamp(2.2rem,8vw,4rem);line-height:1.1}
+.tm{font-size:clamp(2.4rem,8vw,4rem);line-height:1.15}
+#code{font-size:2.4rem}
+#end h2{font-size:1.8rem}
+.nm{font-size:1rem}
+#aans{font-size:1.15rem}
+.big{font-size:1.25rem}
+#a0{--c:var(--p1)}#a1{--c:var(--p2)}
+#arb{max-width:520px;margin:0 auto}
+</style>
+</head>
+<body>
+<main>
+<section id="setup">
+  <h1>Sur le carreau</h1>
+  <p class="lead">Duel à deux sur le même écran. Nommez les images le plus vite possible : chaque bonne réponse passe la main à l'adversaire, et celui dont le temps tombe à zéro perd.</p>
+  <form id="form" class="panel setup">
+    <div class="row2">
+      <label>Joueur 1<input id="n0" maxlength="14" placeholder="Joueur 1" autocomplete="off"></label>
+      <label>Joueur 2<input id="n1" maxlength="14" placeholder="Joueur 2" autocomplete="off"></label>
+    </div>
+    <label>Catégorie<select id="cat"></select></label>
+    <label>Temps par joueur
+      <select id="dur"><option value="30">30 secondes</option><option value="45" selected>45 secondes</option><option value="60">60 secondes</option></select>
+    </label>
+    <label>Réponses
+      <select id="mode"><option value="kb">Au clavier</option><option value="oral">À l’oral, validées par un arbitre</option></select>
+    </label>
+    <button type="submit">Lancer le duel</button>
+    <button type="button" class="alt" id="toarb">Je suis l’arbitre</button>
+  </form>
+</section>
+
+<section id="game" hidden>
+  <div class="arena">
+    <div class="side" id="s0"><span class="nm" id="nm0"></span><div class="tm" id="tm0"></div><div id="sc0"></div></div>
+    <div class="side" id="s1"><span class="nm" id="nm1"></span><div class="tm" id="tm1"></div><div id="sc1"></div></div>
+    <div class="center">
+      <div id="wait" class="panel" hidden>
+        <p>Code à saisir sur la page arbitre</p>
+        <div id="code"></div>
+        <p id="wst" role="status"></p>
+        <p id="lnk" role="status"></p>
+        <button type="button" id="go" disabled>Démarrer le duel</button>
+      </div>
+      <div id="who"></div>
+      <div id="card" aria-label="Image à nommer"></div>
+      <div id="msg" role="status" aria-live="polite"></div>
+      <form id="f2" class="answer" autocomplete="off">
+        <input id="ans" placeholder="Votre réponse" aria-label="Votre réponse" autocapitalize="off" autocorrect="off" spellcheck="false">
+        <button type="submit">Valider</button>
+      </form>
+      <button type="button" class="alt" id="pass">Passer (−3 s)</button>
+    </div>
+  </div>
+</section>
+
+<section id="arb" hidden>
+  <h1>Arbitre</h1>
+  <form id="rj" class="panel setup">
+    <label>Code affiché sur l’écran du jeu<input id="rc" maxlength="4" autocomplete="off" autocapitalize="characters" spellcheck="false"></label>
+    <button type="submit">Rejoindre le duel</button>
+    <button type="button" class="alt" id="arback">Retour</button>
+  </form>
+  <div id="rl" hidden>
+    <div class="row2">
+      <div class="side" id="a0"><span class="nm"></span><div class="tm"></div></div>
+      <div class="side" id="a1"><span class="nm"></span><div class="tm"></div></div>
+    </div>
+    <div id="acard" class="center" aria-label="Image en cours"></div>
+    <p id="aans" role="status"></p>
+    <button type="button" class="big good" id="bok" disabled>Bonne réponse</button>
+    <button type="button" class="big skip" id="bpass" disabled>Passé (−3 s)</button>
+    <p id="ast" role="status"></p>
+    <p id="alk" role="status"></p>
+  </div>
+</section>
+
+<section id="end" hidden>
+  <div class="panel">
+    <h2 id="win"></h2>
+    <p id="res"></p>
+    <button type="button" id="again">Nouvelle partie</button>
+  </div>
+</section>
+</main>
+
+<script>
+const DATA={
+ animaux:{label:"Animaux",items:[["🐘","éléphant",1],["🦁","lion",1],["🐼","panda",1],["🐬","dauphin",1],["🐢","tortue",1],["🦒","girafe",1],["🐸","grenouille",1],["🐝","abeille",1],["🦓","zèbre",2],["🦋","papillon",2],["🐌","escargot",2],["🦅","aigle",2],["🦈","requin",2],["🦔","hérisson",2],["🐧","manchot|pingouin",3],["🦉","hibou|chouette",3],["🐙","pieuvre|poulpe",3],["🦘","kangourou",3],["🐪","chameau|dromadaire",3],["🐊","crocodile|alligator",3]]},
+ fruits:{label:"Fruits et légumes",items:[["🍎","pomme",1],["🍌","banane",1],["🍓","fraise",1],["🍒","cerise",1],["🥕","carotte",1],["🍅","tomate",1],["🍋","citron",1],["🍇","raisin",1],["🍍","ananas",2],["🌽","maïs",2],["🥔","pomme de terre|patate",2],["🥦","brocoli",2],["🍑","pêche",2],["🍉","pastèque",2],["🥝","kiwi",2],["🍆","aubergine",3],["🌶️","piment",3],["🥑","avocat",3],["🧅","oignon",3],["🍄","champignon",3]]},
+ transports:{label:"Transports",items:[["🚲","vélo|bicyclette",1],["🚂","train|locomotive",1],["✈️","avion",1],["🚌","bus|autobus|car",1],["🚕","taxi",1],["🚑","ambulance",1],["🚢","bateau|navire",2],["🚁","hélicoptère",2],["🚜","tracteur",2],["🚒","camion de pompiers|camion de pompier|pompier",2],["🚀","fusée",2],["🛴","trottinette",2],["🛵","scooter|mobylette",3],["🏍️","moto",3],["🛶","canoë|kayak|pirogue",3],["🚡","téléphérique",3]]},
+ drapeaux:{label:"Drapeaux",items:[["🇫🇷","france",1],["🇮🇹","italie",1],["🇪🇸","espagne",1],["🇩🇪","allemagne",1],["🇬🇧","royaume-uni|angleterre|grande-bretagne",1],["🇺🇸","états-unis|etats unis|usa|amérique",1],["🇧🇷","brésil",1],["🇯🇵","japon",1],["🇨🇳","chine",1],["🇨🇦","canada",1],["🇧🇪","belgique",1],["🇨🇭","suisse",1],["🇵🇹","portugal",2],["🇳🇱","pays-bas|hollande",2],["🇮🇪","irlande",2],["🇸🇪","suède",2],["🇳🇴","norvège",2],["🇬🇷","grèce",2],["🇹🇷","turquie",2],["🇲🇽","mexique",2],["🇦🇷","argentine",2],["🇮🇳","inde",2],["🇰🇷","corée du sud|corée",2],["🇦🇺","australie",2],["🇪🇬","égypte",2],["🇲🇦","maroc",2],["🇿🇦","afrique du sud",2],["🇷🇺","russie",2],["🇳🇵","népal",3],["🇨🇾","chypre",3],["🇧🇹","bhoutan",3],["🇨🇱","chili",3],["🇨🇴","colombie",3],["🇩🇰","danemark",3],["🇵🇱","pologne",3],["🇦🇹","autriche",3],["🇭🇺","hongrie",3],["🇱🇧","liban",3],["🇯🇲","jamaïque",3],["🇰🇪","kenya",3],["🇳🇿","nouvelle-zélande",3],["🇸🇬","singapour",3],["🇵🇪","pérou",3],["🇸🇳","sénégal",3],["🇨🇮","côte d'ivoire",3],["🇪🇨","équateur",3],["🇷🇴","roumanie",3],["🇨🇿","tchéquie|république tchèque",3],["🇧🇬","bulgarie",3]]},
+ films:{label:"Films en rébus d'emojis",items:[["🦈","les dents de la mer|dents de la mer",1],["❄️👸","la reine des neiges|reine des neiges",1],["🦁👑","le roi lion|roi lion",1],["🐠🔍","le monde de nemo|nemo|trouver nemo",1],["💍🧙","le seigneur des anneaux|seigneur des anneaux",1],["🚢🧊","titanic",1],["🦖🏝️","jurassic park|jurassic world",1],["🕷️🕸️","spider-man|spiderman",1],["🧸🤠","toy story",1],["👽📞","e.t.|et|e.t. l'extra-terrestre",1],["🐀🍲","ratatouille",2],["🏠🎈","là-haut|la haut",2],["🧞🏜️","aladdin",2],["🌹🕯️","la belle et la bête|belle et la bête",2],["🐼🥋","kung fu panda",2],["💀🚢","pirates des caraïbes",2],["⚡👓","harry potter",2],["⭐⚔️","star wars|la guerre des étoiles",2],["🕶️💊","matrix",2],["🦍🏙️","king kong",2],["🐧💃","happy feet",2],["🚗⚡","cars|flash mcqueen",2],["💀🎸","coco",3],["🍫🏭","charlie et la chocolaterie|la chocolaterie",3],["🐯🌊","l'odyssée de pi|la vie de pi|vie de pi",3],["👹🚪","monstres et cie|monstres cie|monstres inc",3],["🥁🎷","whiplash",3],["🛸🌾","signes|signs",3],["🏔️🤠","brokeback mountain",3],["🐜👑","1001 pattes|mille et une pattes",3]]},
+ jeux:{label:"Jeux vidéo",items:[["🍄","super mario|mario",1],["⛏️","minecraft",1],["🟡👻","pac-man|pacman",1],["🧱","tetris",1],["🐦🐷","angry birds",1],["🏓","pong",1],["🚗🚓","gta|grand theft auto",1],["🏎️🍌","mario kart",1],["⚽🎮","fifa|ea fc|ea sports fc",1],["🧝🗡️","zelda|the legend of zelda|legend of zelda",2],["🦔💨","sonic",2],["👾","space invaders",2],["🧟🌱","plantes contre zombies|plants vs zombies",2],["⚡🔴","pokémon|pokemon",2],["🍬","candy crush",2],["🦝🏝️","animal crossing",2],["⚽🚗","rocket league",2],["🐔🛣️","crossy road",2],["🦍🛢️","donkey kong",3],["🐺⚔️","the witcher|witcher",3],["🌀🔫","portal",3],["🚀🔴","among us",3],["🌾🎣","stardew valley",3],["😈🔥","diablo",3]]}
+};
+const $=id=>document.getElementById(id);
+$('cat').innerHTML=Object.entries(DATA).map(([k,v])=>`<option value="${k}">${v.label}</option>`).join('');
+
+const norm=s=>s.toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g,'').replace(/[^a-z0-9 ]/g,' ').replace(/\b(le|la|les|l|un|une|des|du|de|d)\b/g,' ').replace(/\s+/g,' ').trim();
+function lev(a,b){const m=[...Array(b.length+1).keys()];for(let i=1;i<=a.length;i++){let p=m[0];m[0]=i;for(let j=1;j<=b.length;j++){const t=m[j];m[j]=Math.min(m[j]+1,m[j-1]+1,p+(a[i-1]===b[j-1]?0:1));p=t}}return m[b.length]}
+function isOk(v,list){v=norm(v);if(!v)return false;return list.some(r=>{r=norm(r);if(v===r)return true;const t=r.length>=9?2:r.length>=5?1:0;return t>0&&lev(v,r)<=t})}
+function shuffle(a){for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a}
+function show(id){['setup','game','end','arb'].forEach(x=>$(x).hidden=x!==id)}
+
+let S,flashT;
+const CH='ABCDEFGHJKMNPQRSTUVWXYZ23456789',isArb=location.hash==='#arbitre';
+async function link(code,role,onmsg){
+  const bc='BroadcastChannel' in window?new BroadcastChannel('slc-'+code):null,seen=new Set();
+  const hear=(topic,d)=>{if(!d||d.role===role||seen.has(d.id))return;seen.add(d.id);onmsg(topic,d)};
+  if(bc)bc.onmessage=e=>hear(e.data.topic,e.data.d);
+  let room=null;
+  try{const r=window.claude&&await claude.use('room');if(r){room=await r.join('slc-'+code.toLowerCase());['st','act','hi'].forEach(t=>room.on(t,m=>hear(t,m.data),()=>{}))}}catch(e){room=null}
+  return{live:!!room,send(topic,d){d={...d,role,id:Math.random().toString(36).slice(2)};if(bc)bc.postMessage({topic,d});if(room)room.emit(topic,d).catch(()=>{})}}
+}
+const linkTxt=l=>l.live?'Liaison entre appareils : active':'Liaison entre appareils : indisponible (seuls les onglets du même navigateur se voient). Ouvrez le jeu depuis son lien claude.ai.';
+const lvl=()=>Math.min(3,1+Math.floor((S.sc[0]+S.sc[1])/4));
+function fill(){S.pool=[[],[],[],[]];for(const it of S.src)S.pool[it[2]].push(it);S.pool.forEach(shuffle)}
+function card(){
+  const L=lvl(),order=[L,L-1,L+1,L-2,L+2].filter(l=>l>=1&&l<=3);
+  S.lvl=L;
+  if(!S.pool[L].length)S.pool[L]=shuffle(S.src.filter(x=>x[2]===L&&x!==S.cur));
+  let l=order.find(x=>S.pool[x].length);
+  if(!l){fill();l=order.find(x=>S.pool[x].length)}
+  S.cur=S.pool[l].pop();$('card').textContent=S.started?S.cur[0]:'?';
+}
+function flash(cls,txt){$('msg').className=cls;$('msg').textContent=txt;clearTimeout(flashT);flashT=setTimeout(()=>{$('msg').className='';$('msg').textContent=''},1000)}
+function render(){
+  for(let i=0;i<2;i++){
+    $('nm'+i).textContent=S.names[i];
+    $('tm'+i).textContent=Math.ceil(Math.max(0,S.t[i])/1000);
+    const n=S.sc[i];$('sc'+i).textContent=n+' trouvé'+(n>1?'s':'');
+    $('s'+i).classList.toggle('on',S.turn===i);
+    $('s'+i).classList.toggle('low',S.t[i]<10000);
+  }
+  $('who').textContent='À '+S.names[S.turn]+' de jouer (niveau '+S.lvl+')';
+}
+function push(){if(S&&S.oral&&S.link)S.link.send('st',{names:S.names,t:S.t.map(Math.round),sc:S.sc,turn:S.turn,card:S.cur,lvl:S.lvl,over:S.over,lock:S.lock,started:S.started})}
+function finish(){
+  S.over=true;clearInterval(S.h);
+  const w=S.turn^1;
+  $('win').textContent=S.names[w]+' remporte le duel';
+  $('res').textContent=S.names[0]+' : '+S.sc[0]+' trouvé'+(S.sc[0]>1?'s':'')+'. '+S.names[1]+' : '+S.sc[1]+' trouvé'+(S.sc[1]>1?'s':'')+'.';
+  show('end');push();
+}
+function tick(){
+  const n=performance.now();S.t[S.turn]-=n-S.last;S.last=n;
+  if(S.t[S.turn]<=0){S.t[S.turn]=0;render();return finish()}
+  render();if(++S.n%10===0)push();
+}
+function begin(){S.started=true;$('card').textContent=S.cur[0];S.last=performance.now();S.h=setInterval(tick,100);$('wait').hidden=true;push();$('ans').focus()}
+function good(){S.sc[S.turn]++;S.turn^=1;card();flash('ok','Bonne réponse');render();push()}
+function skip(){
+  if(S.lock||S.over)return;
+  S.lock=true;S.t[S.turn]-=3000;
+  if(S.t[S.turn]<=0){S.t[S.turn]=0;render();return finish()}
+  clearTimeout(flashT);$('msg').className='';$('msg').textContent='C\'était : '+S.cur[1].split('|')[0]+' (−3 s)';
+  render();push();
+  setTimeout(()=>{if(S.over)return;S.lock=false;card();$('msg').textContent='';render();push();$('ans').focus()},1300);
+}
+$('form').onsubmit=e=>{
+  e.preventDefault();
+  if(S)clearInterval(S.h);
+  const T=+$('dur').value*1000,oral=$('mode').value==='oral';
+  S={names:[$('n0').value.trim()||'Joueur 1',$('n1').value.trim()||'Joueur 2'],t:[T,T],turn:Math.random()<.5?0:1,sc:[0,0],src:DATA[$('cat').value].items,pool:null,lvl:1,last:performance.now(),lock:false,over:false,started:false,oral,n:0};
+  fill();card();render();show('game');$('msg').textContent='';
+  $('f2').hidden=$('pass').hidden=oral;$('wait').hidden=!oral;
+  if(!oral)return begin();
+  S.code=Array.from({length:4},()=>CH[Math.floor(Math.random()*CH.length)]).join('');
+  $('code').textContent=S.code;$('go').disabled=true;$('wst').textContent='En attente de l’arbitre…';$('lnk').textContent='Liaison entre appareils : connexion…';
+  const me=S;
+  link(S.code,'game',(topic,d)=>{
+    if(me!==S)return;
+    if(topic==='hi'){if(!S.started){$('go').disabled=false;$('wst').textContent='Arbitre connecté. Vous pouvez démarrer.'}push()}
+    else if(topic==='act'&&S.started&&!S.over&&!S.lock&&d.c===S.cur[0]){d.a==='ok'?good():d.a==='pass'&&skip()}
+  }).then(l=>{if(me===S){S.link=l;$('lnk').textContent=linkTxt(l);push()}});
+};
+$('f2').onsubmit=e=>{
+  e.preventDefault();
+  if(S.lock||S.over)return;
+  const v=$('ans').value;$('ans').value='';
+  if(isOk(v,S.cur[1].split('|')))good();
+  else{if(v.trim())flash('ko','Non, réessayez');render()}
+};
+$('pass').onclick=skip;
+$('go').onclick=begin;
+$('again').onclick=()=>{show('setup')};
+
+let R,L,cool=false;
+function arbRender(){
+  if(!R){$('ast').textContent='En attente du jeu…';return}
+  $('ast').textContent='';
+  const t=R.t.slice();if(R.started&&!R.over)t[R.turn]-=performance.now()-R.at;
+  for(let i=0;i<2;i++){const s=$('a'+i);s.querySelector('.nm').textContent=R.names[i];s.querySelector('.tm').textContent=Math.ceil(Math.max(0,t[i])/1000);s.classList.toggle('on',R.turn===i&&!R.over);s.classList.toggle('low',t[i]<10000)}
+  $('acard').textContent=R.started?R.card[0]:'?';
+  $('aans').textContent=R.over?'Partie terminée':!R.started?'Le duel n’a pas encore démarré':'À '+R.names[R.turn]+' (niveau '+R.lvl+') · réponse : '+R.card[1].split('|').join(' / ');
+  $('bok').disabled=$('bpass').disabled=!R.started||R.over||R.lock||cool;
+}
+function act(a){if(!L||!R||cool)return;L.send('act',{a,c:R.card[0]});cool=true;arbRender();setTimeout(()=>{cool=false;arbRender()},700)}
+$('bok').onclick=()=>act('ok');
+$('bpass').onclick=()=>act('pass');
+$('rj').onsubmit=e=>{
+  e.preventDefault();
+  const c=$('rc').value.trim().toUpperCase();if(!c)return;
+  $('rj').hidden=true;$('rl').hidden=false;arbRender();$('alk').textContent='Liaison entre appareils : connexion…';
+  link(c,'arb',(topic,d)=>{if(topic==='st'){R=d;R.at=performance.now();arbRender()}}).then(l=>{L=l;$('alk').textContent=linkTxt(l);L.send('hi',{});setInterval(()=>L.send('hi',{}),3000);setInterval(arbRender,100)});
+};
+$('toarb').onclick=()=>show('arb');
+$('arback').onclick=()=>show('setup');
+if(isArb)show('arb');
+addEventListener('hashchange',()=>location.reload());
+</script>
+</body>
+</html>
