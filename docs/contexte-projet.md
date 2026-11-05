@@ -3,9 +3,15 @@
 ## Objectif
 Réaliser un jeu web inspiré du jeu télévisé The Floor : des duels de catégories sur une grille de territoires. Nom de travail : « Sur le carreau » (nom et identité visuelle propres, pour ne pas reprendre ceux de l'émission, qui sont protégés).
 
+## Versionnage (novembre 2026)
+- Dépôt GitHub : https://github.com/thomeced/sur-le-carreau (branche `main`).
+- Dans le dépôt : `index.html` (le jeu, pour GitHub Pages), `categories.js` (les catégories), `intro.js`, `intro.css` et `assets/intro/` (l'intro), `tools/generique-intro.py` (génération du générique), `docs/contexte-projet.md` (ce document), `README.md` et `.gitignore`.
+- Commits signés avec l'adresse anonyme `thomeced@users.noreply.github.com` (l'adresse personnelle est protégée par GitHub). Modifications proposées par Claude via des demandes de fusion (PR) que Ced relit et fusionne.
+- Hébergement via GitHub Pages (Settings → Pages → branche `main`, dossier racine) : à activer par le propriétaire du dépôt. La liaison arbitre entre deux appareils y passe par PeerJS (voir « Hébergement et liaison »).
+
 ## Règles du duel retenues
 - Deux joueurs, une catégorie (animaux, fruits et légumes, transports…), des images qui défilent.
-- Chaque joueur a un chrono (30, 45 ou 60 s) qui ne tourne que pendant son tour.
+- Chaque joueur a un chrono (40 ou 45 s) qui ne tourne que pendant son tour.
 - Il faut nommer ce qu'on voit. Une bonne réponse passe la main à l'adversaire.
 - On peut passer : la réponse est révélée et le joueur perd 3 s.
 - Celui dont le temps tombe à zéro perd.
@@ -64,8 +70,8 @@ Fichiers : `index.html` (le jeu : HTML, CSS, JS) et `categories.js` (les catégo
 - Test : la logique de liaison a été vérifiée avec un faux PeerJS dans un navigateur automatisé (2 pages, code déjà pris, démarrage, verdict « bonne réponse », verdict « passé », repli sans liaison). Elle n'a pas encore été essayée avec le vrai service PeerJS sur deux appareils.
 
 ## Compte à rebours, code d'arbitre conservé, catégories externes (novembre 2026)
-- Compte à rebours 3-2-1 avant chaque duel (mode clavier et mode arbitre). Le chrono et les réponses ne démarrent qu'après ; l'arbitre voit aussi le décompte (`count` dans l'état `st`). Pas de son pour l'instant.
-- Le code d'arbitre est conservé d'une partie à l'autre (`getLink()` ouvre la liaison une seule fois, `resetLink()` la ferme). L'arbitre n'a pas à recharger sa page : il voit « Partie terminée · en attente du prochain duel », puis le duel suivant. Bouton « Nouveau code » sur l'écran d'attente. Le bouton Démarrer est activé tout de suite si l'arbitre a été vu dans les 7 dernières secondes.
+- Compte à rebours 3-2-1 avant chaque duel (mode arbitre). Le chrono et les réponses ne démarrent qu'après ; l'arbitre voit aussi le décompte (`count` dans l'état `st`). Pas de son pour l'instant.
+- Le code d'arbitre est conservé d'une partie à l'autre (`getLink()` ouvre la liaison une seule fois, `resetLink()` la ferme). L'arbitre n'a pas à recharger sa page : il voit « Duel terminé · en attente du prochain duel », puis le duel suivant. Bouton « Nouveau code » sur l'écran d'attente. Le bouton Démarrer est activé tout de suite si l'arbitre a été vu dans les 7 dernières secondes.
 - Les catégories sont dans `categories.js` (`const CATEGORIES = {…}`, une ligne `["emoji", "réponse|autre", niveau]` par image), chargé par `<script src="categories.js">` avant le script du jeu (fonctionne en ouvrant le fichier directement, contrairement à un `fetch` de JSON). Le jeu valide les données au chargement : lignes, doublons et catégories invalides sont ignorés avec un avertissement en console ; si le fichier manque, un message s'affiche et le lancement est désactivé.
 - Artefact claude.ai : page unique, `categories.js` est inséré dans le HTML au moment de la publication (la balise `<script src="categories.js"></script>` est remplacée par son contenu). Le fichier du projet `sur-le-carreau.html` est cette version autonome ; la référence reste le dépôt.
 - Prochaine étape pour les catégories : un éditeur (ajout d'images dans la page, export du `categories.js`).
@@ -80,7 +86,6 @@ Fichiers : `index.html` (le jeu : HTML, CSS, JS) et `categories.js` (les catégo
 - Limites : pas de sauvegarde ni de reprise d'une grille ; pas de mode équipes ; 4-voisinage uniquement.
 
 ## Prochaines étapes suggérées
-- Éditeur de catégories (voir ci-dessus).
 - Extras arbitre : bouton « mauvaise réponse », pause, annulation ; sons ; vraies images ; image floue qui se précise ; mode solo.
 - Éditeur de catégories (voir ci-dessus).
 - Intro : remplacer les candidats par des silhouettes ou des personnages inventés avant une publication publique (voir « Intro animée »).
@@ -98,9 +103,14 @@ Réalisée dans une conversation séparée du même projet, sans toucher à la l
 - **Placement des candidats** (`intro.css`) : `.slci-cl` à gauche (left −1 %, largeur 43 %), `.slci-cr` à droite (left 58 %, largeur 49 %), haut à 23 % de la scène ; l'animateur reste visible entre les deux groupes.
 - **Calques** : image fournie par Ced (PNG avec un damier dessiné, pas de vraie transparence). Le damier a été retiré d'après sa couleur, puis l'image a été découpée en 4 calques : `decor.webp`, `host.webp`, `cand-left.webp`, `cand-right.webp` (les candidats en deux groupes). 184 Ko au total.
 - **Logo** : le logo de l'émission sur l'écran du décor a été remplacé par un mur de dalles bleues neutre ; le texte « Sur le carreau » y est affiché en HTML.
-- **Fichiers** : `intro.js`, `intro.css` (classes préfixées `.slci`) et `assets/intro/*.webp`, à la racine du dépôt. Installation : une seule ligne dans le `<head>` de `index.html`, après la feuille de style, sans `defer` : `<script src="intro.js"></script>`. Le script charge lui-même `intro.css` et les images, et masque le jeu (`main`) pendant l'intro. Durée réglée à deux endroits : `--slci-dur` dans `intro.css` et `DUR` dans `intro.js`.
+- **Fichiers** : `intro.js`, `intro.css` (classes préfixées `.slci`), `assets/intro/*.webp` et `assets/intro/generique.mp3`, à la racine du dépôt. Installation : une seule ligne dans le `<head>` de `index.html`, après la feuille de style, sans `defer` : `<script src="intro.js"></script>`. Le script charge lui-même `intro.css` et les images, et masque le jeu (`main`) pendant l'intro. Durée réglée à deux endroits : `--slci-dur` dans `intro.css` et `DUR` dans `intro.js`.
 - **Comportement** : bouton « Passer l'intro » et touche Échap ; pas d'intro sur la vue arbitre (`#arbitre`) ; intro sautée si une image ne charge pas (délai max. 6 s) ; mode « animations réduites » : fondu court sans zoom (2,4 s). Événement `slc:intro-end` sur `document` à la fin.
-- **Version autonome** (artefact claude.ai, aperçu) : définir `window.SLC_INTRO_ASSETS = {decor, host, candLeft, candRight}` (adresses data: en base64) et `window.SLC_INTRO_CSS_INLINE = true` avant le script, CSS inséré dans une balise style. Le texte d'`intro.js` ne doit pas contenir de balise de fermeture de script (sinon il casse une fois inséré dans la page).
+- **Version autonome** (artefact claude.ai, aperçu) : définir `window.SLC_INTRO_ASSETS = {decor, host, candLeft, candRight, music}` (adresses data: en base64) et `window.SLC_INTRO_CSS_INLINE = true` avant le script, CSS inséré dans une balise style. Le texte d'`intro.js` ne doit pas contenir de balise de fermeture de script (sinon il casse une fois inséré dans la page).
 - **Tests** : captures dans un navigateur automatisé, sur ordinateur (1440×900) et sur mobile (390×844), sans erreur JavaScript. Sur mobile (portrait), l'image est recadrée au centre : on voit surtout l'animateur, les candidats sortent vite du cadre.
-- **Choix par défaut, à revoir si besoin** : intro à chaque ouverture de la page (pas de mémoire du navigateur), pas de son.
+- **Son (générique)** : `assets/intro/generique.mp3` (10 s, 157 Ko), musique originale générée en code par `tools/generique-intro.py` (Python, numpy/scipy ; relancer puis convertir en MP3 avec ffmpeg pour la modifier). Style jeu télé électro à 120 bpm : nappe d'ouverture (0-1 s), basse et arpège pulsés avec filtre qui s'ouvre pendant le zoom (accords La mineur, Fa, Sol, 1-7 s), roulement de caisse claire qui accélère et montée de bruit (5-7 s), impact au moment où le titre apparaît (7 s : grosse caisse, chute de sub, cymbale, accord de La majeur), petit motif final puis fondu jusqu'à 10 s. Pas de reprise de la musique de l'émission (protégée).
+- **Bouton son** : « 🔇 Son / 🔊 Son » à côté de « Passer l'intro ». Coupé par défaut, car les navigateurs bloquent le son sans geste de l'utilisateur. Activé en cours d'intro, la musique reprend au bon moment (calée sur le temps écoulé). Le choix est retenu (`localStorage`, clé `slc-intro-son`) et réessayé à la visite suivante ; si le navigateur refuse, le bouton repasse sur « coupé ». Fondu de sortie du son à la fin ou quand on passe l'intro.
+- **Choix par défaut, à revoir si besoin** : intro à chaque ouverture de la page (pas de mémoire du navigateur).
 - **Point d'attention** : le calque des candidats reproduit des candidats reconnaissables de l'émission. À remplacer par des silhouettes ou des personnages inventés avant une publication publique sur GitHub Pages.
+
+## Comment reprendre dans un nouveau projet Claude
+Reliez le dépôt GitHub (référence du code) et gardez ce document dans le projet, puis demandez par exemple : « Lis le document de contexte et reprends le jeu : ajoute l'éditeur de catégories. » Le fichier `sur-le-carreau.html` du projet est la version autonome du jeu (catégories incluses) ; la référence reste le dépôt.

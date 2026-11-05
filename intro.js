@@ -6,11 +6,13 @@
  * Il ne touche pas à la logique du jeu : il pose un calque par-dessus la page, puis le retire.
  *
  * - Bouton « Passer l'intro » (et touche Échap).
+ * - Bouton son (générique assets/intro/generique.mp3) : coupé par défaut, car les navigateurs
+ *   bloquent le son sans geste de l'utilisateur. Le choix est retenu (localStorage) et réessayé à la visite suivante.
  * - Pas d'intro sur la vue arbitre (#arbitre).
  * - Si une image ne se charge pas, l'intro est sautée.
  * - Fin de l'intro : événement « slc:intro-end » sur document.
  * - Version autonome (artefact claude.ai) : définir avant ce script window.SLC_INTRO_ASSETS
- *   = {decor, host, candLeft, candRight} (adresses data:) et window.SLC_INTRO_CSS_INLINE = true.
+ *   = {decor, host, candLeft, candRight, music} (adresses data:) et window.SLC_INTRO_CSS_INLINE = true.
  */
 (function(){
   if(location.hash==='#arbitre')return;
@@ -18,7 +20,8 @@
   const base=(me&&me.src?me.src.replace(/[^/]*$/,''):'');
   const A=window.SLC_INTRO_ASSETS||{
     decor:base+'assets/intro/decor.webp',host:base+'assets/intro/host.webp',
-    candLeft:base+'assets/intro/cand-left.webp',candRight:base+'assets/intro/cand-right.webp'};
+    candLeft:base+'assets/intro/cand-left.webp',candRight:base+'assets/intro/cand-right.webp',
+    music:base+'assets/intro/generique.mp3'};
   const reduce=window.matchMedia&&matchMedia('(prefers-reduced-motion: reduce)').matches;
   const DUR=reduce?2400:10000;
 
@@ -34,10 +37,28 @@
     document.head.appendChild(l);
   }
 
-  let box=null,done=false,timer=0;
+  let box=null,done=false,timer=0,t0=0,audio=null,sndBtn=null;
+  const KEY='slc-intro-son';
+  const getPref=()=>{try{return localStorage.getItem(KEY)==='1'}catch(e){return false}};
+  const setPref=v=>{try{localStorage.setItem(KEY,v?'1':'0')}catch(e){}};
+  function showSnd(on){if(!sndBtn)return;sndBtn.setAttribute('aria-pressed',on?'true':'false');sndBtn.textContent=on?'🔊 Son':'🔇 Son';sndBtn.setAttribute('aria-label',on?'Couper le son':'Activer le son')}
+  function fadeOut(ms){
+    if(!audio||audio.paused)return;const a=audio,v0=a.volume,s=performance.now();
+    const f=()=>{const k=Math.min(1,(performance.now()-s)/ms);a.volume=v0*(1-k);if(k<1)requestAnimationFrame(f);else{a.pause();a.volume=1}};f();
+  }
+  function soundOn(){
+    if(done||!A.music)return;
+    if(!audio){audio=new Audio(A.music);audio.preload='auto'}
+    audio.volume=1;
+    try{audio.currentTime=t0?Math.max(0,(performance.now()-t0)/1000):0}catch(e){}
+    const p=audio.play();showSnd(true);
+    if(p&&p.catch)p.catch(()=>showSnd(false)); // lecture refusée (pas de geste) : on reste muet
+  }
+  function toggleSnd(){if(audio&&!audio.paused){fadeOut(250);showSnd(false);setPref(false)}else{setPref(true);soundOn()}}
   function end(){
     if(done)return;done=true;clearTimeout(timer);
     removeEventListener('keydown',onKey);
+    fadeOut(450);
     root.classList.remove('slci-on');
     const fin=()=>{if(box)box.remove();hide.remove();document.dispatchEvent(new CustomEvent('slc:intro-end'))};
     if(box&&box.classList.contains('slci-ready')){box.classList.add('slci-out');setTimeout(fin,500)}else fin();
@@ -59,16 +80,18 @@
       '<div class="slci-vign" aria-hidden="true"></div>'+
       '<p class="slci-title" aria-hidden="true">Sur le carreau</p>'+
       '<div class="slci-black" aria-hidden="true"></div>'+
-      '<button type="button" class="slci-skip">Passer l’intro</button>';
+      '<div class="slci-ctrl">'+(A.music?'<button type="button" class="slci-snd" aria-pressed="false">🔇 Son</button>':'')+'<button type="button" class="slci-skip">Passer l’intro</button></div>';
     document.body.appendChild(box);
     box.querySelector('.slci-skip').onclick=end;
+    sndBtn=box.querySelector('.slci-snd');if(sndBtn){sndBtn.onclick=toggleSnd;showSnd(false);audio=new Audio(A.music);audio.preload='auto'}
     addEventListener('keydown',onKey);
     const fail=setTimeout(end,6000); // réseau trop lent : on n'attend pas plus
     Promise.all([cssReady,load(A.decor),load(A.host),load(A.candLeft),load(A.candRight)]).then(()=>{
       clearTimeout(fail);if(done)return;
       box.classList.add('slci-ready');
       requestAnimationFrame(()=>requestAnimationFrame(()=>{
-        box.classList.add('slci-run');
+        box.classList.add('slci-run');t0=performance.now();
+        if(getPref())soundOn();
         box.querySelector('.slci-skip').focus({preventScroll:true});
         timer=setTimeout(end,DUR);
       }));
