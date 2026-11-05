@@ -89,3 +89,11 @@ Fichiers : `index.html` (le jeu : HTML, CSS, JS) et `categories.js` (les catégo
 - Temps par joueur : 40 ou 45 secondes (45 par défaut).
 - Mode par défaut : grille de territoires ; taille par défaut 4×4 (3×3 puis 2×2 si pas assez de catégories).
 - Le texte sous le titre (`#lead`) change selon le mode de jeu.
+
+## Chantier : intro / générique animé (à faire, novembre 2026)
+Travail prévu dans une conversation séparée du même projet ; il ne doit pas toucher à la logique du jeu.
+- **Idée** : plateau de télévision vu par la caméra. L'animateur est au fond ; un candidat de chaque côté du cadre. La caméra avance en zoom vers l'animateur, puis enchaîne sur l'écran de départ.
+- **Matériau** : Ced fournit une image à fond transparent avec trois zones à séparer en calques (à confirmer : probablement décor, animateur, candidats). Calques déjà séparés et de même taille = idéal ; sinon découpe à partir de l'image si les zones ne se chevauchent pas. Animation : le zoom applique des échelles différentes par calque (effet de profondeur), avec éventuellement lueurs et projecteurs.
+- **Fichiers** : image(s) dans `assets/` du dépôt (ce que Ced joint à une conversation n'est pas visible depuis une autre) ; code dans `intro.js` et `intro.css` séparés, avec une seule ligne ajoutée dans `index.html` pour lancer l'intro, afin d'éviter les conflits avec les autres conversations.
+- **Contraintes** : bouton « Passer l'intro » ; images optimisées (WebP ou PNG léger) pour le mobile ; pas de son pour l'instant ; l'artefact claude.ai ne charge pas d'images externes, donc la version de test y aura les images intégrées en base64 dans le fichier unique ; sur GitHub Pages, fichiers normaux. Style : rester dans la direction visuelle plateau (voir plus haut), sans reprendre le logo ni l'identité de l'émission.
+- **À trancher** : durée, intro à chaque visite ou une seule fois (mémoire du navigateur), enchaînement avec l'écran de départ, texte ou titre « Sur le carreau » au générique.
