@@ -31,10 +31,12 @@
   text-shadow:0 0 28px rgba(110,150,255,.9),0 0 6px rgba(110,150,255,.8);opacity:0}
 .slci-title::before{content:"";position:absolute;z-index:-1;left:0;right:0;top:-40%;bottom:-60%;background:linear-gradient(transparent,rgba(3,4,14,.85) 45%)}
 .slci-black{position:absolute;inset:0;background:#03040E;pointer-events:none}
-.slci-skip{position:absolute;top:calc(14px + env(safe-area-inset-top,0px));right:14px;z-index:2;cursor:pointer;
+.slci-ctrl{position:absolute;top:calc(14px + env(safe-area-inset-top,0px));right:14px;z-index:2;display:flex;gap:8px}
+.slci-skip,.slci-snd{cursor:pointer;
   font:600 1rem/1 'Poppins','DM Sans',system-ui,sans-serif;color:#F4F6FF;background:rgba(4,8,36,.6);
   border:2px solid rgba(255,255,255,.35);border-radius:4px;padding:10px 16px}
-.slci-skip:focus-visible{outline:3px solid #FFC53D;outline-offset:2px}
+.slci-snd[aria-pressed="true"]{border-color:#FFC53D}
+.slci-skip:focus-visible,.slci-snd:focus-visible{outline:3px solid #FFC53D;outline-offset:2px}
 
 /* Lecture : la classe .slci-run lance toutes les animations en même temps */
 .slci-run .slci-black{animation:slci-fadein .8s ease-out forwards}
