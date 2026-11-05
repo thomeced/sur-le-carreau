@@ -18,9 +18,13 @@ Un compte à rebours 3-2-1 précède chaque duel.
 
 Dépôt → **Settings** → **Pages** → *Build and deployment* : source **Deploy from a branch**, branche `main`, dossier `/ (root)`. Le jeu est ensuite servi à `https://<utilisateur>.github.io/sur-le-carreau/`. L'arbitre ouvre la même adresse (bouton « Je suis l'arbitre ») et saisit le code affiché sur l'écran du jeu.
 
+## Grille de territoires
+
+Choisir « Grille de territoires » au départ, puis une taille (2×2, 3×3 ou 4×4) : un joueur par case, chaque case a sa catégorie. Le duel se joue dans la catégorie de la case défendue ; le perdant est éliminé et le gagnant prend toutes ses cases. Le gagnant choisit ensuite une case voisine (haut, bas, gauche, droite) à défier. Le dernier joueur en lice gagne. En mode arbitre, l'arbitre voit la catégorie du duel ; le choix de la case se fait sur l'écran du jeu.
+
 ## Contenu
 
-Six thèmes : animaux, fruits et légumes, transports, drapeaux, films en rébus d'emojis, jeux vidéo. Chaque image a un niveau de 1 à 3, et la difficulté monte au fil du duel.
+18 catégories (441 images) : animaux, fruits et légumes, transports, drapeaux, films en rébus, jeux vidéo, sports, musique, métiers, outils, nature, vêtements, plats, monuments, fêtes, espace, technologie, corps humain. Chaque image a un niveau de 1 à 3, et la difficulté monte au fil du duel.
 
 ### Ajouter des images ou une catégorie
 
@@ -45,7 +49,7 @@ docs/contexte-projet.md    règles, décisions, direction visuelle, plan
 
 1. Duel à deux sur le même écran — fait
 2. Plusieurs catégories, validation robuste — fait
-3. Grille de territoires et conquête
+3. Grille de territoires et conquête — fait (à essayer avec de vrais appareils)
 4. Mode solo / défi
 5. Multijoueur en ligne (Node.js + Socket.IO)
 6. Finitions : sons, animations, mobile, réponse vocale

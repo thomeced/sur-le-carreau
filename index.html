@@ -65,6 +65,25 @@ h1{font-size:clamp(2.2rem,8vw,4rem);line-height:1.1}
 .big{font-size:1.25rem}
 #a0{--c:var(--p1)}#a1{--c:var(--p2)}
 #arb{max-width:520px;margin:0 auto}
+.fields{display:grid;gap:14px}
+.gnames{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:10px}
+#grid{max-width:760px;margin:0 auto}
+#gtitle{font:700 clamp(1.4rem,5vw,2rem)/1.2 var(--disp);margin:0 0 4px;overflow-wrap:anywhere}
+#ghint,#gstat,#dcat{margin:4px 0}
+#dcat{font-weight:600}
+.gboard{display:grid;gap:6px;margin:12px 0}
+.gcell{aspect-ratio:1/.8;min-width:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;padding:4px;border-radius:6px;border:2px solid rgba(255,255,255,.25);background:var(--gc);color:#fff;box-shadow:none;font-family:var(--disp);cursor:default;overflow:hidden}
+.gcell .gn{font-weight:700;font-size:clamp(.7rem,2.6vw,1.05rem);max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.gcell .gc{font-weight:500;font-size:clamp(.55rem,2vw,.8rem);opacity:.92;max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.gcell.mine{border-color:#fff;box-shadow:0 0 0 3px var(--gh)}
+.gcell.target{cursor:pointer;border-color:var(--p1);animation:gpulse 1.4s ease-in-out infinite}
+.gcell.sel{outline:4px solid var(--p1);outline-offset:2px}
+.gcell.won{animation:gwon .9s ease-out}
+@keyframes gpulse{50%{box-shadow:0 0 14px var(--p1)}}
+@keyframes gwon{0%{filter:brightness(2.2)}100%{filter:none}}
+@media(prefers-reduced-motion:reduce){.gcell.target,.gcell.won{animation:none}}
+.gpanel{display:grid;gap:10px;justify-items:start}
+.gpanel p{margin:0;font-weight:600}
 </style>
 </head>
 <body>
@@ -74,18 +93,27 @@ h1{font-size:clamp(2.2rem,8vw,4rem);line-height:1.1}
   <p class="lead">Duel à deux sur le même écran. Nommez les images le plus vite possible : chaque bonne réponse passe la main à l'adversaire, et celui dont le temps tombe à zéro perd.</p>
   <p id="cerr" role="alert" hidden></p>
   <form id="form" class="panel setup">
-    <div class="row2">
-      <label>Joueur 1<input id="n0" maxlength="14" placeholder="Joueur 1" autocomplete="off"></label>
-      <label>Joueur 2<input id="n1" maxlength="14" placeholder="Joueur 2" autocomplete="off"></label>
+    <label>Mode de jeu
+      <select id="gmode"><option value="duel">Duel à deux</option><option value="grid">Grille de territoires</option></select>
+    </label>
+    <div id="duelfields" class="fields">
+      <div class="row2">
+        <label>Joueur 1<input id="n0" maxlength="14" placeholder="Joueur 1" autocomplete="off"></label>
+        <label>Joueur 2<input id="n1" maxlength="14" placeholder="Joueur 2" autocomplete="off"></label>
+      </div>
+      <label>Catégorie<select id="cat"></select></label>
     </div>
-    <label>Catégorie<select id="cat"></select></label>
+    <div id="gridfields" class="fields" hidden>
+      <label>Taille de la grille<select id="gsize"></select></label>
+      <div id="gnames" class="gnames"></div>
+    </div>
     <label>Temps par joueur
       <select id="dur"><option value="30">30 secondes</option><option value="45" selected>45 secondes</option><option value="60">60 secondes</option></select>
     </label>
     <label>Réponses
       <select id="mode"><option value="kb">Au clavier</option><option value="oral">À l’oral, validées par un arbitre</option></select>
     </label>
-    <button type="submit">Lancer le duel</button>
+    <button type="submit" id="gosubmit">Lancer le duel</button>
     <button type="button" class="alt" id="toarb">Je suis l’arbitre</button>
   </form>
 </section>
@@ -102,7 +130,9 @@ h1{font-size:clamp(2.2rem,8vw,4rem);line-height:1.1}
         <p id="lnk" role="status"></p>
         <button type="button" id="go" disabled>Démarrer le duel</button>
         <button type="button" class="alt" id="newcode">Nouveau code</button>
+        <button type="button" class="alt" id="wback" hidden>Retour à la grille</button>
       </div>
+      <p id="dcat"></p>
       <div id="who"></div>
       <div id="card" aria-label="Image à nommer"></div>
       <div id="msg" role="status" aria-live="polite"></div>
@@ -113,6 +143,15 @@ h1{font-size:clamp(2.2rem,8vw,4rem);line-height:1.1}
       <button type="button" class="alt" id="pass">Passer (−3 s)</button>
     </div>
   </div>
+</section>
+
+<section id="grid" hidden>
+  <h2 id="gtitle"></h2>
+  <p id="ghint"></p>
+  <div id="gboard" class="gboard"></div>
+  <div id="gpanel" class="panel gpanel"></div>
+  <p id="gstat" role="status"></p>
+  <button type="button" class="alt" id="gquit">Quitter la partie</button>
 </section>
 
 <section id="arb" hidden>
@@ -127,6 +166,7 @@ h1{font-size:clamp(2.2rem,8vw,4rem);line-height:1.1}
       <div class="side" id="a0"><span class="nm"></span><div class="tm"></div></div>
       <div class="side" id="a1"><span class="nm"></span><div class="tm"></div></div>
     </div>
+    <p id="actx"></p>
     <div id="acard" class="center" aria-label="Image en cours"></div>
     <p id="aans" role="status"></p>
     <button type="button" class="big good" id="bok" disabled>Bonne réponse</button>
@@ -173,7 +213,7 @@ const norm=s=>s.toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g,'').replace(/[
 function lev(a,b){const m=[...Array(b.length+1).keys()];for(let i=1;i<=a.length;i++){let p=m[0];m[0]=i;for(let j=1;j<=b.length;j++){const t=m[j];m[j]=Math.min(m[j]+1,m[j-1]+1,p+(a[i-1]===b[j-1]?0:1));p=t}}return m[b.length]}
 function isOk(v,list){v=norm(v);if(!v)return false;return list.some(r=>{r=norm(r);if(v===r)return true;const t=r.length>=9?2:r.length>=5?1:0;return t>0&&lev(v,r)<=t})}
 function shuffle(a){for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a}
-function show(id){['setup','game','end','arb'].forEach(x=>$(x).hidden=x!==id)}
+function show(id){['setup','game','grid','end','arb'].forEach(x=>$(x).hidden=x!==id)}
 
 let S,flashT;
 const CH='ABCDEFGHJKMNPQRSTUVWXYZ23456789',isArb=location.hash==='#arbitre';
@@ -274,12 +314,19 @@ function render(){
   }
   $('who').textContent='À '+S.names[S.turn]+' de jouer (niveau '+S.lvl+')';
 }
-function push(){if(S&&S.oral&&S.link)S.link.send('st',{names:S.names,t:S.t.map(Math.round),sc:S.sc,turn:S.turn,card:S.cur,lvl:S.lvl,over:S.over,lock:S.lock,started:S.started,count:S.counting?S.count:0})}
+function push(){if(S&&S.oral&&S.link)S.link.send('st',{names:S.names,t:S.t.map(Math.round),sc:S.sc,turn:S.turn,card:S.cur,lvl:S.lvl,over:S.over,lock:S.lock,started:S.started,count:S.counting?S.count:0,cat:S.cat})}
 function finish(){
   S.over=true;clearInterval(S.h);clearInterval(S.cd);
   const w=S.turn^1;
   $('win').textContent=S.names[w]+' remporte le duel';
-  $('res').textContent=S.names[0]+' : '+S.sc[0]+' trouvé'+(S.sc[0]>1?'s':'')+'. '+S.names[1]+' : '+S.sc[1]+' trouvé'+(S.sc[1]>1?'s':'')+'.';
+  let res=S.names[0]+' : '+S.sc[0]+' trouvé'+(S.sc[0]>1?'s':'')+'. '+S.names[1]+' : '+S.sc[1]+' trouvé'+(S.sc[1]>1?'s':'')+'.';
+  if(S.pid&&G){
+    S.winP=S.pid[w];S.loseP=S.pid[w^1];
+    const nc=G.cells.filter(c=>c.owner===S.loseP).length;
+    res+=' '+S.names[w]+' prend '+(nc>1?'les '+nc+' cases':'la case')+' de '+S.names[w^1]+'.';
+    $('again').textContent='Retour à la grille';
+  }else $('again').textContent='Nouvelle partie';
+  $('res').textContent=res;
   show('end');push();
 }
 function tick(){
@@ -334,19 +381,115 @@ function attach(me){
     push();
   });
 }
-$('form').onsubmit=e=>{
-  e.preventDefault();
+function startDuel(o){
   if(S){clearInterval(S.h);clearInterval(S.cd)}
-  const T=+$('dur').value*1000,oral=$('mode').value==='oral';
-  S={names:[$('n0').value.trim()||'Joueur 1',$('n1').value.trim()||'Joueur 2'],t:[T,T],turn:Math.random()<.5?0:1,sc:[0,0],src:DATA[$('cat').value].items,pool:null,lvl:1,last:performance.now(),lock:false,over:false,started:false,counting:false,count:0,oral,n:0};
-  fill();card();render();show('game');$('msg').textContent='';
-  $('f2').hidden=$('pass').hidden=oral;$('wait').hidden=!oral;
-  if(!oral)return launch();
+  S={names:o.names,t:[o.T,o.T],turn:Math.random()<.5?0:1,sc:[0,0],src:o.src,cat:o.cat,pid:o.pid||null,pool:null,lvl:1,last:performance.now(),lock:false,over:false,started:false,counting:false,count:0,oral:o.oral,n:0};
+  fill();card();render();show('game');$('msg').textContent='';$('dcat').textContent='Catégorie : '+o.cat;
+  $('f2').hidden=$('pass').hidden=o.oral;$('wait').hidden=!o.oral;$('wback').hidden=!S.pid;
+  if(!o.oral)return launch();
   $('code').textContent=LCODE||'…';$('go').disabled=true;$('wst').textContent='En attente de l’arbitre…';
   $('lnk').textContent=LSTAT?linkMsg(LSTAT[0],LSTAT[1]):'Liaison entre appareils : connexion…';
   if(LINK)S.link=LINK;
   attach(S);
+}
+$('form').onsubmit=e=>{
+  e.preventDefault();
+  if($('gmode').value==='grid')return startGrid();
+  const c=DATA[$('cat').value];
+  startDuel({names:[$('n0').value.trim()||'Joueur 1',$('n1').value.trim()||'Joueur 2'],src:c.items,cat:c.label,T:+$('dur').value*1000,oral:$('mode').value==='oral'});
 };
+
+/* ---------- Grille de territoires ----------
+   Une case par joueur, chacune avec une catégorie tirée au sort. Le joueur « qui a la main » défie
+   le propriétaire d'une case voisine ; le duel se joue dans la catégorie de cette case. Le perdant
+   est éliminé, le gagnant prend toutes ses cases et a la main pour le duel suivant. */
+let G=null;
+const gcol=i=>'hsl('+Math.round((i*137.508)%360)+' 62% 34%)';
+const gcolHi=i=>'hsl('+Math.round((i*137.508)%360)+' 70% 58%)';
+const gadj=(size,a,b)=>Math.abs(Math.floor(a/size)-Math.floor(b/size))+Math.abs(a%size-b%size)===1;
+function gtargets(){
+  const out=[];
+  G.cells.forEach((c,i)=>{if(c.owner!==G.ch&&G.cells.some((d,j)=>d.owner===G.ch&&gadj(G.size,i,j)))out.push(i)});
+  return out;
+}
+function gnamesRender(){
+  const n=(+$('gsize').value)**2,box=$('gnames');
+  const old=[...box.querySelectorAll('input')].map(x=>x.value);
+  box.textContent='';
+  for(let i=0;i<n;i++){
+    const l=document.createElement('label'),inp=document.createElement('input');
+    l.append('Joueur '+(i+1),inp);inp.maxLength=14;inp.placeholder='Joueur '+(i+1);inp.autocomplete='off';inp.value=old[i]||'';
+    box.appendChild(l);
+  }
+}
+function gmodeRender(){
+  const grid=$('gmode').value==='grid';
+  $('duelfields').hidden=grid;$('gridfields').hidden=!grid;
+  $('gosubmit').textContent=grid?'Commencer la partie':'Lancer le duel';
+  if(grid)gnamesRender();
+}
+{
+  const nCat=Object.keys(DATA).length;
+  $('gsize').innerHTML=[2,3,4].map(k=>'<option value="'+k+'"'+(k*k>nCat?' disabled':'')+'>'+k+'×'+k+' ('+k*k+' joueurs)'+(k*k>nCat?' : pas assez de catégories':'')+'</option>').join('');
+  $('gsize').value=nCat>=9?'3':'2';
+}
+$('gmode').onchange=gmodeRender;
+$('gsize').onchange=gnamesRender;
+function startGrid(){
+  if(S){clearInterval(S.h);clearInterval(S.cd)}
+  const size=+$('gsize').value,n=size*size;
+  const names=[...$('gnames').querySelectorAll('input')].map((x,i)=>x.value.trim()||'Joueur '+(i+1));
+  const keys=shuffle(Object.keys(DATA));
+  G={size,n,players:names.map(name=>({name,alive:true})),cells:names.map((_,i)=>({cat:keys[i%keys.length],owner:i})),
+     ch:Math.floor(Math.random()*n),sel:null,last:[],over:false,T:+$('dur').value*1000,oral:$('mode').value==='oral'};
+  S=null;
+  gridRender();show('grid');
+}
+function gbtn(txt,cls,fn){const b=document.createElement('button');b.type='button';b.textContent=txt;if(cls)b.className=cls;b.onclick=fn;return b}
+function gridRender(){
+  const alive=G.players.filter(p=>p.alive).length,tg=G.over?[]:gtargets(),won=G.last;G.last=[];
+  $('gtitle').textContent=G.over?G.players[G.ch].name+' remporte la partie !':G.players[G.ch].name+' choisit son adversaire';
+  $('ghint').textContent=G.over?'Toutes les cases lui appartiennent.':'Case(s) de '+G.players[G.ch].name+' : cadre blanc. Cases à attaquer : cadre jaune.';
+  const board=$('gboard');board.style.gridTemplateColumns='repeat('+G.size+',minmax(0,1fr))';board.textContent='';
+  G.cells.forEach((c,i)=>{
+    const own=G.players[c.owner],cat=DATA[c.cat].label,isT=tg.includes(i);
+    const b=document.createElement('button'),nm=document.createElement('span'),ct=document.createElement('span');
+    b.type='button';b.className='gcell'+(c.owner===G.ch?' mine':'')+(isT?' target':'')+(G.sel===i?' sel':'')+(won.includes(i)?' won':'');
+    b.style.setProperty('--gc',gcol(c.owner));b.style.setProperty('--gh',gcolHi(c.owner));
+    nm.className='gn';nm.textContent=own.name;ct.className='gc';ct.textContent=cat;b.append(nm,ct);
+    b.setAttribute('aria-label',own.name+', '+cat+(isT?', case à attaquer':''));
+    b.tabIndex=isT?0:-1;
+    b.onclick=()=>{if(!isT)return;G.sel=G.sel===i?null:i;gridRender()};
+    board.appendChild(b);
+  });
+  const p=$('gpanel');p.textContent='';
+  if(G.over){
+    p.append(gbtn('Nouvelle partie','',()=>show('setup')));
+  }else if(G.sel!=null){
+    const c=G.cells[G.sel],a=G.players[G.ch],d=G.players[c.owner],t=document.createElement('p');
+    t.textContent=a.name+' défie '+d.name+' en « '+DATA[c.cat].label+' ».';
+    p.append(t,gbtn('Lancer le duel','',startGridDuel),gbtn('Changer d’adversaire','alt',()=>{G.sel=null;gridRender()}));
+  }else{
+    const t=document.createElement('p');t.textContent='Touchez une case à cadre jaune pour défier son joueur.';p.append(t);
+  }
+  $('gstat').textContent=alive+' joueur'+(alive>1?'s':'')+' en lice';
+}
+function startGridDuel(){
+  const c=G.cells[G.sel],a=G.ch,d=c.owner,cat=DATA[c.cat];
+  startDuel({names:[G.players[a].name,G.players[d].name],pid:[a,d],src:cat.items,cat:cat.label,T:G.T,oral:G.oral});
+}
+function gridAfterDuel(){
+  const w=S.winP,l=S.loseP;
+  G.cells.forEach((c,i)=>{if(c.owner===l){c.owner=w;G.last.push(i)}});
+  G.players[l].alive=false;G.ch=w;G.sel=null;
+  G.over=G.players.filter(p=>p.alive).length===1;
+  gridRender();show('grid');
+}
+$('wback').onclick=()=>{
+  if(!S||!S.pid||S.started||S.counting)return;
+  S.over=true;push();G.sel=null;gridRender();show('grid');
+};
+$('gquit').onclick=()=>show('setup');
 $('newcode').onclick=()=>{
   if(!S||!S.oral||S.started||S.counting)return;
   resetLink();S.link=null;$('code').textContent='…';$('go').disabled=true;
@@ -362,7 +505,7 @@ $('f2').onsubmit=e=>{
 };
 $('pass').onclick=skip;
 $('go').onclick=launch;
-$('again').onclick=()=>{show('setup')};
+$('again').onclick=()=>{if(S&&S.pid&&S.over&&G&&S.winP!=null)gridAfterDuel();else show('setup')};
 
 let R,L,cool=false;
 function arbRender(){
@@ -370,8 +513,9 @@ function arbRender(){
   $('ast').textContent='';
   const t=R.t.slice();if(R.started&&!R.over)t[R.turn]-=performance.now()-R.at;
   for(let i=0;i<2;i++){const s=$('a'+i);s.querySelector('.nm').textContent=R.names[i];s.querySelector('.tm').textContent=Math.ceil(Math.max(0,t[i])/1000);s.classList.toggle('on',R.turn===i&&!R.over);s.classList.toggle('low',t[i]<10000)}
+  $('actx').textContent=R.cat?'Catégorie : '+R.cat:'';
   $('acard').textContent=R.started?R.card[0]:(R.count||'?');
-  $('aans').textContent=R.over?'Partie terminée · en attente du prochain duel':R.count?'Départ dans '+R.count+'…':!R.started?'Le duel n’a pas encore démarré':'À '+R.names[R.turn]+' (niveau '+R.lvl+') · réponse : '+R.card[1].split('|').join(' / ');
+  $('aans').textContent=R.over?'Duel terminé · en attente du prochain duel':R.count?'Départ dans '+R.count+'…':!R.started?'Le duel n’a pas encore démarré':'À '+R.names[R.turn]+' (niveau '+R.lvl+') · réponse : '+R.card[1].split('|').join(' / ');
   $('bok').disabled=$('bpass').disabled=!R.started||R.over||R.lock||cool;
 }
 function act(a){if(!L||!R||cool)return;L.send('act',{a,c:R.card[0]});cool=true;arbRender();setTimeout(()=>{cool=false;arbRender()},700)}

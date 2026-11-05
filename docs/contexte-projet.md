@@ -14,7 +14,7 @@ Réaliser un jeu web inspiré du jeu télévisé The Floor : des duels de catég
 ## Plan de développement
 1. Duel jouable à deux sur le même écran, une catégorie. **(fait)**
 2. Plusieurs catégories et validation de réponses robuste. **(fait en partie : 3 catégories, tolérance aux accents, articles et petites fautes via distance de Levenshtein)**
-3. Grille de cases et conquête de territoires.
+3. Grille de cases et conquête de territoires. **(fait, novembre 2026)**
 4. Mode solo contre l'ordinateur ou mode défi.
 5. Multijoueur en ligne : Node.js + WebSocket (Socket.IO), le serveur arbitre les chronos et les réponses.
 6. Finitions : sons, animations, mobile, éventuellement réponse vocale (Web Speech API).
@@ -52,7 +52,7 @@ Fichiers : `index.html` (le jeu : HTML, CSS, JS) et `categories.js` (les catégo
 
 ## Niveaux de difficulté et thèmes (novembre 2026)
 - Chaque image porte un niveau de 1 à 3 : `['🐘','éléphant',1]`. Le niveau monte avec le nombre total de bonnes réponses du duel (+1 tous les 4), et le niveau en cours est affiché aux joueurs et à l'arbitre. Un niveau épuisé est recyclé plutôt que de redescendre.
-- Thèmes : animaux, fruits et légumes, transports, drapeaux, films en rébus d'emojis, jeux vidéo. Les rébus n'utilisent que des titres et des emojis génériques (pas de personnages ni de logos protégés).
+- Thèmes d'origine : animaux, fruits et légumes, transports, drapeaux, films en rébus d'emojis, jeux vidéo (12 autres ajoutés avec la grille). Les rébus n'utilisent que des titres et des emojis génériques (pas de personnages ni de logos protégés).
 - Limite : les drapeaux en emoji ne s'affichent pas sous Windows (les lettres du pays apparaissent à la place).
 - Idées non faites : image floue qui se précise avec bonus de vitesse, pénalité de « passer » croissante, vraies images (Wikimedia Commons ou originales), thèmes monuments et plats du monde.
 
@@ -70,7 +70,16 @@ Fichiers : `index.html` (le jeu : HTML, CSS, JS) et `categories.js` (les catégo
 - Artefact claude.ai : page unique, `categories.js` est inséré dans le HTML au moment de la publication (la balise `<script src="categories.js"></script>` est remplacée par son contenu). Le fichier du projet `sur-le-carreau.html` est cette version autonome ; la référence reste le dépôt.
 - Prochaine étape pour les catégories : un éditeur (ajout d'images dans la page, export du `categories.js`).
 
+## Grille de territoires (novembre 2026)
+- Choix « Mode de jeu : grille » au départ ; taille 2×2, 3×3 ou 4×4 (désactivée si moins de catégories que de cases) ; un joueur par case, noms saisis (par défaut « Joueur n »), conservés quand on change la taille.
+- 18 catégories (441 images) pour que chaque case ait une catégorie distincte (tirage aléatoire).
+- Règles : le duel se joue dans la catégorie de la case défendue ; le perdant est éliminé, le gagnant prend toutes ses cases et choisit ensuite un voisin orthogonal à défier ; dernier joueur en lice = vainqueur. Le premier attaquant est tiré au sort.
+- Écran de grille : cases colorées par propriétaire (cadre blanc = cases de l'attaquant, jaune = cibles possibles), panneau « X défie Y en <catégorie> », boutons « Lancer le duel » / « Changer d'adversaire ». Après un duel : « Retour à la grille ». Possible de revenir à la grille avant le départ du duel (`#wback`).
+- Mode arbitre dans la grille : le même code est réutilisé d'un duel à l'autre ; l'arbitre voit « Catégorie : X » et « Duel terminé · en attente du prochain duel ». Il ne choisit pas la case : cela se fait sur l'écran du jeu.
+- Tests (navigateur automatisé) : tailles 2/3/4, voisinage, partie 2×2 jusqu'au vainqueur, grille avec arbitre simulé. Pas encore essayé avec deux vrais appareils ni le vrai PeerJS.
+- Limites : pas de sauvegarde ni de reprise d'une grille ; pas de mode équipes ; 4-voisinage uniquement.
+
 ## Prochaines étapes suggérées
-- Ajouter la grille de territoires et le choix du duel (qui défie qui, quelle catégorie).
-- Enrichir les catégories (drapeaux, monuments, marques, etc.).
+- Éditeur de catégories (voir ci-dessus).
+- Extras arbitre : bouton « mauvaise réponse », pause, annulation ; sons ; vraies images ; image floue qui se précise ; mode solo.
 - Éditeur de catégories (voir ci-dessus).
