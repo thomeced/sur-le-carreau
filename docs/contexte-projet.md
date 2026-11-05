@@ -83,3 +83,9 @@ Fichiers : `index.html` (le jeu : HTML, CSS, JS) et `categories.js` (les catégo
 - Éditeur de catégories (voir ci-dessus).
 - Extras arbitre : bouton « mauvaise réponse », pause, annulation ; sons ; vraies images ; image floue qui se précise ; mode solo.
 - Éditeur de catégories (voir ci-dessus).
+
+## Réglages de départ simplifiés (novembre 2026)
+- Le mode « au clavier » est supprimé de l'écran de départ : les réponses se donnent toujours à l'oral, validées par un arbitre (le code interne du mode clavier reste dans `index.html`, inutilisé, et sert seulement aux tests automatisés).
+- Temps par joueur : 40 ou 45 secondes (45 par défaut).
+- Mode par défaut : grille de territoires ; taille par défaut 4×4 (3×3 puis 2×2 si pas assez de catégories).
+- Le texte sous le titre (`#lead`) change selon le mode de jeu.

@@ -8,8 +8,7 @@ Ouvrir `index.html` dans un navigateur (le fichier `categories.js` doit rester �
 
 Un compte à rebours 3-2-1 précède chaque duel.
 
-- **Mode clavier** : les joueurs tapent leurs réponses (tolérance aux accents, aux articles et aux petites fautes).
-- **Mode arbitre** : les joueurs répondent à l'oral, un arbitre valide depuis une autre page (bouton « Je suis l'arbitre » ou `#arbitre` dans l'adresse) en saisissant le code à 4 caractères affiché par le jeu. Le code reste valable d'une partie à l'autre : l'arbitre n'a pas à recharger sa page ; le bouton « Nouveau code » en génère un autre si besoin.
+- **Réponses à l'oral** : les joueurs répondent de vive voix, un arbitre valide depuis une autre page (bouton « Je suis l'arbitre » ou `#arbitre` dans l'adresse) en saisissant le code à 4 caractères affiché par le jeu. Le code reste valable d'une partie à l'autre : l'arbitre n'a pas à recharger sa page ; le bouton « Nouveau code » en génère un autre si besoin.
 
 > **Liaison jeu ↔ arbitre.** Sur claude.ai, elle passe par la capacité `room` des artefacts. Partout ailleurs (GitHub Pages…), elle passe par [PeerJS](https://peerjs.com) : les deux appareils se connectent en direct, le service public de PeerJS ne sert qu'à les mettre en relation. Si aucun des deux n'est disponible, seuls deux onglets du même navigateur peuvent communiquer (`BroadcastChannel`). Un indicateur affiche l'état de la liaison sur les deux écrans.
 > Sur certains réseaux mobiles très fermés, la connexion directe peut échouer : mettre alors le jeu et l'arbitre sur le même wifi.
@@ -20,7 +19,7 @@ Dépôt → **Settings** → **Pages** → *Build and deployment* : source **Dep
 
 ## Grille de territoires
 
-Choisir « Grille de territoires » au départ, puis une taille (2×2, 3×3 ou 4×4) : un joueur par case, chaque case a sa catégorie. Le duel se joue dans la catégorie de la case défendue ; le perdant est éliminé et le gagnant prend toutes ses cases. Le gagnant choisit ensuite une case voisine (haut, bas, gauche, droite) à défier. Le dernier joueur en lice gagne. En mode arbitre, l'arbitre voit la catégorie du duel ; le choix de la case se fait sur l'écran du jeu.
+Mode par défaut au départ (l'autre choix est « Duel à deux »). Taille 2×2, 3×3 ou 4×4 (4×4 par défaut) : un joueur par case, chaque case a sa catégorie. Le duel se joue dans la catégorie de la case défendue ; le perdant est éliminé et le gagnant prend toutes ses cases. Le gagnant choisit ensuite une case voisine (haut, bas, gauche, droite) à défier. Le dernier joueur en lice gagne. En mode arbitre, l'arbitre voit la catégorie du duel ; le choix de la case se fait sur l'écran du jeu.
 
 ## Contenu
 

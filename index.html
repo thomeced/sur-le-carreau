@@ -90,28 +90,25 @@ h1{font-size:clamp(2.2rem,8vw,4rem);line-height:1.1}
 <main>
 <section id="setup">
   <h1>Sur le carreau</h1>
-  <p class="lead">Duel à deux sur le même écran. Nommez les images le plus vite possible : chaque bonne réponse passe la main à l'adversaire, et celui dont le temps tombe à zéro perd.</p>
+  <p class="lead" id="lead"></p>
   <p id="cerr" role="alert" hidden></p>
   <form id="form" class="panel setup">
     <label>Mode de jeu
-      <select id="gmode"><option value="duel">Duel à deux</option><option value="grid">Grille de territoires</option></select>
+      <select id="gmode"><option value="grid" selected>Grille de territoires</option><option value="duel">Duel à deux</option></select>
     </label>
-    <div id="duelfields" class="fields">
+    <div id="duelfields" class="fields" hidden>
       <div class="row2">
         <label>Joueur 1<input id="n0" maxlength="14" placeholder="Joueur 1" autocomplete="off"></label>
         <label>Joueur 2<input id="n1" maxlength="14" placeholder="Joueur 2" autocomplete="off"></label>
       </div>
       <label>Catégorie<select id="cat"></select></label>
     </div>
-    <div id="gridfields" class="fields" hidden>
+    <div id="gridfields" class="fields">
       <label>Taille de la grille<select id="gsize"></select></label>
       <div id="gnames" class="gnames"></div>
     </div>
     <label>Temps par joueur
-      <select id="dur"><option value="30">30 secondes</option><option value="45" selected>45 secondes</option><option value="60">60 secondes</option></select>
-    </label>
-    <label>Réponses
-      <select id="mode"><option value="kb">Au clavier</option><option value="oral">À l’oral, validées par un arbitre</option></select>
+      <select id="dur"><option value="40">40 secondes</option><option value="45" selected>45 secondes</option></select>
     </label>
     <button type="submit" id="gosubmit">Lancer le duel</button>
     <button type="button" class="alt" id="toarb">Je suis l’arbitre</button>
@@ -404,7 +401,7 @@ $('form').onsubmit=e=>{
   e.preventDefault();
   if($('gmode').value==='grid')return startGrid();
   const c=DATA[$('cat').value];
-  startDuel({names:[$('n0').value.trim()||'Joueur 1',$('n1').value.trim()||'Joueur 2'],src:c.items,cat:c.label,T:+$('dur').value*1000,oral:$('mode').value==='oral'});
+  startDuel({names:[$('n0').value.trim()||'Joueur 1',$('n1').value.trim()||'Joueur 2'],src:c.items,cat:c.label,T:+$('dur').value*1000,oral:true});
 };
 
 /* ---------- Grille de territoires ----------
@@ -434,22 +431,26 @@ function gmodeRender(){
   const grid=$('gmode').value==='grid';
   $('duelfields').hidden=grid;$('gridfields').hidden=!grid;
   $('gosubmit').textContent=grid?'Commencer la partie':'Lancer le duel';
+  $('lead').textContent=grid
+    ?'Un joueur par case, chacune avec sa catégorie. Les duels se jouent à l’oral, validés par un arbitre : le gagnant prend les cases du perdant et défie un voisin, jusqu’au dernier joueur en lice.'
+    :'Un duel à deux, à l’oral, validé par un arbitre : nommez les images le plus vite possible. Chaque bonne réponse passe la main à l’adversaire, et celui dont le temps tombe à zéro perd.';
   if(grid)gnamesRender();
 }
 {
   const nCat=Object.keys(DATA).length;
   $('gsize').innerHTML=[2,3,4].map(k=>'<option value="'+k+'"'+(k*k>nCat?' disabled':'')+'>'+k+'×'+k+' ('+k*k+' joueurs)'+(k*k>nCat?' : pas assez de catégories':'')+'</option>').join('');
-  $('gsize').value=nCat>=9?'3':'2';
+  $('gsize').value=nCat>=16?'4':nCat>=9?'3':'2';
 }
 $('gmode').onchange=gmodeRender;
 $('gsize').onchange=gnamesRender;
+gmodeRender();
 function startGrid(){
   if(S){clearInterval(S.h);clearInterval(S.cd)}
   const size=+$('gsize').value,n=size*size;
   const names=[...$('gnames').querySelectorAll('input')].map((x,i)=>x.value.trim()||'Joueur '+(i+1));
   const keys=shuffle(Object.keys(DATA));
   G={size,n,players:names.map(name=>({name,alive:true})),cells:names.map((_,i)=>({cat:keys[i%keys.length],owner:i})),
-     ch:Math.floor(Math.random()*n),sel:null,last:[],over:false,T:+$('dur').value*1000,oral:$('mode').value==='oral'};
+     ch:Math.floor(Math.random()*n),sel:null,last:[],over:false,T:+$('dur').value*1000,oral:true};
   S=null;
   gridRender();show('grid');
 }
