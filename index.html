@@ -163,15 +163,82 @@ function show(id){['setup','game','end','arb'].forEach(x=>$(x).hidden=x!==id)}
 
 let S,flashT;
 const CH='ABCDEFGHJKMNPQRSTUVWXYZ23456789',isArb=location.hash==='#arbitre';
-async function link(code,role,onmsg){
-  const bc='BroadcastChannel' in window?new BroadcastChannel('slc-'+code):null,seen=new Set();
+let peerLib;
+function loadPeer(){
+  if(window.Peer)return Promise.resolve();
+  return peerLib||(peerLib=new Promise((ok,ko)=>{const el=document.createElement('script');el.src='https://cdn.jsdelivr.net/npm/peerjs@1.5.4/dist/peerjs.min.js';el.onload=ok;el.onerror=()=>ko(new Error('peerjs'));document.head.appendChild(el)}));
+}
+const rnd=()=>Math.random().toString(36).slice(2);
+/* Liaison jeu <-> arbitre. Trois chemins, essayés dans l'ordre :
+   1. claude.ai : capacité "room" (aucun service externe) ;
+   2. ailleurs (GitHub Pages…) : PeerJS, connexion directe entre appareils ;
+   3. à défaut : BroadcastChannel (onglets du même navigateur seulement).
+   onstat(mode,état) sert à afficher l'état de la liaison. */
+async function link(code,role,onmsg,onstat){
+  let bc=null;try{if(typeof BroadcastChannel==='function')bc=new BroadcastChannel('slc-'+code)}catch(e){bc=null}
+  const seen=new Set();
   const hear=(topic,d)=>{if(!d||d.role===role||seen.has(d.id))return;seen.add(d.id);onmsg(topic,d)};
   if(bc)bc.onmessage=e=>hear(e.data.topic,e.data.d);
-  let room=null;
-  try{const r=window.claude&&await claude.use('room');if(r){room=await r.join('slc-'+code.toLowerCase());['st','act','hi'].forEach(t=>room.on(t,m=>hear(t,m.data),()=>{}))}}catch(e){room=null}
-  return{live:!!room,send(topic,d){d={...d,role,id:Math.random().toString(36).slice(2)};if(bc)bc.postMessage({topic,d});if(room)room.emit(topic,d).catch(()=>{})}}
+  let room=null,peer=null,conns=[],mode='local';
+  const stat=st=>{try{if(onstat)onstat(mode,st)}catch(e){}};
+  try{const r=window.claude&&await claude.use('room');if(r){room=await r.join('slc-'+code.toLowerCase());['st','act','hi'].forEach(t=>room.on(t,m=>hear(t,m.data),()=>{}));mode='claude'}}catch(e){room=null}
+  if(room)stat('ok');
+  else{
+    try{
+      await loadPeer();
+      const id='slc-'+code.toLowerCase();
+      peer=await new Promise((ok,ko)=>{
+        const p=new Peer(role==='game'?id:undefined,window.SLC_PEER_OPTS||{debug:0});
+        const to=setTimeout(()=>ko({type:'timeout'}),10000);
+        p.on('open',()=>{clearTimeout(to);ok(p)});
+        p.on('error',e=>{clearTimeout(to);ko(e)});
+      });
+      mode='peer';
+      peer.on('disconnected',()=>{try{peer.reconnect()}catch(e){}});
+      peer.on('error',e=>{stat(e&&e.type==='peer-unavailable'?'search':'down')});
+      const wire=c=>{
+        c.on('data',m=>{if(m)hear(m.topic,m.d)});
+        c.on('error',()=>{});
+      };
+      if(role==='game'){
+        stat('wait');
+        peer.on('connection',c=>{
+          wire(c);
+          c.on('open',()=>{conns.push(c);stat('ok')});
+          c.on('close',()=>{conns=conns.filter(x=>x!==c);stat(conns.length?'ok':'wait')});
+        });
+      }else{
+        stat('search');
+        let conn=null,t0=0;
+        const attempt=()=>{
+          if(conn&&conn.open)return;
+          if(conn&&Date.now()-t0<8000)return;
+          if(conn){try{conn.close()}catch(e){}}
+          const c=conn=peer.connect(id,{reliable:true,serialization:'json'});t0=Date.now();
+          wire(c);
+          c.on('open',()=>{conns=[c];stat('ok');c.send({topic:'hi',d:{role,id:rnd()}})});
+          c.on('close',()=>{if(conn===c){conns=[];stat('search')}});
+        };
+        attempt();setInterval(attempt,2000);
+      }
+    }catch(e){
+      if(peer){try{peer.destroy()}catch(_){}}
+      if(role==='game'&&e&&e.type==='unavailable-id'){if(bc)bc.close();return{taken:true,send(){}}}
+      peer=null;mode='local';stat('local');
+    }
+  }
+  return{send(topic,d){
+    d={...d,role,id:rnd()};
+    if(bc)bc.postMessage({topic,d});
+    if(room)room.emit(topic,d).catch(()=>{});
+    for(const c of conns)if(c.open)try{c.send({topic,d})}catch(e){}
+  },close(){try{if(bc)bc.close()}catch(e){}try{if(room)room.leave()}catch(e){}try{if(peer)peer.destroy()}catch(e){}conns=[]}}
 }
-const linkTxt=l=>l.live?'Liaison entre appareils : active':'Liaison entre appareils : indisponible (seuls les onglets du même navigateur se voient). Ouvrez le jeu depuis son lien claude.ai.';
+const linkMsg=(mode,st)=>{
+  if(mode==='claude')return'Liaison entre appareils : active';
+  if(mode==='peer')return{ok:'Liaison entre appareils : active',wait:'Liaison entre appareils : prête, en attente de l’arbitre',search:'Liaison entre appareils : recherche du duel… vérifiez le code',down:'Liaison entre appareils : interrompue, nouvelle tentative…'}[st]||'Liaison entre appareils : connexion…';
+  return'Liaison entre appareils : indisponible (seuls les onglets du même navigateur se voient)';
+};
 const lvl=()=>Math.min(3,1+Math.floor((S.sc[0]+S.sc[1])/4));
 function fill(){S.pool=[[],[],[],[]];for(const it of S.src)S.pool[it[2]].push(it);S.pool.forEach(shuffle)}
 function card(){
@@ -218,20 +285,27 @@ function skip(){
 }
 $('form').onsubmit=e=>{
   e.preventDefault();
-  if(S)clearInterval(S.h);
+  if(S){clearInterval(S.h);if(S.link&&S.link.close)S.link.close()}
   const T=+$('dur').value*1000,oral=$('mode').value==='oral';
   S={names:[$('n0').value.trim()||'Joueur 1',$('n1').value.trim()||'Joueur 2'],t:[T,T],turn:Math.random()<.5?0:1,sc:[0,0],src:DATA[$('cat').value].items,pool:null,lvl:1,last:performance.now(),lock:false,over:false,started:false,oral,n:0};
   fill();card();render();show('game');$('msg').textContent='';
   $('f2').hidden=$('pass').hidden=oral;$('wait').hidden=!oral;
   if(!oral)return begin();
-  S.code=Array.from({length:4},()=>CH[Math.floor(Math.random()*CH.length)]).join('');
-  $('code').textContent=S.code;$('go').disabled=true;$('wst').textContent='En attente de l’arbitre…';$('lnk').textContent='Liaison entre appareils : connexion…';
+  $('code').textContent='…';$('go').disabled=true;$('wst').textContent='En attente de l’arbitre…';$('lnk').textContent='Liaison entre appareils : connexion…';
   const me=S;
-  link(S.code,'game',(topic,d)=>{
+  const onmsg=(topic,d)=>{
     if(me!==S)return;
     if(topic==='hi'){if(!S.started){$('go').disabled=false;$('wst').textContent='Arbitre connecté. Vous pouvez démarrer.'}push()}
     else if(topic==='act'&&S.started&&!S.over&&!S.lock&&d.c===S.cur[0]){d.a==='ok'?good():d.a==='pass'&&skip()}
-  }).then(l=>{if(me===S){S.link=l;$('lnk').textContent=linkTxt(l);push()}});
+  };
+  const open=async n=>{
+    const code=Array.from({length:4},()=>CH[Math.floor(Math.random()*CH.length)]).join('');
+    const l=await link(code,'game',onmsg,(m,st)=>{if(me===S)$('lnk').textContent=linkMsg(m,st)});
+    if(l.taken&&n<8)return open(n+1);
+    if(me!==S)return;
+    S.code=code;$('code').textContent=code;S.link=l;push();
+  };
+  open(0);
 };
 $('f2').onsubmit=e=>{
   e.preventDefault();
@@ -242,7 +316,7 @@ $('f2').onsubmit=e=>{
 };
 $('pass').onclick=skip;
 $('go').onclick=begin;
-$('again').onclick=()=>{show('setup')};
+$('again').onclick=()=>{if(S&&S.link&&S.link.close)S.link.close();show('setup')};
 
 let R,L,cool=false;
 function arbRender(){
@@ -261,7 +335,7 @@ $('rj').onsubmit=e=>{
   e.preventDefault();
   const c=$('rc').value.trim().toUpperCase();if(!c)return;
   $('rj').hidden=true;$('rl').hidden=false;arbRender();$('alk').textContent='Liaison entre appareils : connexion…';
-  link(c,'arb',(topic,d)=>{if(topic==='st'){R=d;R.at=performance.now();arbRender()}}).then(l=>{L=l;$('alk').textContent=linkTxt(l);L.send('hi',{});setInterval(()=>L.send('hi',{}),3000);setInterval(arbRender,100)});
+  link(c,'arb',(topic,d)=>{if(topic==='st'){R=d;R.at=performance.now();arbRender()}},(m,st)=>{$('alk').textContent=linkMsg(m,st)}).then(l=>{L=l;L.send('hi',{});setInterval(()=>L.send('hi',{}),3000);setInterval(arbRender,100)});
 };
 $('toarb').onclick=()=>show('arb');
 $('arback').onclick=()=>show('setup');

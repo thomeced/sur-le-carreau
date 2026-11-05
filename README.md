@@ -9,7 +9,12 @@ Ouvrir `index.html` dans un navigateur. Aucune installation, aucune dépendance 
 - **Mode clavier** : les joueurs tapent leurs réponses (tolérance aux accents, aux articles et aux petites fautes).
 - **Mode arbitre** : les joueurs répondent à l'oral, un arbitre valide depuis une autre page (bouton « Je suis l'arbitre » ou `#arbitre` dans l'adresse) en saisissant le code à 4 caractères affiché par le jeu.
 
-> La liaison entre deux appareils utilise la capacité `room` des artefacts claude.ai. Hors claude.ai, seuls deux onglets du même navigateur peuvent communiquer (`BroadcastChannel`).
+> **Liaison jeu ↔ arbitre.** Sur claude.ai, elle passe par la capacité `room` des artefacts. Partout ailleurs (GitHub Pages…), elle passe par [PeerJS](https://peerjs.com) : les deux appareils se connectent en direct, le service public de PeerJS ne sert qu'à les mettre en relation. Si aucun des deux n'est disponible, seuls deux onglets du même navigateur peuvent communiquer (`BroadcastChannel`). Un indicateur affiche l'état de la liaison sur les deux écrans.
+> Sur certains réseaux mobiles très fermés, la connexion directe peut échouer : mettre alors le jeu et l'arbitre sur le même wifi.
+
+## Héberger sur GitHub Pages
+
+Dépôt → **Settings** → **Pages** → *Build and deployment* : source **Deploy from a branch**, branche `main`, dossier `/ (root)`. Le jeu est ensuite servi à `https://<utilisateur>.github.io/sur-le-carreau/`. L'arbitre ouvre la même adresse (bouton « Je suis l'arbitre ») et saisit le code affiché sur l'écran du jeu.
 
 ## Contenu
 

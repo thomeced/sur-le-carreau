@@ -23,7 +23,7 @@ Réaliser un jeu web inspiré du jeu télévisé The Floor : des duels de catég
 - Besoin : réponses données à l'oral, un arbitre valide avec des boutons (« Bonne réponse » ou « Passé », −3 s), sur une page à part qui communique avec le jeu.
 - Réalisation : même fichier, la vue arbitre s'ouvre en ajoutant `#arbitre` à l'adresse de la page. Le jeu affiche un code à 4 caractères (choix « À l'oral, validées par un arbitre » au départ), l'arbitre le saisit, voit l'image, la réponse attendue et les chronos, puis valide. Le duel démarre quand l'arbitre est connecté.
 - Transport : capacité `room` d'Artifact (appareils différents, comptes claude.ai uniquement) et `BroadcastChannel` (deux onglets du même navigateur). Messages : `st` (état du jeu), `act` (décision de l'arbitre), `hi` (présence de l'arbitre).
-- Limite connue : pour un vrai multijoueur hors claude.ai, il faudra un serveur (étape 5 du plan).
+- Hors claude.ai, la liaison passe par PeerJS (voir « Hébergement et liaison » plus bas). Pour un vrai multijoueur en ligne avec serveur de référence pour les chronos, il faudra un serveur (étape 5 du plan).
 
 ## Décisions prises
 - Premier prototype : duel à deux joueurs sur le même écran.
@@ -55,6 +55,13 @@ Fichier : `index.html` (une seule page HTML autonome, sans dépendance hormis un
 - Thèmes : animaux, fruits et légumes, transports, drapeaux, films en rébus d'emojis, jeux vidéo. Les rébus n'utilisent que des titres et des emojis génériques (pas de personnages ni de logos protégés).
 - Limite : les drapeaux en emoji ne s'affichent pas sous Windows (les lettres du pays apparaissent à la place).
 - Idées non faites : image floue qui se précise avec bonus de vitesse, pénalité de « passer » croissante, vraies images (Wikimedia Commons ou originales), thèmes monuments et plats du monde.
+
+## Hébergement et liaison (novembre 2026)
+- Dépôt : https://github.com/thomeced/sur-le-carreau (branche `main`, `index.html` à la racine), publié avec GitHub Pages. La même page est aussi publiée comme artefact sur claude.ai pour tester les évolutions.
+- `link()` essaie trois chemins dans l'ordre : capacité `room` de claude.ai, puis PeerJS (script `peerjs@1.5.4` chargé à la demande depuis jsDelivr, service de mise en relation public gratuit), puis `BroadcastChannel`. Les messages (`st`, `act`, `hi`) sont les mêmes sur les trois.
+- PeerJS : le jeu crée un pair d'identifiant `slc-<code>` ; si le code est déjà pris, un autre est tiré (jusqu'à 8 essais). L'arbitre s'y connecte et réessaie toutes les 2 s tant que ce n'est pas fait. Connexion directe entre appareils, sans serveur à maintenir.
+- Limites : le service public est sans garantie de disponibilité ; la connexion directe peut échouer sur certains réseaux mobiles (pas de relais TURN). Les codes à 4 caractères sont devinables : acceptable pour un jeu de salon, à renforcer pour un usage public.
+- Test : la logique de liaison a été vérifiée avec un faux PeerJS dans un navigateur automatisé (2 pages, code déjà pris, démarrage, verdict « bonne réponse », verdict « passé », repli sans liaison). Elle n'a pas encore été essayée avec le vrai service PeerJS sur deux appareils.
 
 ## Prochaines étapes suggérées
 - Ajouter la grille de territoires et le choix du duel (qui défie qui, quelle catégorie).
