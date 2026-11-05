@@ -63,7 +63,14 @@ Fichier : `index.html` (une seule page HTML autonome, sans dépendance hormis un
 - Limites : le service public est sans garantie de disponibilité ; la connexion directe peut échouer sur certains réseaux mobiles (pas de relais TURN). Les codes à 4 caractères sont devinables : acceptable pour un jeu de salon, à renforcer pour un usage public.
 - Test : la logique de liaison a été vérifiée avec un faux PeerJS dans un navigateur automatisé (2 pages, code déjà pris, démarrage, verdict « bonne réponse », verdict « passé », repli sans liaison). Elle n'a pas encore été essayée avec le vrai service PeerJS sur deux appareils.
 
+## Compte à rebours, code d'arbitre conservé, catégories externes (novembre 2026)
+- Compte à rebours 3-2-1 avant chaque duel (mode clavier et mode arbitre). Le chrono et les réponses ne démarrent qu'après ; l'arbitre voit aussi le décompte (`count` dans l'état `st`). Pas de son pour l'instant.
+- Le code d'arbitre est conservé d'une partie à l'autre (`getLink()` ouvre la liaison une seule fois, `resetLink()` la ferme). L'arbitre n'a pas à recharger sa page : il voit « Partie terminée · en attente du prochain duel », puis le duel suivant. Bouton « Nouveau code » sur l'écran d'attente. Le bouton Démarrer est activé tout de suite si l'arbitre a été vu dans les 7 dernières secondes.
+- Les catégories sont dans `categories.js` (`const CATEGORIES = {…}`, une ligne `["emoji", "réponse|autre", niveau]` par image), chargé par `<script src="categories.js">` avant le script du jeu (fonctionne en ouvrant le fichier directement, contrairement à un `fetch` de JSON). Le jeu valide les données au chargement : lignes, doublons et catégories invalides sont ignorés avec un avertissement en console ; si le fichier manque, un message s'affiche et le lancement est désactivé.
+- Artefact claude.ai : page unique, `categories.js` est inséré dans le HTML au moment de la publication (la balise `<script src="categories.js"></script>` est remplacée par son contenu). Le fichier du projet `sur-le-carreau.html` est cette version autonome ; la référence reste le dépôt.
+- Prochaine étape pour les catégories : un éditeur (ajout d'images dans la page, export du `categories.js`).
+
 ## Prochaines étapes suggérées
 - Ajouter la grille de territoires et le choix du duel (qui défie qui, quelle catégorie).
 - Enrichir les catégories (drapeaux, monuments, marques, etc.).
-- Séparer les données (JSON) du code pour faciliter l'ajout de catégories.
+- Éditeur de catégories (voir ci-dessus).

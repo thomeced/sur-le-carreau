@@ -72,6 +72,7 @@ h1{font-size:clamp(2.2rem,8vw,4rem);line-height:1.1}
 <section id="setup">
   <h1>Sur le carreau</h1>
   <p class="lead">Duel à deux sur le même écran. Nommez les images le plus vite possible : chaque bonne réponse passe la main à l'adversaire, et celui dont le temps tombe à zéro perd.</p>
+  <p id="cerr" role="alert" hidden></p>
   <form id="form" class="panel setup">
     <div class="row2">
       <label>Joueur 1<input id="n0" maxlength="14" placeholder="Joueur 1" autocomplete="off"></label>
@@ -100,6 +101,7 @@ h1{font-size:clamp(2.2rem,8vw,4rem);line-height:1.1}
         <p id="wst" role="status"></p>
         <p id="lnk" role="status"></p>
         <button type="button" id="go" disabled>Démarrer le duel</button>
+        <button type="button" class="alt" id="newcode">Nouveau code</button>
       </div>
       <div id="who"></div>
       <div id="card" aria-label="Image à nommer"></div>
@@ -143,16 +145,28 @@ h1{font-size:clamp(2.2rem,8vw,4rem);line-height:1.1}
 </section>
 </main>
 
+<script src="categories.js"></script>
 <script>
-const DATA={
- animaux:{label:"Animaux",items:[["🐘","éléphant",1],["🦁","lion",1],["🐼","panda",1],["🐬","dauphin",1],["🐢","tortue",1],["🦒","girafe",1],["🐸","grenouille",1],["🐝","abeille",1],["🦓","zèbre",2],["🦋","papillon",2],["🐌","escargot",2],["🦅","aigle",2],["🦈","requin",2],["🦔","hérisson",2],["🐧","manchot|pingouin",3],["🦉","hibou|chouette",3],["🐙","pieuvre|poulpe",3],["🦘","kangourou",3],["🐪","chameau|dromadaire",3],["🐊","crocodile|alligator",3]]},
- fruits:{label:"Fruits et légumes",items:[["🍎","pomme",1],["🍌","banane",1],["🍓","fraise",1],["🍒","cerise",1],["🥕","carotte",1],["🍅","tomate",1],["🍋","citron",1],["🍇","raisin",1],["🍍","ananas",2],["🌽","maïs",2],["🥔","pomme de terre|patate",2],["🥦","brocoli",2],["🍑","pêche",2],["🍉","pastèque",2],["🥝","kiwi",2],["🍆","aubergine",3],["🌶️","piment",3],["🥑","avocat",3],["🧅","oignon",3],["🍄","champignon",3]]},
- transports:{label:"Transports",items:[["🚲","vélo|bicyclette",1],["🚂","train|locomotive",1],["✈️","avion",1],["🚌","bus|autobus|car",1],["🚕","taxi",1],["🚑","ambulance",1],["🚢","bateau|navire",2],["🚁","hélicoptère",2],["🚜","tracteur",2],["🚒","camion de pompiers|camion de pompier|pompier",2],["🚀","fusée",2],["🛴","trottinette",2],["🛵","scooter|mobylette",3],["🏍️","moto",3],["🛶","canoë|kayak|pirogue",3],["🚡","téléphérique",3]]},
- drapeaux:{label:"Drapeaux",items:[["🇫🇷","france",1],["🇮🇹","italie",1],["🇪🇸","espagne",1],["🇩🇪","allemagne",1],["🇬🇧","royaume-uni|angleterre|grande-bretagne",1],["🇺🇸","états-unis|etats unis|usa|amérique",1],["🇧🇷","brésil",1],["🇯🇵","japon",1],["🇨🇳","chine",1],["🇨🇦","canada",1],["🇧🇪","belgique",1],["🇨🇭","suisse",1],["🇵🇹","portugal",2],["🇳🇱","pays-bas|hollande",2],["🇮🇪","irlande",2],["🇸🇪","suède",2],["🇳🇴","norvège",2],["🇬🇷","grèce",2],["🇹🇷","turquie",2],["🇲🇽","mexique",2],["🇦🇷","argentine",2],["🇮🇳","inde",2],["🇰🇷","corée du sud|corée",2],["🇦🇺","australie",2],["🇪🇬","égypte",2],["🇲🇦","maroc",2],["🇿🇦","afrique du sud",2],["🇷🇺","russie",2],["🇳🇵","népal",3],["🇨🇾","chypre",3],["🇧🇹","bhoutan",3],["🇨🇱","chili",3],["🇨🇴","colombie",3],["🇩🇰","danemark",3],["🇵🇱","pologne",3],["🇦🇹","autriche",3],["🇭🇺","hongrie",3],["🇱🇧","liban",3],["🇯🇲","jamaïque",3],["🇰🇪","kenya",3],["🇳🇿","nouvelle-zélande",3],["🇸🇬","singapour",3],["🇵🇪","pérou",3],["🇸🇳","sénégal",3],["🇨🇮","côte d'ivoire",3],["🇪🇨","équateur",3],["🇷🇴","roumanie",3],["🇨🇿","tchéquie|république tchèque",3],["🇧🇬","bulgarie",3]]},
- films:{label:"Films en rébus d'emojis",items:[["🦈","les dents de la mer|dents de la mer",1],["❄️👸","la reine des neiges|reine des neiges",1],["🦁👑","le roi lion|roi lion",1],["🐠🔍","le monde de nemo|nemo|trouver nemo",1],["💍🧙","le seigneur des anneaux|seigneur des anneaux",1],["🚢🧊","titanic",1],["🦖🏝️","jurassic park|jurassic world",1],["🕷️🕸️","spider-man|spiderman",1],["🧸🤠","toy story",1],["👽📞","e.t.|et|e.t. l'extra-terrestre",1],["🐀🍲","ratatouille",2],["🏠🎈","là-haut|la haut",2],["🧞🏜️","aladdin",2],["🌹🕯️","la belle et la bête|belle et la bête",2],["🐼🥋","kung fu panda",2],["💀🚢","pirates des caraïbes",2],["⚡👓","harry potter",2],["⭐⚔️","star wars|la guerre des étoiles",2],["🕶️💊","matrix",2],["🦍🏙️","king kong",2],["🐧💃","happy feet",2],["🚗⚡","cars|flash mcqueen",2],["💀🎸","coco",3],["🍫🏭","charlie et la chocolaterie|la chocolaterie",3],["🐯🌊","l'odyssée de pi|la vie de pi|vie de pi",3],["👹🚪","monstres et cie|monstres cie|monstres inc",3],["🥁🎷","whiplash",3],["🛸🌾","signes|signs",3],["🏔️🤠","brokeback mountain",3],["🐜👑","1001 pattes|mille et une pattes",3]]},
- jeux:{label:"Jeux vidéo",items:[["🍄","super mario|mario",1],["⛏️","minecraft",1],["🟡👻","pac-man|pacman",1],["🧱","tetris",1],["🐦🐷","angry birds",1],["🏓","pong",1],["🚗🚓","gta|grand theft auto",1],["🏎️🍌","mario kart",1],["⚽🎮","fifa|ea fc|ea sports fc",1],["🧝🗡️","zelda|the legend of zelda|legend of zelda",2],["🦔💨","sonic",2],["👾","space invaders",2],["🧟🌱","plantes contre zombies|plants vs zombies",2],["⚡🔴","pokémon|pokemon",2],["🍬","candy crush",2],["🦝🏝️","animal crossing",2],["⚽🚗","rocket league",2],["🐔🛣️","crossy road",2],["🦍🛢️","donkey kong",3],["🐺⚔️","the witcher|witcher",3],["🌀🔫","portal",3],["🚀🔴","among us",3],["🌾🎣","stardew valley",3],["😈🔥","diablo",3]]}
-};
+const DATA={};
 const $=id=>document.getElementById(id);
+(function(){
+  const src=typeof CATEGORIES==='undefined'?null:CATEGORIES;
+  if(src&&typeof src==='object')for(const [k,v] of Object.entries(src)){
+    if(!v||typeof v.label!=='string'||!Array.isArray(v.items)){console.warn('Catégorie ignorée :',k);continue}
+    const items=[],seen=new Set();
+    v.items.forEach((it,n)=>{
+      const ok=Array.isArray(it)&&typeof it[0]==='string'&&it[0]&&typeof it[1]==='string'&&it[1].trim()&&[1,2,3].includes(it[2]);
+      if(!ok){console.warn('Image ignorée dans « '+k+' » (n° '+(n+1)+') :',it);return}
+      if(seen.has(it[0])){console.warn('Doublon ignoré dans « '+k+' » :',it[0]);return}
+      seen.add(it[0]);items.push(it);
+    });
+    if(items.length)DATA[k]={label:v.label,items};else console.warn('Catégorie vide ignorée :',k);
+  }
+  if(!Object.keys(DATA).length){
+    $('cerr').hidden=false;$('cerr').textContent='Les catégories n’ont pas pu être chargées : le fichier categories.js est introuvable ou vide.';
+    $('form').querySelector('button[type=submit]').disabled=true;
+  }
+})();
 $('cat').innerHTML=Object.entries(DATA).map(([k,v])=>`<option value="${k}">${v.label}</option>`).join('');
 
 const norm=s=>s.toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g,'').replace(/[^a-z0-9 ]/g,' ').replace(/\b(le|la|les|l|un|une|des|du|de|d)\b/g,' ').replace(/\s+/g,' ').trim();
@@ -260,9 +274,9 @@ function render(){
   }
   $('who').textContent='À '+S.names[S.turn]+' de jouer (niveau '+S.lvl+')';
 }
-function push(){if(S&&S.oral&&S.link)S.link.send('st',{names:S.names,t:S.t.map(Math.round),sc:S.sc,turn:S.turn,card:S.cur,lvl:S.lvl,over:S.over,lock:S.lock,started:S.started})}
+function push(){if(S&&S.oral&&S.link)S.link.send('st',{names:S.names,t:S.t.map(Math.round),sc:S.sc,turn:S.turn,card:S.cur,lvl:S.lvl,over:S.over,lock:S.lock,started:S.started,count:S.counting?S.count:0})}
 function finish(){
-  S.over=true;clearInterval(S.h);
+  S.over=true;clearInterval(S.h);clearInterval(S.cd);
   const w=S.turn^1;
   $('win').textContent=S.names[w]+' remporte le duel';
   $('res').textContent=S.names[0]+' : '+S.sc[0]+' trouvé'+(S.sc[0]>1?'s':'')+'. '+S.names[1]+' : '+S.sc[1]+' trouvé'+(S.sc[1]>1?'s':'')+'.';
@@ -273,50 +287,82 @@ function tick(){
   if(S.t[S.turn]<=0){S.t[S.turn]=0;render();return finish()}
   render();if(++S.n%10===0)push();
 }
+function launch(){
+  if(!S||S.started||S.counting||S.over)return;
+  S.counting=true;S.count=3;$('go').disabled=true;$('wait').hidden=true;
+  const step=()=>{$('card').textContent=S.count;$('who').textContent='Départ dans '+S.count+'…';push()};
+  step();
+  S.cd=setInterval(()=>{S.count--;if(S.count>0)return step();clearInterval(S.cd);S.counting=false;S.count=0;begin()},1000);
+}
 function begin(){S.started=true;$('card').textContent=S.cur[0];S.last=performance.now();S.h=setInterval(tick,100);$('wait').hidden=true;push();$('ans').focus()}
 function good(){S.sc[S.turn]++;S.turn^=1;card();flash('ok','Bonne réponse');render();push()}
 function skip(){
-  if(S.lock||S.over)return;
+  if(!S.started||S.lock||S.over)return;
   S.lock=true;S.t[S.turn]-=3000;
   if(S.t[S.turn]<=0){S.t[S.turn]=0;render();return finish()}
   clearTimeout(flashT);$('msg').className='';$('msg').textContent='C\'était : '+S.cur[1].split('|')[0]+' (−3 s)';
   render();push();
   setTimeout(()=>{if(S.over)return;S.lock=false;card();$('msg').textContent='';render();push();$('ans').focus()},1300);
 }
+let LINKP=null,LINK=null,LCODE='',lastHi=0,LSTAT=null;
+const onmsg=(topic,d)=>{
+  if(topic==='hi'){
+    lastHi=Date.now();
+    if(S&&S.oral&&!S.started&&!S.counting&&!S.over){$('go').disabled=false;$('wst').textContent='Arbitre connecté. Vous pouvez démarrer.'}
+    push();
+  }else if(topic==='act'&&S&&S.oral&&S.started&&!S.over&&!S.lock&&d.c===S.cur[0]){d.a==='ok'?good():d.a==='pass'&&skip()}
+};
+function getLink(){
+  if(LINKP)return LINKP;
+  return LINKP=(async()=>{
+    for(let n=0;n<8;n++){
+      const code=Array.from({length:4},()=>CH[Math.floor(Math.random()*CH.length)]).join('');
+      const l=await link(code,'game',onmsg,(m,st)=>{LSTAT=[m,st];$('lnk').textContent=linkMsg(m,st)});
+      if(!l.taken){LINK=l;LCODE=code;return l}
+    }
+    return null;
+  })();
+}
+function resetLink(){if(LINK&&LINK.close)LINK.close();LINK=null;LINKP=null;LCODE='';lastHi=0;LSTAT=null}
+function attach(me){
+  getLink().then(l=>{
+    if(me!==S)return;
+    if(!l){$('code').textContent='—';$('wst').textContent='Impossible de créer un code : rechargez la page.';return}
+    S.code=LCODE;S.link=l;$('code').textContent=LCODE;
+    if(LSTAT)$('lnk').textContent=linkMsg(LSTAT[0],LSTAT[1]);
+    if(Date.now()-lastHi<7000){$('go').disabled=false;$('wst').textContent='Arbitre connecté. Vous pouvez démarrer.'}
+    push();
+  });
+}
 $('form').onsubmit=e=>{
   e.preventDefault();
-  if(S){clearInterval(S.h);if(S.link&&S.link.close)S.link.close()}
+  if(S){clearInterval(S.h);clearInterval(S.cd)}
   const T=+$('dur').value*1000,oral=$('mode').value==='oral';
-  S={names:[$('n0').value.trim()||'Joueur 1',$('n1').value.trim()||'Joueur 2'],t:[T,T],turn:Math.random()<.5?0:1,sc:[0,0],src:DATA[$('cat').value].items,pool:null,lvl:1,last:performance.now(),lock:false,over:false,started:false,oral,n:0};
+  S={names:[$('n0').value.trim()||'Joueur 1',$('n1').value.trim()||'Joueur 2'],t:[T,T],turn:Math.random()<.5?0:1,sc:[0,0],src:DATA[$('cat').value].items,pool:null,lvl:1,last:performance.now(),lock:false,over:false,started:false,counting:false,count:0,oral,n:0};
   fill();card();render();show('game');$('msg').textContent='';
   $('f2').hidden=$('pass').hidden=oral;$('wait').hidden=!oral;
-  if(!oral)return begin();
-  $('code').textContent='…';$('go').disabled=true;$('wst').textContent='En attente de l’arbitre…';$('lnk').textContent='Liaison entre appareils : connexion…';
-  const me=S;
-  const onmsg=(topic,d)=>{
-    if(me!==S)return;
-    if(topic==='hi'){if(!S.started){$('go').disabled=false;$('wst').textContent='Arbitre connecté. Vous pouvez démarrer.'}push()}
-    else if(topic==='act'&&S.started&&!S.over&&!S.lock&&d.c===S.cur[0]){d.a==='ok'?good():d.a==='pass'&&skip()}
-  };
-  const open=async n=>{
-    const code=Array.from({length:4},()=>CH[Math.floor(Math.random()*CH.length)]).join('');
-    const l=await link(code,'game',onmsg,(m,st)=>{if(me===S)$('lnk').textContent=linkMsg(m,st)});
-    if(l.taken&&n<8)return open(n+1);
-    if(me!==S)return;
-    S.code=code;$('code').textContent=code;S.link=l;push();
-  };
-  open(0);
+  if(!oral)return launch();
+  $('code').textContent=LCODE||'…';$('go').disabled=true;$('wst').textContent='En attente de l’arbitre…';
+  $('lnk').textContent=LSTAT?linkMsg(LSTAT[0],LSTAT[1]):'Liaison entre appareils : connexion…';
+  if(LINK)S.link=LINK;
+  attach(S);
+};
+$('newcode').onclick=()=>{
+  if(!S||!S.oral||S.started||S.counting)return;
+  resetLink();S.link=null;$('code').textContent='…';$('go').disabled=true;
+  $('wst').textContent='En attente de l’arbitre…';$('lnk').textContent='Liaison entre appareils : connexion…';
+  attach(S);
 };
 $('f2').onsubmit=e=>{
   e.preventDefault();
-  if(S.lock||S.over)return;
+  if(!S.started||S.lock||S.over)return;
   const v=$('ans').value;$('ans').value='';
   if(isOk(v,S.cur[1].split('|')))good();
   else{if(v.trim())flash('ko','Non, réessayez');render()}
 };
 $('pass').onclick=skip;
-$('go').onclick=begin;
-$('again').onclick=()=>{if(S&&S.link&&S.link.close)S.link.close();show('setup')};
+$('go').onclick=launch;
+$('again').onclick=()=>{show('setup')};
 
 let R,L,cool=false;
 function arbRender(){
@@ -324,8 +370,8 @@ function arbRender(){
   $('ast').textContent='';
   const t=R.t.slice();if(R.started&&!R.over)t[R.turn]-=performance.now()-R.at;
   for(let i=0;i<2;i++){const s=$('a'+i);s.querySelector('.nm').textContent=R.names[i];s.querySelector('.tm').textContent=Math.ceil(Math.max(0,t[i])/1000);s.classList.toggle('on',R.turn===i&&!R.over);s.classList.toggle('low',t[i]<10000)}
-  $('acard').textContent=R.started?R.card[0]:'?';
-  $('aans').textContent=R.over?'Partie terminée':!R.started?'Le duel n’a pas encore démarré':'À '+R.names[R.turn]+' (niveau '+R.lvl+') · réponse : '+R.card[1].split('|').join(' / ');
+  $('acard').textContent=R.started?R.card[0]:(R.count||'?');
+  $('aans').textContent=R.over?'Partie terminée · en attente du prochain duel':R.count?'Départ dans '+R.count+'…':!R.started?'Le duel n’a pas encore démarré':'À '+R.names[R.turn]+' (niveau '+R.lvl+') · réponse : '+R.card[1].split('|').join(' / ');
   $('bok').disabled=$('bpass').disabled=!R.started||R.over||R.lock||cool;
 }
 function act(a){if(!L||!R||cool)return;L.send('act',{a,c:R.card[0]});cool=true;arbRender();setTimeout(()=>{cool=false;arbRender()},700)}

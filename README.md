@@ -4,10 +4,12 @@ Jeu web de duels de catégories, inspiré du principe des jeux télévisés de �
 
 ## Jouer
 
-Ouvrir `index.html` dans un navigateur. Aucune installation, aucune dépendance (hormis une police Google Fonts).
+Ouvrir `index.html` dans un navigateur (le fichier `categories.js` doit rester à côté). Aucune installation, aucune dépendance (hormis une police Google Fonts).
+
+Un compte à rebours 3-2-1 précède chaque duel.
 
 - **Mode clavier** : les joueurs tapent leurs réponses (tolérance aux accents, aux articles et aux petites fautes).
-- **Mode arbitre** : les joueurs répondent à l'oral, un arbitre valide depuis une autre page (bouton « Je suis l'arbitre » ou `#arbitre` dans l'adresse) en saisissant le code à 4 caractères affiché par le jeu.
+- **Mode arbitre** : les joueurs répondent à l'oral, un arbitre valide depuis une autre page (bouton « Je suis l'arbitre » ou `#arbitre` dans l'adresse) en saisissant le code à 4 caractères affiché par le jeu. Le code reste valable d'une partie à l'autre : l'arbitre n'a pas à recharger sa page ; le bouton « Nouveau code » en génère un autre si besoin.
 
 > **Liaison jeu ↔ arbitre.** Sur claude.ai, elle passe par la capacité `room` des artefacts. Partout ailleurs (GitHub Pages…), elle passe par [PeerJS](https://peerjs.com) : les deux appareils se connectent en direct, le service public de PeerJS ne sert qu'à les mettre en relation. Si aucun des deux n'est disponible, seuls deux onglets du même navigateur peuvent communiquer (`BroadcastChannel`). Un indicateur affiche l'état de la liaison sur les deux écrans.
 > Sur certains réseaux mobiles très fermés, la connexion directe peut échouer : mettre alors le jeu et l'arbitre sur le même wifi.
@@ -20,10 +22,22 @@ Dépôt → **Settings** → **Pages** → *Build and deployment* : source **Dep
 
 Six thèmes : animaux, fruits et légumes, transports, drapeaux, films en rébus d'emojis, jeux vidéo. Chaque image a un niveau de 1 à 3, et la difficulté monte au fil du duel.
 
+### Ajouter des images ou une catégorie
+
+Tout se passe dans `categories.js`, sans toucher au jeu : copier une ligne et la modifier.
+
+```js
+["🐘", "éléphant", 1],            // emoji, réponses acceptées (séparées par |), niveau 1 à 3
+["🐧", "manchot|pingouin", 3],
+```
+
+Une catégorie est un bloc `clé: { label: "Nom affiché", items: [ … ] }`. Une ligne mal écrite est ignorée, avec un avertissement dans la console du navigateur (F12).
+
 ## Structure
 
 ```
-index.html                 le jeu complet (HTML, CSS, JS)
+index.html                 le jeu (HTML, CSS, JS)
+categories.js              les catégories et leurs images : le fichier à modifier pour ajouter du contenu
 docs/contexte-projet.md    règles, décisions, direction visuelle, plan
 ```
 
