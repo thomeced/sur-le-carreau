@@ -28,11 +28,11 @@ Réaliser un jeu web inspiré du jeu télévisé The Floor : des duels de catég
 ## Décisions prises
 - Premier prototype : duel à deux joueurs sur le même écran.
 - Images du prototype : emojis (les images externes ne se chargent pas dans une page publiée). À remplacer plus tard par des visuels libres de droits (Wikimedia Commons) ou originaux. Les logos et marques posent des questions de droits.
-- Contenu : un objet JSON par catégorie, avec une liste de réponses acceptées par image (séparées par `|`).
+- Contenu : une entrée par catégorie dans `categories.js`, avec une ligne `[emoji, réponses acceptées séparées par |, niveau]` par image.
 
 ## État du prototype
 Style mis à jour (novembre 2026) pour correspondre à l'ambiance du plateau.
-Fichier : `index.html` (une seule page HTML autonome, sans dépendance hormis une police Google Fonts).
+Fichiers : `index.html` (le jeu : HTML, CSS, JS) et `categories.js` (les catégories), sans autre dépendance qu'une police Google Fonts.
 - Écran de départ : noms des joueurs, catégorie, durée.
 - Duel : chronos, carte d'image, champ de réponse (ou arbitre), bouton « Passer (−3 s) », écran de fin.
 - Validation : minuscules, accents retirés, articles retirés, tolérance de 1 faute (mots de 5 lettres ou plus) ou 2 fautes (9 lettres ou plus).
@@ -48,7 +48,7 @@ Fichier : `index.html` (une seule page HTML autonome, sans dépendance hormis un
 - Appairage : l'écran du duel affiche un code à 4 caractères ; l'arbitre le saisit sur sa page. Le duel ne démarre que sur clic du bouton « Démarrer le duel », activé une fois l'arbitre connecté.
 - L'arbitre voit les deux chronos, l'image en cours et la réponse attendue avec ses variantes. Deux boutons : « Bonne réponse » (passe la main) et « Passé (−3 s) » (révèle la réponse).
 - Communication : capacité `room` des artefacts claude.ai (messages `st`, `act`, `hi` dans une salle nommée d'après le code), avec `BroadcastChannel` en secours entre deux onglets du même navigateur. Chaque verdict porte l'image concernée pour ignorer les doubles clics ou les retards.
-- Limites connues : pas de bouton « mauvaise réponse » ni de pause ; l'arbitre doit recharger sa page entre deux parties ; la communication entre deux appareils n'a pas encore été testée en conditions réelles.
+- Limites connues : pas de bouton « mauvaise réponse » ni de pause ; la communication via PeerJS n'a pas encore été testée en conditions réelles (voir « Hébergement et liaison »).
 
 ## Niveaux de difficulté et thèmes (novembre 2026)
 - Chaque image porte un niveau de 1 à 3 : `['🐘','éléphant',1]`. Le niveau monte avec le nombre total de bonnes réponses du duel (+1 tous les 4), et le niveau en cours est affiché aux joueurs et à l'arbitre. Un niveau épuisé est recyclé plutôt que de redescendre.
