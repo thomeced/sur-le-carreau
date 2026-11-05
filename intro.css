@@ -1,0 +1,65 @@
+/* Intro « Sur le carreau » : plateau vu par la caméra, zoom vers l'animateur.
+   Fichier indépendant du jeu : tout est préfixé .slci et ne touche pas aux styles existants.
+   Repères de la scène : format 16:10 ; les positions sont en % de la scène. */
+.slci{position:fixed;inset:0;z-index:1000;overflow:hidden;background:#03040E;color:#F4F6FF;
+  --slci-dur:10s;--slci-ease:cubic-bezier(.5,0,.15,1)}
+.slci-sky{position:absolute;inset:0;background:
+  radial-gradient(ellipse 55% 45% at 50% 18%,rgba(120,150,255,.30),transparent 70%),
+  radial-gradient(circle,#fff 0 1px,transparent 1.6px) 0 0/46px 46px,
+  radial-gradient(circle,rgba(255,255,255,.7) 0 1px,transparent 1.6px) 23px 17px/61px 61px,#03040E}
+.slci-scene{position:absolute;left:50%;top:50%;width:max(100vw,min(160vh,190vw));aspect-ratio:1.6;
+  transform:translate(-50%,-50%);container-type:inline-size}
+.slci-plane{position:absolute;inset:0;transform-origin:50% 28%;will-change:transform}
+.slci-plane img{position:absolute;display:block;height:auto;user-select:none;-webkit-user-drag:none}
+/* Sol bleu quadrillé, comme dans le jeu */
+.slci-floor::before{content:"";position:absolute;left:-60%;right:-60%;top:52%;bottom:-30%;
+  background:linear-gradient(rgba(255,255,255,.55) 2px,transparent 2px),linear-gradient(90deg,rgba(255,255,255,.55) 2px,transparent 2px),linear-gradient(180deg,#0A1F7A,#1740C8);
+  background-size:6cqw 6cqw,6cqw 6cqw,100% 100%;background-position:center top;
+  transform:perspective(40cqw) rotateX(58deg);transform-origin:50% 0;
+  -webkit-mask-image:linear-gradient(transparent,#000 18%);mask-image:linear-gradient(transparent,#000 18%)}
+.slci-decor-box{position:absolute;left:15%;top:3%;width:70%;aspect-ratio:910/498}
+.slci-decor-box img{inset:0;width:100%}
+.slci-screen{position:absolute;left:26.5%;top:15.9%;width:46.9%;height:47.2%;display:flex;justify-content:center;
+  padding-top:2.5%;font:700 2.6cqw/1 'Poppins','DM Sans',system-ui,sans-serif;text-transform:uppercase;text-align:center;letter-spacing:.04em;
+  color:#EFE9FF;text-shadow:0 0 .6cqw rgba(200,180,255,.9),0 .25cqw 0 #5B3FB0}
+.slci-host{left:43.45%;top:27.5%;width:13.1%;-webkit-mask-image:linear-gradient(#000 72%,transparent 97%);mask-image:linear-gradient(#000 72%,transparent 97%)}
+.slci-cl{left:-1%;top:23%;width:43%}
+.slci-cr{left:58%;top:23%;width:49%}
+.slci-vign{position:absolute;inset:0;pointer-events:none;background:radial-gradient(ellipse 80% 70% at 50% 40%,transparent 55%,rgba(3,4,14,.75))}
+.slci-title{position:absolute;left:0;right:0;bottom:calc(10vh + env(safe-area-inset-bottom,0px));margin:0;padding:0 16px;text-align:center;
+  font:700 clamp(2.4rem,9vw,5.5rem)/1.1 'Poppins','DM Sans',system-ui,sans-serif;letter-spacing:.02em;
+  text-shadow:0 0 28px rgba(110,150,255,.9),0 0 6px rgba(110,150,255,.8);opacity:0}
+.slci-title::before{content:"";position:absolute;z-index:-1;left:0;right:0;top:-40%;bottom:-60%;background:linear-gradient(transparent,rgba(3,4,14,.85) 45%)}
+.slci-black{position:absolute;inset:0;background:#03040E;pointer-events:none}
+.slci-skip{position:absolute;top:calc(14px + env(safe-area-inset-top,0px));right:14px;z-index:2;cursor:pointer;
+  font:600 1rem/1 'Poppins','DM Sans',system-ui,sans-serif;color:#F4F6FF;background:rgba(4,8,36,.6);
+  border:2px solid rgba(255,255,255,.35);border-radius:4px;padding:10px 16px}
+.slci-skip:focus-visible{outline:3px solid #FFC53D;outline-offset:2px}
+
+/* Lecture : la classe .slci-run lance toutes les animations en même temps */
+.slci-run .slci-black{animation:slci-fadein .8s ease-out forwards}
+.slci-run .slci-p-decor{animation:slci-decor var(--slci-dur) var(--slci-ease) forwards}
+.slci-run .slci-p-floor{animation:slci-floor var(--slci-dur) var(--slci-ease) forwards}
+.slci-run .slci-p-host{animation:slci-host var(--slci-dur) var(--slci-ease) forwards}
+.slci-run .slci-p-cl{animation:slci-cl var(--slci-dur) var(--slci-ease) forwards}
+.slci-run .slci-p-cr{animation:slci-cr var(--slci-dur) var(--slci-ease) forwards}
+.slci-run .slci-screen{animation:slci-glow 1.6s ease-in-out .6s 3}
+.slci-run .slci-title{animation:slci-title var(--slci-dur) ease-out forwards}
+.slci-out{transition:opacity .5s ease;opacity:0}
+
+@keyframes slci-fadein{to{opacity:0}}
+/* La caméra avance de 10 % à 75 % de la durée ; chaque calque grossit plus ou moins selon sa profondeur */
+@keyframes slci-decor{0%,10%{transform:none;filter:none}75%,100%{transform:scale(1.45);filter:brightness(.6)}}
+@keyframes slci-floor{0%,10%{transform:none}75%,100%{transform:scale(1.7)}}
+@keyframes slci-host{0%,10%{transform:none}75%,100%{transform:scale(2.3)}}
+@keyframes slci-cl{0%,10%{transform:none}68%,100%{transform:translate(-30%,8%) scale(3)}}
+@keyframes slci-cr{0%,10%{transform:none}68%,100%{transform:translate(30%,8%) scale(3)}}
+@keyframes slci-glow{50%{filter:brightness(1.5)}}
+@keyframes slci-title{0%,70%{opacity:0;transform:scale(.85)}80%,100%{opacity:1;transform:none}}
+
+@media (prefers-reduced-motion:reduce){
+  .slci{--slci-dur:2.4s}
+  .slci-run .slci-p-decor,.slci-run .slci-p-floor,.slci-run .slci-p-host,.slci-run .slci-p-cl,.slci-run .slci-p-cr,.slci-run .slci-screen{animation:none}
+  .slci-run .slci-black{animation-duration:.3s}
+  @keyframes slci-title{0%,30%{opacity:0}45%,100%{opacity:1}}
+}
