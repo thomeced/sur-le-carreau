@@ -17,7 +17,7 @@ Réaliser un jeu web inspiré du jeu télévisé The Floor : des duels de catég
 3. Grille de cases et conquête de territoires. **(fait, novembre 2026)**
 4. Mode solo contre l'ordinateur ou mode défi.
 5. Multijoueur en ligne : Node.js + WebSocket (Socket.IO), le serveur arbitre les chronos et les réponses.
-6. Finitions : sons, animations, mobile, éventuellement réponse vocale (Web Speech API).
+6. Finitions : sons, animations, mobile, éventuellement réponse vocale (Web Speech API). **(intro animée faite, novembre 2026)**
 
 ## Mode arbitre (ajouté en novembre 2026)
 - Besoin : réponses données à l'oral, un arbitre valide avec des boutons (« Bonne réponse » ou « Passé », −3 s), sur une page à part qui communique avec le jeu.
@@ -32,7 +32,7 @@ Réaliser un jeu web inspiré du jeu télévisé The Floor : des duels de catég
 
 ## État du prototype
 Style mis à jour (novembre 2026) pour correspondre à l'ambiance du plateau.
-Fichiers : `index.html` (le jeu : HTML, CSS, JS) et `categories.js` (les catégories), sans autre dépendance qu'une police Google Fonts.
+Fichiers : `index.html` (le jeu : HTML, CSS, JS) et `categories.js` (les catégories), sans autre dépendance qu'une police Google Fonts. Intro animée dans `intro.js`, `intro.css` et `assets/intro/` (voir « Intro animée »).
 - Écran de départ : noms des joueurs, catégorie, durée.
 - Duel : chronos, carte d'image, champ de réponse (ou arbitre), bouton « Passer (−3 s) », écran de fin.
 - Validation : minuscules, accents retirés, articles retirés, tolérance de 1 faute (mots de 5 lettres ou plus) ou 2 fautes (9 lettres ou plus).
@@ -83,6 +83,7 @@ Fichiers : `index.html` (le jeu : HTML, CSS, JS) et `categories.js` (les catégo
 - Éditeur de catégories (voir ci-dessus).
 - Extras arbitre : bouton « mauvaise réponse », pause, annulation ; sons ; vraies images ; image floue qui se précise ; mode solo.
 - Éditeur de catégories (voir ci-dessus).
+- Intro : remplacer les candidats par des silhouettes ou des personnages inventés avant une publication publique (voir « Intro animée »).
 
 ## Réglages de départ simplifiés (novembre 2026)
 - Le mode « au clavier » est supprimé de l'écran de départ : les réponses se donnent toujours à l'oral, validées par un arbitre (le code interne du mode clavier reste dans `index.html`, inutilisé, et sert seulement aux tests automatisés).
@@ -90,10 +91,16 @@ Fichiers : `index.html` (le jeu : HTML, CSS, JS) et `categories.js` (les catégo
 - Mode par défaut : grille de territoires ; taille par défaut 4×4 (3×3 puis 2×2 si pas assez de catégories).
 - Le texte sous le titre (`#lead`) change selon le mode de jeu.
 
-## Chantier : intro / générique animé (à faire, novembre 2026)
-Travail prévu dans une conversation séparée du même projet ; il ne doit pas toucher à la logique du jeu.
-- **Idée** : plateau de télévision vu par la caméra. L'animateur est au fond ; un candidat de chaque côté du cadre. La caméra avance en zoom vers l'animateur, puis enchaîne sur l'écran de départ.
-- **Matériau** : Ced fournit une image à fond transparent avec trois zones à séparer en calques (à confirmer : probablement décor, animateur, candidats). Calques déjà séparés et de même taille = idéal ; sinon découpe à partir de l'image si les zones ne se chevauchent pas. Animation : le zoom applique des échelles différentes par calque (effet de profondeur), avec éventuellement lueurs et projecteurs.
-- **Fichiers** : image(s) dans `assets/` du dépôt (ce que Ced joint à une conversation n'est pas visible depuis une autre) ; code dans `intro.js` et `intro.css` séparés, avec une seule ligne ajoutée dans `index.html` pour lancer l'intro, afin d'éviter les conflits avec les autres conversations.
-- **Contraintes** : bouton « Passer l'intro » ; images optimisées (WebP ou PNG léger) pour le mobile ; pas de son pour l'instant ; l'artefact claude.ai ne charge pas d'images externes, donc la version de test y aura les images intégrées en base64 dans le fichier unique ; sur GitHub Pages, fichiers normaux. Style : rester dans la direction visuelle plateau (voir plus haut), sans reprendre le logo ni l'identité de l'émission.
-- **À trancher** : durée, intro à chaque visite ou une seule fois (mémoire du navigateur), enchaînement avec l'écran de départ, texte ou titre « Sur le carreau » au générique.
+## Intro animée (faite, novembre 2026)
+Réalisée dans une conversation séparée du même projet, sans toucher à la logique du jeu.
+- **Scène** : plateau vu par la caméra, composition reprise de la photo de référence. Décor au fond, animateur devant l'écran, et une file de candidats de chaque côté, en grand et resserrés vers le centre pour créer un effet « tunnel » vers l'animateur. Sol bleu quadrillé (CSS, comme dans le jeu), ciel étoilé.
+- **Déroulé (10 s, demandé par Ced)** : fondu d'ouverture, puis la caméra avance vers l'animateur de 1 s à 7,5 s environ. Chaque calque grossit à sa propre vitesse (décor ×1,45, sol ×1,7, animateur ×2,3, candidats ×3 avec sortie par les côtés vers 6,8 s), ce qui crée la profondeur. Le titre « Sur le carreau » apparaît en bas vers 7-8 s et reste affiché jusqu'au fondu vers l'écran de départ.
+- **Placement des candidats** (`intro.css`) : `.slci-cl` à gauche (left −1 %, largeur 43 %), `.slci-cr` à droite (left 58 %, largeur 49 %), haut à 23 % de la scène ; l'animateur reste visible entre les deux groupes.
+- **Calques** : image fournie par Ced (PNG avec un damier dessiné, pas de vraie transparence). Le damier a été retiré d'après sa couleur, puis l'image a été découpée en 4 calques : `decor.webp`, `host.webp`, `cand-left.webp`, `cand-right.webp` (les candidats en deux groupes). 184 Ko au total.
+- **Logo** : le logo de l'émission sur l'écran du décor a été remplacé par un mur de dalles bleues neutre ; le texte « Sur le carreau » y est affiché en HTML.
+- **Fichiers** : `intro.js`, `intro.css` (classes préfixées `.slci`) et `assets/intro/*.webp`, à la racine du dépôt. Installation : une seule ligne dans le `<head>` de `index.html`, après la feuille de style, sans `defer` : `<script src="intro.js"></script>`. Le script charge lui-même `intro.css` et les images, et masque le jeu (`main`) pendant l'intro. Durée réglée à deux endroits : `--slci-dur` dans `intro.css` et `DUR` dans `intro.js`.
+- **Comportement** : bouton « Passer l'intro » et touche Échap ; pas d'intro sur la vue arbitre (`#arbitre`) ; intro sautée si une image ne charge pas (délai max. 6 s) ; mode « animations réduites » : fondu court sans zoom (2,4 s). Événement `slc:intro-end` sur `document` à la fin.
+- **Version autonome** (artefact claude.ai, aperçu) : définir `window.SLC_INTRO_ASSETS = {decor, host, candLeft, candRight}` (adresses data: en base64) et `window.SLC_INTRO_CSS_INLINE = true` avant le script, CSS inséré dans une balise style. Le texte d'`intro.js` ne doit pas contenir de balise de fermeture de script (sinon il casse une fois inséré dans la page).
+- **Tests** : captures dans un navigateur automatisé, sur ordinateur (1440×900) et sur mobile (390×844), sans erreur JavaScript. Sur mobile (portrait), l'image est recadrée au centre : on voit surtout l'animateur, les candidats sortent vite du cadre.
+- **Choix par défaut, à revoir si besoin** : intro à chaque ouverture de la page (pas de mémoire du navigateur), pas de son.
+- **Point d'attention** : le calque des candidats reproduit des candidats reconnaissables de l'émission. À remplacer par des silhouettes ou des personnages inventés avant une publication publique sur GitHub Pages.
