@@ -467,20 +467,16 @@ function startGrid(){
   show('grid');gridRender();
 }
 /* ---------- Plateau SVG ----------
-   Le plateau est un quadrillage déformé : les sommets intérieurs sont déplacés au hasard et les bords
-   intérieurs dessinés en S. La topologie reste celle de la grille : deux zones voisines (haut, bas,
-   gauche, droite) partagent toujours un bord, deux zones en diagonale seulement un sommet. Le voisinage
-   du dessin est donc exactement celui de gadj. La forme est tirée une fois par partie (G.seed). */
+   Le plateau est un quadrillage droit : une case carrée par joueur au départ. Les formes irrégulières
+   (façon pièces de Tetris) naissent des captures : les cases d'un même joueur sont fusionnées
+   visuellement (même couleur, frontière blanche seulement entre joueurs différents). */
 const GNS='http://www.w3.org/2000/svg';
 const sv=(tag,at,par)=>{const e=document.createElementNS(GNS,tag);for(const k in at)e.setAttribute(k,at[k]);if(par)par.appendChild(e);return e};
 function grng(seed){let s=(seed>>>0)||1;return()=>{s^=s<<13;s^=s>>>17;s^=s<<5;return(s>>>0)/4294967296}}
 function gshape(){
   if(G.shape)return G.shape;
-  const n=G.size,r=grng(G.seed),J=.2,B=.13,P=[],H=[],V=[];
-  for(let y=0;y<=n;y++){P[y]=[];for(let x=0;x<=n;x++)P[y][x]=[x+(x>0&&x<n?(r()*2-1)*J:0),y+(y>0&&y<n?(r()*2-1)*J:0)]}
-  const bend=inner=>{if(!inner)return[0,0];const a=(r()*2-1)*B;return[a,(r()<.6?-1:1)*a*(.5+r()*.5)]};
-  for(let y=0;y<=n;y++){H[y]=[];for(let x=0;x<n;x++)H[y][x]=bend(y>0&&y<n)}
-  for(let y=0;y<n;y++){V[y]=[];for(let x=0;x<=n;x++)V[y][x]=bend(x>0&&x<n)}
+  const n=G.size,P=[],H=[],V=[];
+  for(let y=0;y<=n;y++){P[y]=[];H[y]=[];V[y]=[];for(let x=0;x<=n;x++){P[y][x]=[x,y];H[y][x]=V[y][x]=[0,0]}}
   return G.shape={P,H,V};
 }
 /* Camaïeu de bleus : une teinte par joueur (couleur de sa case de départ), en alternant foncé et clair
@@ -589,26 +585,47 @@ function gpaint(own){
 }
 const f1=v=>Math.round(v*10)/10;
 /* Capture : une vague de la couleur du gagnant part du bord où s'est joué le duel et recouvre les cases
-   prises, puis les frontières intérieures s'effacent. Sans animation si « animations réduites ». */
+   prises. Son front est organique (rayon modulé par plusieurs sinusoïdes qui ondulent pendant
+   l'avancée), découpé aux cases capturées ; puis les frontières intérieures s'effacent.
+   Sans animation si « animations réduites ». */
+function gblob(ox,oy,r,t,ph){
+  // Contour fermé lissé (milieux reliés par des courbes quadratiques) autour de (ox,oy).
+  const N=72,pts=[];
+  for(let k=0;k<N;k++){
+    const a=k/N*Math.PI*2;
+    const m=1+.16*Math.sin(3*a+ph[0]+t*2.2)+.09*Math.sin(5*a+ph[1]-t*3.1)+.05*Math.sin(9*a+ph[2]+t*4.7)+.03*Math.sin(14*a+ph[3]-t*6);
+    pts.push([ox+Math.cos(a)*r*m,oy+Math.sin(a)*r*m]);
+  }
+  const mid=(p,q)=>[(p[0]+q[0])/2,(p[1]+q[1])/2],f=v=>Math.round(v*10)/10;
+  let d='M'+mid(pts[N-1],pts[0]).map(f);
+  for(let k=0;k<N;k++)d+='Q'+pts[k].map(f)+' '+mid(pts[k],pts[(k+1)%N]).map(f);
+  return d+'Z';
+}
 function gcapture(A){
   const V0=GV,reduce=matchMedia('(prefers-reduced-motion: reduce)').matches;
   const fin=()=>{gAnimT=null;if(GV!==V0)return;V0.gan.textContent='';V0.gt.classList.remove('wait');gpaint(i=>G.cells[i].owner)};
   if(reduce||!A.cells.length)return fin();
   const sh=V0.E.find(e=>(e.a===A.from[0]&&e.b===A.from[1])||(e.a===A.from[1]&&e.b===A.from[0]));
   const ox=sh?(sh.c[0][0]+sh.c[3][0])/2:V0.cells[A.cells[0]].cx,oy=sh?(sh.c[0][1]+sh.c[3][1])/2:V0.cells[A.cells[0]].cy;
-  let R=0;A.cells.forEach(i=>{const c=V0.cells[i];R=Math.max(R,Math.hypot(c.cx-ox,c.cy-oy)+Math.hypot(V0.sx,V0.sy)*.75)});
+  // Rayon final : assez grand pour que même le creux le plus profond du front couvre toutes les cases.
+  let R=0;A.cells.forEach(i=>{const c=V0.cells[i];for(const dx of[-.5,.5])for(const dy of[-.5,.5])R=Math.max(R,Math.hypot(c.cx+dx*V0.sx-ox,c.cy+dy*V0.sy-oy))});R=R/.67+4;
+  const rr=grng(G.seed^(A.cells.length*7919+A.to)),ph=[0,0,0,0].map(()=>rr()*Math.PI*2);
   const cp=sv('clipPath',{id:'gcap'},V0.svg.querySelector('defs'));
   A.cells.forEach(i=>sv('path',{d:V0.cells[i].d},cp));
   const g=sv('g',{'clip-path':'url(#gcap)'},V0.gan),col=gcol(A.to);
-  const disc=sv('circle',{cx:f1(ox),cy:f1(oy),r:0,fill:col},g);
-  const ring=sv('circle',{cx:f1(ox),cy:f1(oy),r:0,fill:'none',stroke:'#EAF0FF','stroke-width':10,filter:'url(#gglow)'},g);
+  const glowB=sv('path',{d:'',fill:'#BFD0FF','fill-opacity':.55,filter:'url(#gglow)'},g);
+  const body=sv('path',{d:'',fill:col},g);
+  const ring=sv('path',{d:'',fill:'none',stroke:'#EAF0FF','stroke-width':6,filter:'url(#gglow)'},g);
   V0.gt.classList.add('wait');
-  const dur=Math.min(1500,650+130*A.cells.length),t0=performance.now();
+  const dur=Math.min(1900,950+160*A.cells.length),t0=performance.now();
   snd('capture');
   const step=now=>{
     if(GV!==V0)return;
-    const p=Math.max(0,Math.min(1,(now-t0)/dur)),e=1-Math.pow(1-p,3),r=f1(R*e);
-    disc.setAttribute('r',r);ring.setAttribute('r',r);ring.setAttribute('stroke-opacity',f1(1-p*p));
+    const p=Math.max(0,Math.min(1,(now-t0)/dur)),e=(1-Math.cos(Math.PI*p))/2,t=(now-t0)/1000,r=R*e;
+    body.setAttribute('d',gblob(ox,oy,r,t,ph));
+    glowB.setAttribute('d',gblob(ox,oy,r+Math.min(22,V0.sx*.12),t,ph));
+    ring.setAttribute('d',gblob(ox,oy,r,t,ph));const fade=p<.8?1:(1-p)/.2;ring.setAttribute('stroke-opacity',Math.round(fade*100)/100);
+    glowB.setAttribute('fill-opacity',Math.round(.6*fade*100)/100);
     if(p<1){gAnimT=requestAnimationFrame(step);return}
     // Les cases prennent leur nouvelle couleur sous la vague, puis la vague disparaît.
     V0.zones.forEach((z,i)=>{if(A.cells.includes(i)){z.style.transition='none';z.setAttribute('fill',col);z.getBoundingClientRect();z.style.transition=''}});
