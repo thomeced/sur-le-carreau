@@ -1,8 +1,9 @@
 /* Sons du jeu « Sur le carreau » : tous synthétisés avec la Web Audio API (aucun fichier audio, aucun droit à gérer).
  *
- * API : SLC_SND.play('beep' | 'go' | 'good' | 'pass' | 'end' | 'capture' | 'tick' | 'tock' | 'impact'), SLC_SND.enabled(), SLC_SND.toggle().
+ * API : SLC_SND.play('beep' | 'go' | 'good' | 'pass' | 'end' | 'capture' | 'tick' | 'tock' | 'impact' | 'urgent', [n]), SLC_SND.enabled(), SLC_SND.toggle().
  *  - beep : bip du compte à rebours 3-2-1 ; go : départ ; good : bonne réponse ; pass : « passé » ; end : fin de temps ; capture : prise de territoire sur le plateau ;
- *  tick / tock : battements du tirage « Retourner sur le sol » ; impact : coup de batterie quand le candidat est tiré.
+ *  tick / tock : battements du tirage « Retourner sur le sol » ; impact : coup de batterie quand le candidat est tiré ;
+ *  urgent : tic-tac des 5 dernières secondes du chrono (n = secondes restantes, de 5 à 1 : tic et tac alternés, de plus en plus aigus et forts).
  * Réglage retenu dans localStorage (clé « slc-sons », « 1 » ou « 0 »). Sans réglage : actif, sauf en mode sérieux.
  * Le navigateur n'autorise le son qu'après un geste : le contexte audio est réveillé au premier clic ou à la première touche.
  * Un petit bouton 🔊/🔇 (en haut à droite) permet de couper les sons ; il n'apparaît pas sur la vue arbitre.
@@ -45,12 +46,15 @@
     tock:c=>{note(c,'triangle',196,0,0,0.09,0.22);noise(c,0,0.05,0.08,'highpass',5000)},
     impact:c=>{note(c,'sine',160,38,0,0.6,0.9);noise(c,0,0.3,0.5,'bandpass',1800);noise(c,0.01,2.2,0.22,'highpass',6000);
       note(c,'sawtooth',110,0,0.02,2.1,0.06);note(c,'sawtooth',164.8,0,0.02,2.1,0.05);note(c,'triangle',220,0,0.02,2.1,0.07)},
+    urgent:(c,n)=>{n=Math.max(1,Math.min(5,n||5));const k=5-n,tic=n%2===1;
+      note(c,'square',tic?1100+k*80:820+k*60,0,0,0.05,0.07+k*0.02);noise(c,0,0.035,0.1+k*0.02,'highpass',tic?7000:4500);
+      if(n===1)note(c,'sine',1760,0,0.09,0.12,0.12)},
     end:c=>{note(c,'square',150,70,0,0.9,0.2);note(c,'sawtooth',100,50,0,0.9,0.15)}
   };
-  function play(name){
+  function play(name,arg){
     if(!enabled()||!SOUNDS[name])return;
     const c=ac();if(!c)return;
-    try{SOUNDS[name](c)}catch(e){}
+    try{SOUNDS[name](c,arg)}catch(e){}
   }
   function show(){if(!btn)return;const on=enabled();btn.textContent=on?'🔊':'🔇';btn.setAttribute('aria-pressed',on?'true':'false');btn.setAttribute('aria-label',on?'Couper les sons du jeu':'Activer les sons du jeu');btn.title=on?'Sons du jeu : activés':'Sons du jeu : coupés'}
   function toggle(){set(enabled()?'0':'1');show();if(enabled())play('beep')}

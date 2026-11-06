@@ -375,7 +375,7 @@ function push(){
   if(S.type==='photo'&&S.cur[3]&&(S.imgK!==k||++S.imgN%8===0)){d.img=S.cur[3].thumb;S.imgK=k}
   S.link.send('st',d);
 }
-const snd=n=>{try{window.SLC_SND&&SLC_SND.play(n)}catch(e){}};
+const snd=(n,a)=>{try{window.SLC_SND&&SLC_SND.play(n,a)}catch(e){}};
 function finish(){
   snd('end');S.over=true;clearInterval(S.h);clearInterval(S.cd);
   const w=S.turn^1;
@@ -391,8 +391,10 @@ function finish(){
   show('end');push();
 }
 function tick(){
-  const n=performance.now();S.t[S.turn]-=n-S.last;S.last=n;
+  const n=performance.now(),s0=Math.ceil(S.t[S.turn]/1000);S.t[S.turn]-=n-S.last;S.last=n;
   if(S.t[S.turn]<=0){S.t[S.turn]=0;render();return finish()}
+  // Tic-tac des 5 dernières secondes : un son à chaque seconde franchie (5, 4, 3, 2, 1) du joueur qui a la main.
+  const s1=Math.ceil(S.t[S.turn]/1000);if(s1<s0&&s1<=5)snd('urgent',s1);
   render();if(++S.n%10===0)push();
 }
 function launch(){

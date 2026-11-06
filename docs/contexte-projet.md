@@ -123,7 +123,8 @@ Réalisée dans une conversation séparée du même projet, sans toucher à la l
 - `sons.js` (chargé après `intro.js`) : sons synthétisés avec la Web Audio API, sans fichier audio ni droits à gérer. Cinq sons : `beep` (bip de chaque chiffre du 3-2-1), `go` (départ), `good` (bonne réponse), `pass` (passé), `end` (fin de temps). Appelés depuis `index.html` par la fonction `snd(nom)` (dans `launch`, `begin`, `good`, `skip`, `finish`). Les sons sont joués sur l'écran du jeu, pas sur la page arbitre.
 - Réglage : bouton 🔊/🔇 en haut à droite (absent de la vue arbitre), retenu dans `localStorage` (clé `slc-sons`). Le choix du mode au lancement le fixe : funky = sons actifs, sérieux = sons coupés ; avec `?mode=serieux` sans choix enregistré, les sons sont coupés aussi.
 - Chrono : le nombre du joueur passe en rouge quand il lui reste 5 secondes ou moins (avant : moins de 10 s), sur l'écran du jeu et sur la page arbitre.
-- Idées non faites : tic-tac chaque seconde dans les 5 dernières secondes, son de victoire de partie (le son de capture est fait, voir « Plateau de jeu en SVG »).
+- **Tic-tac des 5 dernières secondes** (son `urgent` dans `sons.js`, déclenché par `tick()` dans `index.html`) : un son à chaque seconde franchie à 5, 4, 3, 2 et 1 s du joueur qui a la main, en même temps que le chiffre affiché. Tic et tac alternés, de plus en plus aigus et forts, avec un petit bip en plus à 1 s ; à 0, c'est le son `end`. Une passe (−3 s) qui fait sauter des secondes ne joue pas de rafale : le tic-tac reprend à la seconde suivante. Il s'arrête pendant le tour de l'adversaire et reprend quand la main revient. Joué sur l'écran du jeu seulement, et coupé avec les autres sons (bouton 🔊/🔇, mode sérieux).
+- Idées non faites : son de victoire de partie (le son de capture est fait, voir « Plateau de jeu en SVG »).
 
 ## Chantiers à venir (briefs, novembre 2026)
 Chaque chantier est prévu dans sa propre conversation du projet, sur sa propre branche, avec une PR.
