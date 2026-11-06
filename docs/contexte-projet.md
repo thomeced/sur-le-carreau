@@ -86,7 +86,7 @@ Fichiers : `index.html` (le jeu : HTML, CSS, JS) et `categories.js` (les catégo
 - Limites : pas de sauvegarde ni de reprise d'une grille ; pas de mode équipes ; 4-voisinage uniquement.
 
 ## Prochaines étapes suggérées
-- Extras arbitre : bouton « mauvaise réponse », pause, annulation ; sons ; vraies images ; image floue qui se précise ; mode solo.
+- Extras arbitre : bouton « mauvaise réponse », pause, annulation (mis de côté pour l'instant) ; vraies images ; image floue qui se précise ; mode solo.
 - Éditeur de catégories (voir ci-dessus).
 - Intro : remplacer les candidats par des silhouettes ou des personnages inventés avant une publication publique (voir « Intro animée »).
 
@@ -118,6 +118,12 @@ Réalisée dans une conversation séparée du même projet, sans toucher à la l
 - Mise en œuvre : tout dans `intro.js` et `intro.css` (écran `.slcl`, classe `slc-serieux` sur `<html>`) ; `index.html` n'a pas changé. Pas d'écran de lancement ni d'intro sur `#arbitre`.
 - Limite : le mode sérieux ne s'applique pas à la page arbitre (autre appareil, autre navigateur). Les tests automatisés ouvrent le jeu avec `?mode=serieux`.
 - Version autonome (aperçu claude.ai) : pas encore reconstruite avec l'intro ni l'écran de lancement.
+
+## Sons du jeu et chrono rouge (novembre 2026)
+- `sons.js` (chargé après `intro.js`) : sons synthétisés avec la Web Audio API, sans fichier audio ni droits à gérer. Cinq sons : `beep` (bip de chaque chiffre du 3-2-1), `go` (départ), `good` (bonne réponse), `pass` (passé), `end` (fin de temps). Appelés depuis `index.html` par la fonction `snd(nom)` (dans `launch`, `begin`, `good`, `skip`, `finish`). Les sons sont joués sur l'écran du jeu, pas sur la page arbitre.
+- Réglage : bouton 🔊/🔇 en haut à droite (absent de la vue arbitre), retenu dans `localStorage` (clé `slc-sons`). Le choix du mode au lancement le fixe : funky = sons actifs, sérieux = sons coupés ; avec `?mode=serieux` sans choix enregistré, les sons sont coupés aussi.
+- Chrono : le nombre du joueur passe en rouge quand il lui reste 5 secondes ou moins (avant : moins de 10 s), sur l'écran du jeu et sur la page arbitre.
+- Idées non faites : tic-tac chaque seconde dans les 5 dernières secondes, son de victoire/capture de zone (à voir avec le nouveau plateau).
 
 ## Comment reprendre dans un nouveau projet Claude
 Reliez le dépôt GitHub (référence du code) et gardez ce document dans le projet, puis demandez par exemple : « Lis le document de contexte et reprends le jeu : ajoute l'éditeur de catégories. » Le fichier `sur-le-carreau.html` du projet est la version autonome du jeu (catégories incluses) ; la référence reste le dépôt.

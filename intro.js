@@ -122,14 +122,14 @@
     document.body.appendChild(lb);
     const kill=()=>lb.remove();
     lb.querySelector('.slcl-funky').onclick=()=>{
-      setMode('funky');setPref(true);
+      setMode('funky');setPref(true);try{localStorage.setItem('slc-sons','1')}catch(e){}
       // Ce clic est le geste qui autorise le son : on « débloque » l'élément audio (utile sur iPhone).
       if(A.music){try{audio=new Audio(A.music);audio.preload='auto';audio.muted=true;
         const p=audio.play();const un=()=>{try{audio.pause();audio.currentTime=0;audio.muted=false}catch(e){}};
         if(p&&p.then)p.then(un,()=>{audio.muted=false});else un()}catch(e){}}
       kill();build();
     };
-    lb.querySelector('.slcl-serious').onclick=()=>{setMode('serieux');setPref(false);serious();kill();skipAll()};
+    lb.querySelector('.slcl-serious').onclick=()=>{setMode('serieux');setPref(false);try{localStorage.setItem('slc-sons','0')}catch(e){}serious();kill();skipAll()};
     (lb.querySelector(last==='serieux'?'.slcl-serious':'.slcl-funky')).focus({preventScroll:true});
   }
   function begin(){
