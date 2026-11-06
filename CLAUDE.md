@@ -49,6 +49,7 @@ Jeu web de salon inspiré de The Floor : duels de catégories sur une grille de 
 - Drapeaux en emoji illisibles sous Windows. Codes à 4 caractères devinables. PeerJS et les relais TURN sont des services publics sans garantie.
 - Catégories perso liées à un appareil et un navigateur ; photos d'enfants : usage privé.
 - Pas de sauvegarde de partie ; ni pause ni bouton « mauvaise réponse » pour l'arbitre.
+- **Navigateur des TV Samsung** (testé par Ced, novembre 2026) : petits défauts d'affichage, vague de capture très dégradée. Causes probables : animation SVG recalculée à chaque image (3 contours de 72 points), filtres de flou `#gglow` (vague et contours), `color-mix()` et `backdrop-filter` non pris en charge par les anciens Chromium de Tizen. Piste : version légère de la vague (sans flou, forme simple), automatique si l'animation rame, ou en Mode sérieux. Il faut le modèle ou l'année du téléviseur et une description des défauts.
 - `index.html` est volumineux : le découper en modules facilitera les prochains chantiers.
 
 ## Pistes (non priorisées)
