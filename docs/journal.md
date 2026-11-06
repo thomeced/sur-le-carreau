@@ -1,3 +1,5 @@
+> **Historique figé (novembre 2026).** L'état actuel du projet est dans [`CLAUDE.md`](../CLAUDE.md). Ce journal n'est plus mis à jour section par section ; il sert de mémoire des décisions passées.
+
 # Projet : jeu web inspiré de The Floor ("Sur le carreau")
 
 ## Objectif
@@ -5,7 +7,7 @@ Réaliser un jeu web inspiré du jeu télévisé The Floor : des duels de catég
 
 ## Versionnage (novembre 2026)
 - Dépôt GitHub : https://github.com/thomeced/sur-le-carreau (branche `main`).
-- Dans le dépôt : `index.html` (le jeu, pour GitHub Pages), `categories.js` (les catégories), `intro.js`, `intro.css` et `assets/intro/` (l'intro), `tools/generique-intro.py` (génération du générique), `docs/contexte-projet.md` (ce document), `README.md` et `.gitignore`.
+- Dans le dépôt : `index.html` (le jeu, pour GitHub Pages), `categories.js` (les catégories), `intro.js`, `intro.css` et `assets/intro/` (l'intro), `tools/generique-intro.py` (génération du générique), `docs/journal.md` (ce document, anciennement `docs/contexte-projet.md`), `README.md` et `.gitignore`.
 - Commits signés avec l'adresse anonyme `thomeced@users.noreply.github.com` (l'adresse personnelle est protégée par GitHub). Modifications proposées par Claude via des demandes de fusion (PR) que Ced relit et fusionne.
 - Hébergement via GitHub Pages (Settings → Pages → branche `main`, dossier racine) : à activer par le propriétaire du dépôt. La liaison arbitre entre deux appareils y passe par PeerJS (voir « Hébergement et liaison »).
 
