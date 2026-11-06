@@ -25,7 +25,9 @@ Mode par défaut au départ (l'autre choix est « Duel à deux »). Taille 2×2,
 
 ## Contenu
 
-18 catégories (441 images) : animaux, fruits et légumes, transports, drapeaux, films en rébus, jeux vidéo, sports, musique, métiers, outils, nature, vêtements, plats, monuments, fêtes, espace, technologie, corps humain. Chaque image a un niveau de 1 à 3, et la difficulté monte au fil du duel.
+28 catégories. 18 en images emoji (441 images) : animaux, fruits et légumes, transports, drapeaux, films en rébus, jeux vidéo, sports, musique, métiers, outils, nature, vêtements, plats, monuments, fêtes, espace, technologie, corps humain. Chaque image a un niveau de 1 à 3, et la difficulté monte au fil du duel.
+
+10 catégories en **mot à trous** (319 mots, public adulte) : capitales du monde, villes de France, départements français, fleuves, mers et montagnes, personnages historiques, mythologie, peintres et sculpteurs, fromages, desserts et pâtisseries, anatomie. Le jeu cache des lettres au hasard, mot par mot ; le niveau dépend de la longueur du mot le plus long.
 
 ### Ajouter des images ou une catégorie
 

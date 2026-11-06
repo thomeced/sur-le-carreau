@@ -156,5 +156,12 @@ Chaque chantier est prévu dans sa propre conversation du projet, sur sa propre 
 - **Limites** : catégories perso propres à un appareil et un navigateur (effacer les données du site les supprime : d'où la sauvegarde) ; pas de modification des catégories d'origine ; photos d'enfants ou de la maison : à garder pour un usage privé ; la version autonome `sur-le-carreau.html` du projet ne contient pas encore l'éditeur.
 - Idées non faites : choisir les catégories de la grille, niveaux réglables à la main, devinettes et lettres mélangées, faire passer des photos dans le dépôt (`assets/photos/` + `categories.js`).
 
+## Catégories « mot à trous » pour adultes (novembre 2026)
+- Demande de Ced : une dizaine de catégories en mot à trous, public adulte, directement dans `categories.js` (type `"trous"`, une chaîne `"réponse|variante"` par mot, niveau automatique).
+- 10 catégories, 319 mots : capitales du monde (37), villes de France (30), départements français (33), fleuves, mers, monts (31), personnages historiques (30), mythologie (33), peintres et sculpteurs (30), fromages (30), desserts et pâtisseries (31), anatomie (34). Le jeu compte maintenant 28 catégories.
+- Partis pris : pas de marques ni de personnes vivantes ; thèmes impossibles à dessiner en emoji ; variantes pour les noms composés ou à orthographe double (« Jeanne d'Arc|jeanne darc », « Pékin|beijing »).
+- Ajustement du masquage (`perso.js`) découvert avec les noms composés : les lettres sont cachées **mot par mot**, chaque mot garde au moins une lettre visible, les mots de 2 lettres ou moins (« de », « d' ») restent entiers, et au niveau 1 la première lettre de chaque mot reste visible. Le niveau automatique se base sur le mot le plus long (« Léonard de Vinci » : niveau 2 et non 3).
+- Tests (navigateur automatisé, ordinateur et mobile) : 28 catégories chargées sans avertissement, répartition des niveaux par catégorie, affichage d'un nom long en tuiles sur mobile, grille 4×4.
+
 ## Comment reprendre dans un nouveau projet Claude
 Reliez le dépôt GitHub (référence du code) et gardez ce document dans le projet, puis demandez par exemple : « Lis le document de contexte et reprends le jeu : ajoute l'éditeur de catégories. » Le fichier `sur-le-carreau.html` du projet est la version autonome du jeu (catégories incluses) ; la référence reste le dépôt.
