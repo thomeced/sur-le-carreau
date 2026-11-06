@@ -17,18 +17,22 @@
   const isL=c=>/\p{L}/u.test(c);
   const first=a=>String(a).split('|')[0].trim();
   const letters=w=>[...first(w)].filter(isL).length;
-  // Niveau automatique d'un mot à trous, d'après sa longueur.
-  const autoLevel=w=>{const n=letters(w);return n<=5?1:n<=8?2:3};
-  /* Cache une partie des lettres : environ 1/3 au niveau 1 (jamais la première lettre), 1/2 au niveau 2,
-     près de 2/3 au niveau 3. Au moins une lettre cachée, au moins une visible. « _ » = lettre cachée. */
+  // Niveau automatique d'un mot à trous, d'après la longueur de son mot le plus long (« Léonard de Vinci » : 7 lettres).
+  const autoLevel=w=>{const n=Math.max(0,...first(w).split(/[\s'’-]+/).map(x=>[...x].filter(isL).length));return n<=5?1:n<=8?2:3};
+  /* Cache une partie des lettres, mot par mot : environ 1/3 au niveau 1 (jamais la première lettre d'un mot),
+     1/2 au niveau 2, près de 2/3 au niveau 3. Chaque mot garde au moins une lettre visible, les petits mots
+     (2 lettres ou moins : « de », « d' ») restent entiers ; au moins une lettre cachée en tout. « _ » = lettre cachée. */
   function masque(w,lvl){
-    const ch=[...first(w).toUpperCase()],idx=ch.map((c,i)=>isL(c)?i:-1).filter(i=>i>=0),n=idx.length;
-    if(n<2)return ch.join('');
-    const r=[0,.34,.5,.62][lvl]||.5;
-    let cand=lvl===1?idx.slice(1):idx.slice();
-    let h=Math.max(1,Math.min(n-1,Math.round(n*r),cand.length));
-    for(let i=cand.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[cand[i],cand[j]]=[cand[j],cand[i]]}
-    cand.slice(0,h).forEach(i=>ch[i]='_');
+    const ch=[...first(w).toUpperCase()],r=[0,.34,.5,.62][lvl]||.5,groups=[];let g=[];
+    ch.forEach((c,i)=>{if(isL(c))g.push(i);else if(g.length){groups.push(g);g=[]}});if(g.length)groups.push(g);
+    const shuf=a=>{for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a};
+    let hid=0;
+    groups.forEach(gr=>{
+      if(gr.length<=2)return;
+      const cand=shuf(lvl===1?gr.slice(1):gr.slice()),h=Math.min(gr.length-1,cand.length,Math.max(1,Math.round(gr.length*r)));
+      cand.slice(0,h).forEach(i=>{ch[i]='_';hid++});
+    });
+    if(!hid){const all=groups.flat();if(all.length>=2)ch[all[1+Math.floor(Math.random()*(all.length-1))]]='_'}
     return ch.join('');
   }
   // Affiche un mot masqué en tuiles, à une taille qui tient dans la largeur de l'élément.
