@@ -56,7 +56,8 @@ index.html                 le jeu (HTML, CSS, JS)
 categories.js              les catégories et leurs images : le fichier à modifier pour ajouter du contenu
 editeur.html               l'éditeur « Mes catégories » (mots à trous, photos)
 perso.js                   types de jeu, mot à trous, enregistrement des catégories perso (jeu + éditeur)
-docs/contexte-projet.md    règles, décisions, direction visuelle, plan
+CLAUDE.md                  état actuel du projet (règles, fichiers, conventions, risques)
+docs/journal.md            historique détaillé des chantiers et des décisions
 ```
 
 ## Feuille de route
@@ -68,4 +69,4 @@ docs/contexte-projet.md    règles, décisions, direction visuelle, plan
 5. Multijoueur en ligne (Node.js + Socket.IO)
 6. Finitions : sons, animations, mobile, réponse vocale (sons et plateau SVG faits)
 
-Détails dans [`docs/contexte-projet.md`](docs/contexte-projet.md).
+État actuel dans [`CLAUDE.md`](CLAUDE.md), historique dans [`docs/journal.md`](docs/journal.md).
