@@ -87,7 +87,7 @@ Fichiers : `index.html` (le jeu : HTML, CSS, JS) et `categories.js` (les catégo
 
 ## Prochaines étapes suggérées
 - Extras arbitre : bouton « mauvaise réponse », pause, annulation (mis de côté pour l'instant) ; vraies images ; image floue qui se précise ; mode solo.
-- Éditeur de catégories (voir ci-dessus).
+- Éditeur de catégories : premier jet fait (mots à trous, photos) ; suites possibles listées dans sa section.
 - Intro : remplacer les candidats par des silhouettes ou des personnages inventés avant une publication publique (voir « Intro animée »).
 
 ## Réglages de départ simplifiés (novembre 2026)
@@ -127,7 +127,7 @@ Réalisée dans une conversation séparée du même projet, sans toucher à la l
 
 ## Chantiers à venir (briefs, novembre 2026)
 Chaque chantier est prévu dans sa propre conversation du projet, sur sa propre branche, avec une PR.
-### Éditeur de catégories
+### Éditeur de catégories (premier jet fait : voir « Éditeur de catégories : mots à trous et photos »)
 - Besoin (Ced) : ajouter facilement des catégories et des images sans toucher au code, y compris par sa fille. Les catégories sont aujourd'hui dans `categories.js` (`const CATEGORIES={clé:{label,items:[[emoji,"réponse|variante",niveau 1-3],…]}}`, validé au chargement par `index.html`).
 - Piste : page d'édition (par exemple `editeur.html` ou une vue de l'application) pour créer et modifier catégories et images, avec export du `categories.js` à copier dans le dépôt, ou enregistrement local (`localStorage`) fusionné avec `categories.js`. À trancher avec Ced selon qui doit pouvoir éditer et où.
 - **Vision à terme** : d'autres types de jeux, par exemple **basés sur des propositions textuelles** (et non des images emoji). Le format des données devra donc distinguer le type d'élément (image, texte, etc.) sans casser l'existant : prévoir un champ de type, ou une structure extensible, et ne pas lier l'éditeur au seul format `[emoji, réponse, niveau]`.
