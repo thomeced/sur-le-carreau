@@ -182,5 +182,13 @@ Chaque chantier est prévu dans sa propre conversation du projet, sur sa propre 
 - Tests (navigateur automatisé, 1440×900 et 390×844, avec une catégorie perso de 7 mots) : tirage initial de 16 catégories distinctes, fréquence de la catégorie perso conforme à un tirage pur, retrait / ajout / blocage / déblocage, ajouts grisés, réduction 3×3 puis « Retirer au hasard », agrandissement 4×4, plateaux 2×2 et 4×4 = catégories choisies, sélection conservée, duel par type, avertissement ; aucune erreur JavaScript.
 - Pas fait : réglage des niveaux à la main.
 
+## Case d'or (novembre 2026)
+- Demande de Ced : la règle française de la « case d'or » (série de victoires), toujours active, libellé « Case d'or », récompense +5 s.
+- **Règle** : 3 duels gagnés d'affilée (en attaque comme en défense) donnent la case d'or. Retourner sur le sol remet la série à 0. Avant un duel, chaque détenteur concerné (attaquant ou défenseur) peut cocher « ☆ Nom utilise sa case d'or (+5 s) » : son chrono démarre à 50 s au lieu de 45. Un seul bonus à la fois ; une 3e victoire en le détenant est sans effet, sauf s'il vient d'être utilisé dans ce duel. Le bonus est consommé à la fin du duel (« Retour à la grille » avant le départ ne le consomme pas) ; il disparaît si son détenteur est éliminé ; il n'est pas attribué au dernier duel de la partie. Pas de case d'or en mode « Duel à deux ».
+- **Affichage** : annonce sur l'écran de fin de duel et sur la grille (`#gnote`, annoncée), carillon `gold`, « ★ Case d'or » sous le nom du détenteur sur le plateau (et dans l'étiquette accessible), série en cours dans le panneau, rappel sur l'écran de duel (`#dgold`) et chez l'arbitre (`#agold`).
+- Code : `GOLD_STREAK`, `GOLD_SEC`, `goldEarns` ; `G.players[i].streak` et `.gold`, `G.use` (bonus cochés), `G.note` ; `startDuel` accepte `bonus`, `goldUse`, `gold`.
+- Tests (navigateur automatisé, 1440×900 et 390×844, grille 3×3) : trois victoires → case d'or, bouton coché / décoché au clavier, chrono à 50 s, bonus consommé, série relancée à 1, retour sur le sol → série à 0 ; aucune erreur JavaScript.
+- Écarts possibles avec l'émission, à confirmer par Ced : les victoires en défense comptent ; pas d'échange de catégorie à la place du bonus.
+
 ## Comment reprendre dans un nouveau projet Claude
 Reliez le dépôt GitHub (référence du code) et gardez ce document dans le projet, puis demandez par exemple : « Lis le document de contexte et reprends le jeu : ajoute l'éditeur de catégories. » Le fichier `sur-le-carreau.html` du projet est la version autonome du jeu (catégories incluses) ; la référence reste le dépôt.

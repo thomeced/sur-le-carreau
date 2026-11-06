@@ -1,8 +1,8 @@
 /* Sons du jeu « Sur le carreau » : tous synthétisés avec la Web Audio API (aucun fichier audio, aucun droit à gérer).
  *
- * API : SLC_SND.play('beep' | 'go' | 'good' | 'pass' | 'end' | 'capture' | 'tick' | 'tock' | 'impact' | 'urgent', [n]), SLC_SND.enabled(), SLC_SND.toggle().
+ * API : SLC_SND.play('beep' | 'go' | 'good' | 'pass' | 'end' | 'capture' | 'tick' | 'tock' | 'impact' | 'urgent' | 'gold', [n]), SLC_SND.enabled(), SLC_SND.toggle().
  *  - beep : bip du compte à rebours 3-2-1 ; go : départ ; good : bonne réponse ; pass : « passé » ; end : fin de temps ; capture : prise de territoire sur le plateau ;
- *  tick / tock : battements du tirage « Retourner sur le sol » ; impact : coup de batterie quand le candidat est tiré ;
+ *  tick / tock : battements du tirage « Retourner sur le sol » ; impact : coup de batterie quand le candidat est tiré ; gold : carillon de la case d'or ;
  *  urgent : tic-tac des 5 dernières secondes du chrono (n = secondes restantes, de 5 à 1 : tic et tac alternés, de plus en plus aigus et forts).
  * Réglage retenu dans localStorage (clé « slc-sons », « 1 » ou « 0 »). Sans réglage : actif, sauf en mode sérieux.
  * Le navigateur n'autorise le son qu'après un geste : le contexte audio est réveillé au premier clic ou à la première touche.
@@ -49,6 +49,7 @@
     urgent:(c,n)=>{n=Math.max(1,Math.min(5,n||5));const k=5-n,tic=n%2===1;
       note(c,'square',tic?1100+k*80:820+k*60,0,0,0.05,0.07+k*0.02);noise(c,0,0.035,0.1+k*0.02,'highpass',tic?7000:4500);
       if(n===1)note(c,'sine',1760,0,0.09,0.12,0.12)},
+    gold:c=>{[1047,1319,1568,2093].forEach((f,k)=>note(c,'triangle',f,0,k*0.09,0.5,0.2));note(c,'sine',2637,0,0.36,0.9,0.12);noise(c,0.36,0.6,0.06,'highpass',9000)},
     end:c=>{note(c,'square',150,70,0,0.9,0.2);note(c,'sawtooth',100,50,0,0.9,0.15)}
   };
   function play(name,arg){
