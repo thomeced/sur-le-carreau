@@ -77,22 +77,20 @@ h1{font-size:clamp(2.2rem,8vw,4rem);line-height:1.1}
 .gz{stroke:none;transition:fill .45s ease;outline:none}
 .gz.t{cursor:pointer}
 .ge{fill:none;stroke-linecap:round;stroke-linejoin:round;pointer-events:none;transition:stroke .5s,stroke-width .5s,stroke-opacity .5s}
-.ge.in{stroke:#9DB8FF;stroke-opacity:.28;stroke-width:1.2;stroke-dasharray:3 5}
-.ge.fr{stroke:#EAF0FF;stroke-opacity:.9;stroke-width:2.6}
-.ge.bd{stroke:#9DB8FF;stroke-opacity:.9;stroke-width:3}
+.ge.in{stroke:#fff;stroke-opacity:.16;stroke-width:1}
+.ge.fr{stroke:#fff;stroke-opacity:.95;stroke-width:2.6}
+.ge.bd{stroke:#fff;stroke-opacity:.85;stroke-width:3}
 .go{fill:none;stroke:#fff;stroke-width:5;stroke-linecap:round;pointer-events:none;opacity:0;transition:opacity .5s}
 .go.on{opacity:1}
-.gt{fill:rgba(255,197,61,.05);stroke:var(--p1);stroke-width:3.5;stroke-dasharray:10 7;pointer-events:none;animation:gdash 1.2s linear infinite,gpulse 1.6s ease-in-out infinite;transition:opacity .4s}
-.gt.sel{fill:rgba(255,197,61,.22);stroke-width:6;stroke-dasharray:none}
-.gt.foc{stroke:#fff;stroke-width:6}
-.gt.wait{opacity:0}
-@keyframes gdash{to{stroke-dashoffset:-17}}
-@keyframes gpulse{50%{fill:rgba(255,197,61,.16)}}
+.gt{fill:none;stroke:none;pointer-events:none}
+.gt.foc{stroke:#fff;stroke-width:5}
+.gz.pick{animation:gpick .45s ease-in-out infinite alternate}
+@keyframes gpick{to{filter:brightness(1.3)}}
 .gl{pointer-events:none;fill:#fff;text-anchor:middle;paint-order:stroke;stroke:rgba(3,4,14,.72);stroke-linejoin:round;transition:opacity .4s}
 .gl .gn{font-weight:700}
 .gl .gc{font-weight:500;fill:#DCE5FF}
 .gl.fade{opacity:0}
-@media(prefers-reduced-motion:reduce){.gt{animation:none}.gz,.ge,.go,.gl{transition-duration:.2s}}
+@media(prefers-reduced-motion:reduce){.gz.pick{animation:none}.gz,.ge,.go,.gl{transition-duration:.2s}}
 .gpanel{display:grid;gap:10px;justify-items:start}
 .gpanel p{margin:0;font-weight:600}
 </style>
@@ -424,11 +422,10 @@ $('form').onsubmit=e=>{
    est éliminé, le gagnant prend toutes ses cases et a la main pour le duel suivant. */
 let G=null;
 const gadj=(size,a,b)=>Math.abs(Math.floor(a/size)-Math.floor(b/size))+Math.abs(a%size-b%size)===1;
-function gtargets(){
-  const out=[];
-  G.cells.forEach((c,i)=>{if(c.owner!==G.ch&&G.cells.some((d,j)=>d.owner===G.ch&&gadj(G.size,i,j)))out.push(i)});
-  return out;
-}
+// Adversaires possibles : joueurs dont le territoire touche celui du joueur en cours.
+function gfoes(){const f=new Set();G.cells.forEach((c,i)=>{if(c.owner!==G.ch&&G.cells.some((d,j)=>d.owner===G.ch&&gadj(G.size,i,j)))f.add(c.owner)});return[...f]}
+// Cases cliquables : toutes les cases de ces adversaires (on attaque un joueur, pas une case).
+function gtargets(){const f=gfoes();return G.cells.map((_,i)=>i).filter(i=>f.includes(G.cells[i].owner))}
 function gnamesRender(){
   const n=(+$('gsize').value)**2,box=$('gnames');
   const old=[...box.querySelectorAll('input')].map(x=>x.value);
@@ -462,7 +459,7 @@ function startGrid(){
   const names=[...$('gnames').querySelectorAll('input')].map((x,i)=>x.value.trim()||'Joueur '+(i+1));
   const keys=shuffle(Object.keys(DATA));
   G={size,n,players:names.map(name=>({name,alive:true})),cells:names.map((_,i)=>({cat:keys[i%keys.length],owner:i})),
-     ch:Math.floor(Math.random()*n),sel:null,anim:null,seed:Math.floor(Math.random()*4294967296),shape:null,over:false,T:+$('dur').value*1000,oral:true};
+     ch:Math.floor(Math.random()*n),sel:null,anim:null,draw:false,drawT:null,played:new Set(),seed:Math.floor(Math.random()*4294967296),shape:null,over:false,T:+$('dur').value*1000,oral:true};
   S=null;
   show('grid');gridRender();
 }
@@ -479,12 +476,14 @@ function gshape(){
   for(let y=0;y<=n;y++){P[y]=[];H[y]=[];V[y]=[];for(let x=0;x<=n;x++){P[y][x]=[x,y];H[y][x]=V[y][x]=[0,0]}}
   return G.shape={P,H,V};
 }
-/* Camaïeu de bleus : une teinte par joueur (couleur de sa case de départ), en alternant foncé et clair
-   comme un damier pour que deux voisins se distinguent. Bornes reprises du décor (#0A1F7A → #1740C8). */
-function gcol(i){
-  const n=G.size,p=(Math.floor(i/n)+i%n)%2,k=Math.floor(i/2);
-  const h=[224,214,232,219,228,210,236,221][k%8],l=p?[41,46,37][k%3]:[21,27,24][k%3];
-  return'hsl('+h+' '+(p?74:80)+'% '+l+'%)';
+/* Couleurs du plateau : un bleu unique pour toutes les cases, violet pour le joueur en cours,
+   bleu clair pour les adversaires qu'il peut défier, plus clair encore pour l'adversaire choisi. */
+const GC={base:'#1B3DB0',me:'#7A3FD8',foe:'#3D78EA',sel:'#6A9CFF',pick:'#BFD3FF',flash:['#4F86F7','#6E9BFF','#3F74E8','#8DB0FF','#5A8FFF']};
+function gfill(o,foes){
+  if(G.draw)return GC.base;
+  if(o===G.ch)return GC.me;
+  if(G.sel===o)return GC.sel;
+  return foes.includes(o)?GC.foe:GC.base;
 }
 let GV=null,gAnimT=null;
 const gctx=document.createElement('canvas').getContext('2d');
@@ -541,10 +540,10 @@ function gboardBuild(tg){
     const isT=tg.includes(i),z=sv('path',{d:c.d,class:'gz'+(isT?' t':''),'data-i':i},gz);
     if(isT){
       z.setAttribute('tabindex','0');z.setAttribute('role','button');
-      const pick=()=>{G.sel=G.sel===i?null:i;gridRender();const again=GV&&GV.zones[i];if(again)again.focus()};
+      const pick=()=>{const o=G.cells[i].owner;G.sel=G.sel===o?null:o;gridRender();const again=GV&&GV.zones[i];if(again)again.focus()};
       z.addEventListener('click',pick);
       z.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();pick()}});
-      const o=sv('path',{d:c.d,class:'gt'+(G.sel===i?' sel':'')},gt);
+      const o=sv('path',{d:c.d,class:'gt'},gt);
       z.addEventListener('focus',()=>o.classList.add('foc'));z.addEventListener('blur',()=>o.classList.remove('foc'));
     }
     return z;
@@ -552,35 +551,31 @@ function gboardBuild(tg){
   E.forEach(e=>{e.el=sv('path',{d:e.d,class:'ge'},ge);e.ol=sv('path',{d:e.d,class:'go'},go)});
   GV={svg,zones,cells,E,cellE,gan,gl,gt,Wd,Ht,sx,sy,narrow};
 }
-// Couleurs, frontières, contour de l'attaquant et étiquettes, d'après own(i).
+// Couleurs, frontières, contours et étiquettes, d'après own(i).
 function gpaint(own){
-  const V0=GV,n=G.size;
-  V0.zones.forEach((z,i)=>z.setAttribute('fill',gcol(own(i))));
+  const V0=GV,foes=G.over||G.draw?[]:gfoes();
+  V0.zones.forEach((z,i)=>z.setAttribute('fill',gfill(own(i),foes)));
   V0.E.forEach(e=>{
     const oa=e.a<0?-1:own(e.a),ob=e.b<0?-1:own(e.b);
     e.el.setAttribute('class','ge '+(e.a<0||e.b<0?'bd':oa===ob?'in':'fr'));
-    e.ol.classList.toggle('on',!G.over&&(oa===G.ch)!==(ob===G.ch));
+    e.ol.classList.toggle('on',!G.over&&!G.draw&&((oa===G.ch)!==(ob===G.ch)||(G.sel!=null&&(oa===G.sel)!==(ob===G.sel))));
   });
-  // Étiquettes : nom du joueur dans la case la plus centrale de son territoire, catégorie dans chaque case.
+  /* Étiquettes : seulement sur la case d'origine de chaque joueur en lice (nom + catégorie d'origine).
+     Les catégories des cases conquises disparaissent : un joueur ne peut être attaqué que sur la sienne. */
   V0.gl.textContent='';
-  const terr={};G.cells.forEach((_,i)=>{(terr[own(i)]=terr[own(i)]||[]).push(i)});
-  const home={};
-  for(const o in terr){
-    const L=terr[o],mx=L.reduce((a,i)=>a+V0.cells[i].cx,0)/L.length,my=L.reduce((a,i)=>a+V0.cells[i].cy,0)/L.length;
-    home[o]=L.reduce((b,i)=>Math.hypot(V0.cells[i].cx-mx,V0.cells[i].cy-my)<Math.hypot(V0.cells[b].cx-mx,V0.cells[b].cy-my)?i:b,L[0]);
-  }
+  const size={};G.cells.forEach((_,i)=>{size[own(i)]=(size[own(i)]||0)+1});
   const ch=V0.sy,cw=V0.sx,max=cw*.82;
   G.cells.forEach((c,i)=>{
-    const o=own(i),isH=home[o]===i,k=terr[o].length;
+    const o=own(i);
+    V0.zones[i].setAttribute('aria-label',G.players[o].name+', '+DATA[G.cells[o].cat].label+(V0.zones[i].classList.contains('t')?', adversaire possible':''));
+    if(o!==i)return;
     const cp=Math.max(11,Math.min(15,ch*.1)),cat=gwrap(DATA[c.cat].label,cp,500,max,2);
-    // Nom : plus grand quand le territoire grandit, réduit jusqu'à 11 px pour tenir dans la case, puis tronqué.
-    let np=Math.max(13,Math.min(22,ch*.15))*Math.min(1.35,1+.08*(k-1)),nm=null;
-    if(isH){const full=G.players[o].name;while(np>11&&gmeasure(full,np,700)>max)np-=.5;nm=gfit(full,np,700,max)}
-    const tot=(nm?np*1.15+4:0)+cat.length*cp*1.2;let y=V0.cells[i].cy-tot/2;
-    const t=sv('text',{class:'gl','stroke-width':nm?4:3.5},V0.gl);
-    if(nm){sv('tspan',{x:f1(V0.cells[i].cx),y:f1(y+np*.9),class:'gn','font-size':f1(np)},t).textContent=nm;y+=np*1.15+4}
+    let np=Math.max(13,Math.min(22,ch*.15))*Math.min(1.35,1+.08*(size[o]-1));
+    const full=G.players[o].name;while(np>11&&gmeasure(full,np,700)>max)np-=.5;const nm=gfit(full,np,700,max);
+    const tot=np*1.15+4+cat.length*cp*1.2;let y=V0.cells[i].cy-tot/2;
+    const t=sv('text',{class:'gl','stroke-width':4},V0.gl);
+    sv('tspan',{x:f1(V0.cells[i].cx),y:f1(y+np*.9),class:'gn','font-size':f1(np)},t).textContent=nm;y+=np*1.15+4;
     cat.forEach(l=>{sv('tspan',{x:f1(V0.cells[i].cx),y:f1(y+cp*.95),class:'gc','font-size':f1(cp)},t).textContent=l;y+=cp*1.2});
-    V0.zones[i].setAttribute('aria-label',G.players[o].name+', '+DATA[c.cat].label+(V0.zones[i].classList.contains('t')?', case à attaquer':''));
   });
 }
 const f1=v=>Math.round(v*10)/10;
@@ -612,7 +607,7 @@ function gcapture(A){
   const rr=grng(G.seed^(A.cells.length*7919+A.to)),ph=[0,0,0,0].map(()=>rr()*Math.PI*2);
   const cp=sv('clipPath',{id:'gcap'},V0.svg.querySelector('defs'));
   A.cells.forEach(i=>sv('path',{d:V0.cells[i].d},cp));
-  const g=sv('g',{'clip-path':'url(#gcap)'},V0.gan),col=gcol(A.to);
+  const g=sv('g',{'clip-path':'url(#gcap)'},V0.gan),col=GC.me;
   const glowB=sv('path',{d:'',fill:'#BFD0FF','fill-opacity':.55,filter:'url(#gglow)'},g);
   const body=sv('path',{d:'',fill:col},g);
   const ring=sv('path',{d:'',fill:'none',stroke:'#EAF0FF','stroke-width':6,filter:'url(#gglow)'},g);
@@ -633,38 +628,85 @@ function gcapture(A){
   };
   gAnimT=requestAnimationFrame(step);
 }
+/* ---------- Retourner sur le sol ----------
+   Le joueur en cours rend la main : un autre candidat est tiré au sort, en priorité parmi ceux qui
+   n'ont pas encore joué. 6 s de clignotement aléatoire (sons tic/tac), puis 2 s de mise en avant
+   du candidat tiré (son d'impact), qui devient le joueur en cours. */
+function gdrawPool(){
+  const alive=G.players.map((_,i)=>i).filter(i=>G.players[i].alive&&i!==G.ch),fresh=alive.filter(i=>!G.played.has(i));
+  return{pool:fresh.length?fresh:alive,fresh:fresh.length>0};
+}
+function gdraw(){
+  if(G.draw||G.over||gAnimT)return;
+  const{pool,fresh}=gdrawPool();if(!pool.length)return;
+  const g0=G,pick=pool[Math.floor(Math.random()*pool.length)],reduce=matchMedia('(prefers-reduced-motion: reduce)').matches;
+  G.draw=true;G.drawFresh=fresh;G.sel=null;gridRender();
+  const V0=GV,T=reduce?600:6000,H=2000,t0=performance.now();
+  const cellsOf=o=>G.cells.map((c,i)=>c.owner===o?i:-1).filter(i=>i>=0);
+  const paint=(o,col)=>cellsOf(o).forEach(i=>{const z=V0.zones[i];z.style.transition='none';z.setAttribute('fill',col)});
+  const clear=()=>V0.zones.forEach(z=>{z.style.transition='none';z.setAttribute('fill',GC.base)});
+  let last=-1,k=0;
+  const alive=()=>G===g0&&GV===V0&&G.draw;
+  const land=()=>{
+    if(!alive())return;
+    clear();paint(pick,GC.pick);cellsOf(pick).forEach(i=>V0.zones[i].classList.add('pick'));
+    V0.E.forEach(e=>{const a=e.a>=0&&G.cells[e.a].owner===pick,b=e.b>=0&&G.cells[e.b].owner===pick;e.ol.classList.toggle('on',a!==b)});
+    $('gtitle').textContent=G.players[pick].name+' prend la main !';
+    snd('impact');
+    G.drawT=setTimeout(()=>{if(!alive())return;G.draw=false;G.drawT=null;G.ch=pick;G.sel=null;gridRender()},H);
+  };
+  const step=()=>{
+    if(!alive())return;
+    const el=performance.now()-t0;if(el>=T||reduce)return land();
+    clear();
+    const n=pool.length>3&&Math.random()<.35?2:1,lit=[];
+    for(let m=0;m<n;m++){
+      let o,guard=0;do{o=pool[Math.floor(Math.random()*pool.length)]}while(pool.length>n&&(o===last||lit.includes(o))&&++guard<20);
+      lit.push(o);paint(o,GC.flash[Math.floor(Math.random()*GC.flash.length)]);
+    }
+    last=lit[0];snd(k++%2?'tock':'tick');
+    const p=el/T;G.drawT=setTimeout(step,75+185*p*p);
+  };
+  step();
+}
 function gbtn(txt,cls,fn){const b=document.createElement('button');b.type='button';b.textContent=txt;if(cls)b.className=cls;b.onclick=fn;return b}
 function gridRender(){
-  const alive=G.players.filter(p=>p.alive).length,tg=G.over?[]:gtargets();
-  $('gtitle').textContent=G.over?G.players[G.ch].name+' remporte la partie !':G.players[G.ch].name+' choisit son adversaire';
-  $('ghint').textContent=G.over?'Toutes les cases lui appartiennent.':'Territoire de '+G.players[G.ch].name+' : contour blanc. Cases à attaquer : pointillés jaunes.';
+  const alive=G.players.filter(p=>p.alive).length,tg=G.over||G.draw?[]:gtargets();
+  $('gtitle').textContent=G.over?G.players[G.ch].name+' remporte la partie !':G.draw?'Retour sur le sol…':G.players[G.ch].name+' choisit son adversaire';
+  $('ghint').textContent=G.over?'Toutes les cases lui appartiennent.':G.draw?'Tirage au sort parmi les candidats '+(G.drawFresh?'qui n’ont pas encore joué.':'en lice.'):'Territoire de '+G.players[G.ch].name+' : violet. Adversaires possibles : bleu clair.';
   if(gAnimT){cancelAnimationFrame(gAnimT);gAnimT=null}
   const A=G.anim;G.anim=null;
   gboardBuild(tg);
   gpaint(A?i=>A.cells.includes(i)?A.old:G.cells[i].owner:i=>G.cells[i].owner);
   if(A)gcapture(A);
   const p=$('gpanel');p.textContent='';
+  const sol=()=>gdrawPool().pool.length?gbtn('Retourner sur le sol','alt',gdraw):null;
   if(G.over){
     p.append(gbtn('Nouvelle partie','',()=>show('setup')));
+  }else if(G.draw){
+    const t=document.createElement('p');t.textContent='Tirage au sort d’un candidat…';p.append(t);
   }else if(G.sel!=null){
-    const c=G.cells[G.sel],a=G.players[G.ch],d=G.players[c.owner],t=document.createElement('p');
-    t.textContent=a.name+' défie '+d.name+' en « '+DATA[c.cat].label+' ».';
+    const a=G.players[G.ch],d=G.players[G.sel],t=document.createElement('p');
+    t.textContent=a.name+' défie '+d.name+' en « '+DATA[G.cells[G.sel].cat].label+' ».';
     p.append(t,gbtn('Lancer le duel','',startGridDuel),gbtn('Changer d’adversaire','alt',()=>{G.sel=null;gridRender()}));
   }else{
-    const t=document.createElement('p');t.textContent='Touchez une case en pointillés jaunes pour défier son joueur.';p.append(t);
+    const t=document.createElement('p');t.textContent='Touchez une case bleu clair pour défier son joueur, ou retournez sur le sol pour laisser la main à un autre candidat.';
+    p.append(t);const b=sol();if(b)p.append(b);
   }
   $('gstat').textContent=alive+' joueur'+(alive>1?'s':'')+' en lice';
 }
 function startGridDuel(){
-  const c=G.cells[G.sel],a=G.ch,d=c.owner,cat=DATA[c.cat];
+  // On attaque un joueur : le duel se joue dans sa catégorie d'origine (celle de sa case de départ).
+  const a=G.ch,d=G.sel,cat=DATA[G.cells[d].cat];
   startDuel({names:[G.players[a].name,G.players[d].name],pid:[a,d],src:cat.items,cat:cat.label,T:G.T,oral:G.oral});
 }
 function gridAfterDuel(){
-  const w=S.winP,l=S.loseP,a=G.ch,sel=G.sel,cells=[];
-  // Bord du duel : entre la case défendue et une case voisine de l'attaquant (départ de la vague de capture).
-  const nb=sel==null?-1:G.cells.findIndex((c,j)=>c.owner===a&&gadj(G.size,sel,j));
+  const w=S.winP,l=S.loseP,a=G.ch,d=G.sel,cells=[];
+  // Bord du duel : une case du défenseur voisine d'une case de l'attaquant (départ de la vague de capture).
+  let from=[-1,-1];G.cells.forEach((c,i)=>{if(from[0]<0&&c.owner===d){const j=G.cells.findIndex((e,k)=>e.owner===a&&gadj(G.size,i,k));if(j>=0)from=[i,j]}});
+  G.played.add(a);G.played.add(d);
   G.cells.forEach((c,i)=>{if(c.owner===l){c.owner=w;cells.push(i)}});
-  G.anim={cells,old:l,to:w,from:[sel,nb]};
+  G.anim={cells,old:l,to:w,from};
   G.players[l].alive=false;G.ch=w;G.sel=null;
   G.over=G.players.filter(p=>p.alive).length===1;
   show('grid');gridRender();
@@ -673,10 +715,10 @@ $('wback').onclick=()=>{
   if(!S||!S.pid||S.started||S.counting)return;
   S.over=true;push();G.sel=null;show('grid');gridRender();
 };
-$('gquit').onclick=()=>show('setup');
+$('gquit').onclick=()=>{if(G){clearTimeout(G.drawT);G.draw=false}show('setup')};
 // Le plateau est dessiné à la largeur réelle de l'écran : on le redessine si elle change, et une fois la police chargée.
-{let rt=0,lw=0;addEventListener('resize',()=>{clearTimeout(rt);rt=setTimeout(()=>{const w=$('gboard').clientWidth;if(G&&!$('grid').hidden&&!gAnimT&&w!==lw){lw=w;gridRender()}},150)})}
-if(document.fonts&&document.fonts.ready)document.fonts.ready.then(()=>{if(G&&!$('grid').hidden&&!gAnimT)gridRender()});
+{let rt=0,lw=0;addEventListener('resize',()=>{clearTimeout(rt);rt=setTimeout(()=>{const w=$('gboard').clientWidth;if(G&&!$('grid').hidden&&!gAnimT&&!G.draw&&w!==lw){lw=w;gridRender()}},150)})}
+if(document.fonts&&document.fonts.ready)document.fonts.ready.then(()=>{if(G&&!$('grid').hidden&&!gAnimT&&!G.draw)gridRender()});
 $('newcode').onclick=()=>{
   if(!S||!S.oral||S.started||S.counting)return;
   resetLink();S.link=null;$('code').textContent='…';$('go').disabled=true;
