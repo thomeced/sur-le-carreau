@@ -154,7 +154,7 @@ Chaque chantier est prévu dans sa propre conversation du projet, sur sa propre 
 - **Retour au jeu** depuis l'éditeur : pas d'écran de lancement ni d'intro (`sessionStorage` `slc-retour`, géré dans `intro.js`), dernier mode conservé.
 - **Tests** (navigateur automatisé, ordinateur 1440×900 et mobile 390×844) : création des deux types, doublons, suppression, file de 6 photos avec une passée, retour au jeu, duel arbitré dans chaque type (carte identique jeu / arbitre, vignette mise à jour, bonne réponse, passe), grille à 20 catégories, sauvegarde puis restauration dans un navigateur vierge ; aucune erreur JavaScript. Pas encore essayé sur un vrai téléphone ni avec PeerJS entre deux appareils (photos).
 - **Limites** : catégories perso propres à un appareil et un navigateur (effacer les données du site les supprime : d'où la sauvegarde) ; pas de modification des catégories d'origine ; photos d'enfants ou de la maison : à garder pour un usage privé ; la version autonome `sur-le-carreau.html` du projet ne contient pas encore l'éditeur.
-- Idées non faites : choisir les catégories de la grille, niveaux réglables à la main, devinettes et lettres mélangées, faire passer des photos dans le dépôt (`assets/photos/` + `categories.js`).
+- Idées non faites : niveaux réglables à la main, devinettes et lettres mélangées, faire passer des photos dans le dépôt (`assets/photos/` + `categories.js`).
 
 ## Catégories « mot à trous » pour adultes (novembre 2026)
 - Demande de Ced : une dizaine de catégories en mot à trous, public adulte, directement dans `categories.js` (type `"trous"`, une chaîne `"réponse|variante"` par mot, niveau automatique).
@@ -162,6 +162,22 @@ Chaque chantier est prévu dans sa propre conversation du projet, sur sa propre 
 - Partis pris : pas de marques ni de personnes vivantes ; thèmes impossibles à dessiner en emoji ; variantes pour les noms composés ou à orthographe double (« Jeanne d'Arc|jeanne darc », « Pékin|beijing »).
 - Ajustement du masquage (`perso.js`) découvert avec les noms composés : les lettres sont cachées **mot par mot**, chaque mot garde au moins une lettre visible, les mots de 2 lettres ou moins (« de », « d' ») restent entiers, et au niveau 1 la première lettre de chaque mot reste visible. Le niveau automatique se base sur le mot le plus long (« Léonard de Vinci » : niveau 2 et non 3).
 - Tests (navigateur automatisé, ordinateur et mobile) : 28 catégories chargées sans avertissement, répartition des niveaux par catégorie, affichage d'un nom long en tuiles sur mobile, grille 4×4.
+
+## Choix des catégories de la grille (novembre 2026)
+- Demande de Ced : voir et modifier les catégories de la partie sur l'écran de départ, avant de lancer la grille.
+- **Zone « Catégories de la partie »** (mode grille, sous la taille) : à l'ouverture, autant de catégories que de cases sont tirées au hasard (tirage pur, toutes catégories confondues, perso comprises). Elles s'affichent en étiquettes rangées par type de jeu (Images, Mot à trous, Photos), avec leur nombre d'éléments et un ✕ pour les retirer. Compteur « n / N catégories » : vert si le compte est bon, ambre s'il en manque, rouge s'il y en a trop.
+- **Ajouter** : liste « Ajouter une catégorie » des catégories non choisies, en sections repliables par type, un bouton « + » par catégorie ; grisés quand la grille est complète (message « La grille est complète : retirez une catégorie pour en ajouter une autre »).
+- **Boutons** : « 🎲 Nouveau tirage » (tout refaire au hasard), « Compléter au hasard » (s'il en manque), « Retirer au hasard » (s'il y en a trop).
+- **Erreurs bloquantes** : tant que le compte n'est pas exact, « Commencer la partie » est désactivé, avec le message sous la zone (« Il manque 2 catégories pour une grille 4×4… », « 7 catégories de trop pour une grille 3×3… ») et un rappel au-dessus du bouton.
+- **Avertissements non bloquants** (étiquette encadrée en ambre, ⚠, et liste sous les étiquettes) : catégorie de moins de 15 éléments (`PFEW`), des éléments risquant de revenir pendant le duel ; catégorie à drapeaux sous Windows (affichés en lettres).
+- **Taille de grille** : agrandie, la sélection est complétée au hasard (« 7 catégories ajoutées au hasard pour la grille 4×4 ») ; réduite, rien n'est retiré sans l'accord du joueur (erreur + « Retirer au hasard »). Le choix de taille est conservé quand les catégories perso finissent de charger.
+- **Catégories perso** : chargées un peu après la page ; si le joueur n'a pas encore touché à la sélection, le tirage est refait pour les inclure, sinon elles rejoignent seulement la liste d'ajout.
+- La sélection est gardée en changeant de mode ou de taille et après une partie ; nouveau tirage à chaque ouverture de la page (pas de mémoire entre visites). Le placement sur le plateau reste aléatoire parmi les catégories choisies.
+- Duel à deux : la liste des catégories est rangée par type (`optgroup`).
+- Code : `PICK` (clés choisies), `pdraw`, `pfill`, `ptrim`, `pickSync`, `pickRender` dans `index.html` ; `startGrid` utilise `PICK`.
+- Accessibilité : compteur et messages annoncés (`aria-live`), boutons ✕ et « + » étiquetés, focus replacé après un ajout ou un retrait.
+- Tests (navigateur automatisé, 1440×900 et 390×844, avec une catégorie perso de 7 mots) : tirage initial de 16 catégories distinctes, fréquence de la catégorie perso conforme à un tirage pur, retrait / ajout / blocage / déblocage, ajouts grisés, réduction 3×3 puis « Retirer au hasard », agrandissement 4×4, plateaux 2×2 et 4×4 = catégories choisies, sélection conservée, duel par type, avertissement ; aucune erreur JavaScript.
+- Pas fait : réglage des niveaux à la main.
 
 ## Comment reprendre dans un nouveau projet Claude
 Reliez le dépôt GitHub (référence du code) et gardez ce document dans le projet, puis demandez par exemple : « Lis le document de contexte et reprends le jeu : ajoute l'éditeur de catégories. » Le fichier `sur-le-carreau.html` du projet est la version autonome du jeu (catégories incluses) ; la référence reste le dépôt.
