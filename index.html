@@ -54,6 +54,7 @@ button.alt{background:transparent;border:2px solid var(--line);color:var(--ink);
 .good{background:var(--ok);box-shadow:0 0 18px rgba(61,220,151,.45)}
 .skip{background:var(--ko);box-shadow:0 0 18px rgba(255,107,107,.45)}
 button:disabled{opacity:.4;cursor:not-allowed}
+.slc-snd-btn{position:fixed;top:calc(10px + env(safe-area-inset-top,0px));right:10px;z-index:50;width:40px;height:40px;padding:0;font-size:1.1rem;line-height:1;background:rgba(4,8,36,.7);border:2px solid var(--line);color:var(--ink);box-shadow:none}
 button,.nm,#who,#aans,label{font-family:var(--disp);font-weight:600}
 h1,.tm,#code,#end h2{font-weight:700}
 h1{font-size:clamp(2.2rem,8vw,4rem);line-height:1.1}
@@ -86,6 +87,7 @@ h1{font-size:clamp(2.2rem,8vw,4rem);line-height:1.1}
 .gpanel p{margin:0;font-weight:600}
 </style>
 <script src="intro.js"></script>
+<script src="sons.js"></script>
 </head>
 <body>
 <main>
@@ -316,13 +318,14 @@ function render(){
     $('tm'+i).textContent=Math.ceil(Math.max(0,S.t[i])/1000);
     const n=S.sc[i];$('sc'+i).textContent=n+' trouvé'+(n>1?'s':'');
     $('s'+i).classList.toggle('on',S.turn===i);
-    $('s'+i).classList.toggle('low',S.t[i]<10000);
+    $('s'+i).classList.toggle('low',S.t[i]<=5000);
   }
   $('who').textContent='À '+S.names[S.turn]+' de jouer (niveau '+S.lvl+')';
 }
 function push(){if(S&&S.oral&&S.link)S.link.send('st',{names:S.names,t:S.t.map(Math.round),sc:S.sc,turn:S.turn,card:S.cur,lvl:S.lvl,over:S.over,lock:S.lock,started:S.started,count:S.counting?S.count:0,cat:S.cat})}
+const snd=n=>{try{window.SLC_SND&&SLC_SND.play(n)}catch(e){}};
 function finish(){
-  S.over=true;clearInterval(S.h);clearInterval(S.cd);
+  snd('end');S.over=true;clearInterval(S.h);clearInterval(S.cd);
   const w=S.turn^1;
   $('win').textContent=S.names[w]+' remporte le duel';
   let res=S.names[0]+' : '+S.sc[0]+' trouvé'+(S.sc[0]>1?'s':'')+'. '+S.names[1]+' : '+S.sc[1]+' trouvé'+(S.sc[1]>1?'s':'')+'.';
@@ -343,17 +346,17 @@ function tick(){
 function launch(){
   if(!S||S.started||S.counting||S.over)return;
   S.counting=true;S.count=3;$('go').disabled=true;$('wait').hidden=true;
-  const step=()=>{$('card').textContent=S.count;$('who').textContent='Départ dans '+S.count+'…';push()};
+  const step=()=>{snd('beep');$('card').textContent=S.count;$('who').textContent='Départ dans '+S.count+'…';push()};
   step();
   S.cd=setInterval(()=>{S.count--;if(S.count>0)return step();clearInterval(S.cd);S.counting=false;S.count=0;begin()},1000);
 }
-function begin(){S.started=true;$('card').textContent=S.cur[0];S.last=performance.now();S.h=setInterval(tick,100);$('wait').hidden=true;push();$('ans').focus()}
-function good(){S.sc[S.turn]++;S.turn^=1;card();flash('ok','Bonne réponse');render();push()}
+function begin(){snd('go');S.started=true;$('card').textContent=S.cur[0];S.last=performance.now();S.h=setInterval(tick,100);$('wait').hidden=true;push();$('ans').focus()}
+function good(){snd('good');S.sc[S.turn]++;S.turn^=1;card();flash('ok','Bonne réponse');render();push()}
 function skip(){
   if(!S.started||S.lock||S.over)return;
   S.lock=true;S.t[S.turn]-=3000;
   if(S.t[S.turn]<=0){S.t[S.turn]=0;render();return finish()}
-  clearTimeout(flashT);$('msg').className='';$('msg').textContent='C\'était : '+S.cur[1].split('|')[0]+' (−3 s)';
+  snd('pass');clearTimeout(flashT);$('msg').className='';$('msg').textContent='C\'était : '+S.cur[1].split('|')[0]+' (−3 s)';
   render();push();
   setTimeout(()=>{if(S.over)return;S.lock=false;card();$('msg').textContent='';render();push();$('ans').focus()},1300);
 }
@@ -522,7 +525,7 @@ function arbRender(){
   if(!R){$('ast').textContent='En attente du jeu…';return}
   $('ast').textContent='';
   const t=R.t.slice();if(R.started&&!R.over)t[R.turn]-=performance.now()-R.at;
-  for(let i=0;i<2;i++){const s=$('a'+i);s.querySelector('.nm').textContent=R.names[i];s.querySelector('.tm').textContent=Math.ceil(Math.max(0,t[i])/1000);s.classList.toggle('on',R.turn===i&&!R.over);s.classList.toggle('low',t[i]<10000)}
+  for(let i=0;i<2;i++){const s=$('a'+i);s.querySelector('.nm').textContent=R.names[i];s.querySelector('.tm').textContent=Math.ceil(Math.max(0,t[i])/1000);s.classList.toggle('on',R.turn===i&&!R.over);s.classList.toggle('low',t[i]<=5000)}
   $('actx').textContent=R.cat?'Catégorie : '+R.cat:'';
   $('acard').textContent=R.started?R.card[0]:(R.count||'?');
   $('aans').textContent=R.over?'Duel terminé · en attente du prochain duel':R.count?'Départ dans '+R.count+'…':!R.started?'Le duel n’a pas encore démarré':'À '+R.names[R.turn]+' (niveau '+R.lvl+') · réponse : '+R.card[1].split('|').join(' / ');

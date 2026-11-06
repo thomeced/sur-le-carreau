@@ -86,7 +86,7 @@ Fichiers : `index.html` (le jeu : HTML, CSS, JS) et `categories.js` (les catégo
 - Limites : pas de sauvegarde ni de reprise d'une grille ; pas de mode équipes ; 4-voisinage uniquement.
 
 ## Prochaines étapes suggérées
-- Extras arbitre : bouton « mauvaise réponse », pause, annulation ; sons ; vraies images ; image floue qui se précise ; mode solo.
+- Extras arbitre : bouton « mauvaise réponse », pause, annulation (mis de côté pour l'instant) ; vraies images ; image floue qui se précise ; mode solo.
 - Éditeur de catégories (voir ci-dessus).
 - Intro : remplacer les candidats par des silhouettes ou des personnages inventés avant une publication publique (voir « Intro animée »).
 
@@ -118,6 +118,23 @@ Réalisée dans une conversation séparée du même projet, sans toucher à la l
 - Mise en œuvre : tout dans `intro.js` et `intro.css` (écran `.slcl`, classe `slc-serieux` sur `<html>`) ; `index.html` n'a pas changé. Pas d'écran de lancement ni d'intro sur `#arbitre`.
 - Limite : le mode sérieux ne s'applique pas à la page arbitre (autre appareil, autre navigateur). Les tests automatisés ouvrent le jeu avec `?mode=serieux`.
 - Version autonome (aperçu claude.ai) : pas encore reconstruite avec l'intro ni l'écran de lancement.
+
+## Sons du jeu et chrono rouge (novembre 2026)
+- `sons.js` (chargé après `intro.js`) : sons synthétisés avec la Web Audio API, sans fichier audio ni droits à gérer. Cinq sons : `beep` (bip de chaque chiffre du 3-2-1), `go` (départ), `good` (bonne réponse), `pass` (passé), `end` (fin de temps). Appelés depuis `index.html` par la fonction `snd(nom)` (dans `launch`, `begin`, `good`, `skip`, `finish`). Les sons sont joués sur l'écran du jeu, pas sur la page arbitre.
+- Réglage : bouton 🔊/🔇 en haut à droite (absent de la vue arbitre), retenu dans `localStorage` (clé `slc-sons`). Le choix du mode au lancement le fixe : funky = sons actifs, sérieux = sons coupés ; avec `?mode=serieux` sans choix enregistré, les sons sont coupés aussi.
+- Chrono : le nombre du joueur passe en rouge quand il lui reste 5 secondes ou moins (avant : moins de 10 s), sur l'écran du jeu et sur la page arbitre.
+- Idées non faites : tic-tac chaque seconde dans les 5 dernières secondes, son de victoire/capture de zone (à voir avec le nouveau plateau).
+
+## Chantiers à venir (briefs, novembre 2026)
+Chaque chantier est prévu dans sa propre conversation du projet, sur sa propre branche, avec une PR.
+### Éditeur de catégories
+- Besoin (Ced) : ajouter facilement des catégories et des images sans toucher au code, y compris par sa fille. Les catégories sont aujourd'hui dans `categories.js` (`const CATEGORIES={clé:{label,items:[[emoji,"réponse|variante",niveau 1-3],…]}}`, validé au chargement par `index.html`).
+- Piste : page d'édition (par exemple `editeur.html` ou une vue de l'application) pour créer et modifier catégories et images, avec export du `categories.js` à copier dans le dépôt, ou enregistrement local (`localStorage`) fusionné avec `categories.js`. À trancher avec Ced selon qui doit pouvoir éditer et où.
+- **Vision à terme** : d'autres types de jeux, par exemple **basés sur des propositions textuelles** (et non des images emoji). Le format des données devra donc distinguer le type d'élément (image, texte, etc.) sans casser l'existant : prévoir un champ de type, ou une structure extensible, et ne pas lier l'éditeur au seul format `[emoji, réponse, niveau]`.
+### Plateau de jeu en SVG
+- Besoin (Ced) : améliorer le design de la grille : possession des zones gérée en SVG avec des formes plus complexes que les cases rectangulaires, animation de transition quand une zone est capturée, camaïeu de bleus repris du code couleur de l'image de fond (sol bleu `#0A1F7A`→`#1740C8`, ciel `#03040E`, halos bleu clair).
+- Contraintes : garder les règles actuelles (voisinage orthogonal, taille 2×2 à 4×4, une zone par joueur au départ, le gagnant prend toutes les cases du perdant) et les fonctions `gtargets`, `gridAfterDuel`, `gadj` ; se rappeler que l'adjacence doit suivre le dessin des formes si elles ne sont plus des carrés. Accessibilité : texte lisible, sélection au clavier, `prefers-reduced-motion`. Le son de capture pourra utiliser `sons.js` (ajouter un son).
+- À prévoir : captures d'écran sur mobile (390 px) et ordinateur, tests des cas 2×2, 3×3 et 4×4 avec noms longs.
 
 ## Comment reprendre dans un nouveau projet Claude
 Reliez le dépôt GitHub (référence du code) et gardez ce document dans le projet, puis demandez par exemple : « Lis le document de contexte et reprends le jeu : ajoute l'éditeur de catégories. » Le fichier `sur-le-carreau.html` du projet est la version autonome du jeu (catégories incluses) ; la référence reste le dépôt.
