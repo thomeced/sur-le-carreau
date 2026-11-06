@@ -72,17 +72,27 @@ h1{font-size:clamp(2.2rem,8vw,4rem);line-height:1.1}
 #gtitle{font:700 clamp(1.4rem,5vw,2rem)/1.2 var(--disp);margin:0 0 4px;overflow-wrap:anywhere}
 #ghint,#gstat,#dcat{margin:4px 0}
 #dcat{font-weight:600}
-.gboard{display:grid;gap:6px;margin:12px 0}
-.gcell{aspect-ratio:1/.8;min-width:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;padding:4px;border-radius:6px;border:2px solid rgba(255,255,255,.25);background:var(--gc);color:#fff;box-shadow:none;font-family:var(--disp);cursor:default;overflow:hidden}
-.gcell .gn{font-weight:700;font-size:clamp(.7rem,2.6vw,1.05rem);max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.gcell .gc{font-weight:500;font-size:clamp(.55rem,2vw,.8rem);opacity:.92;max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.gcell.mine{border-color:#fff;box-shadow:0 0 0 3px var(--gh)}
-.gcell.target{cursor:pointer;border-color:var(--p1);animation:gpulse 1.4s ease-in-out infinite}
-.gcell.sel{outline:4px solid var(--p1);outline-offset:2px}
-.gcell.won{animation:gwon .9s ease-out}
-@keyframes gpulse{50%{box-shadow:0 0 14px var(--p1)}}
-@keyframes gwon{0%{filter:brightness(2.2)}100%{filter:none}}
-@media(prefers-reduced-motion:reduce){.gcell.target,.gcell.won{animation:none}}
+.gboard{margin:12px 0;position:relative}
+.gboard svg{display:block;width:100%;height:auto;overflow:visible;font-family:var(--disp);-webkit-tap-highlight-color:transparent}
+.gz{stroke:none;transition:fill .45s ease;outline:none}
+.gz.t{cursor:pointer}
+.ge{fill:none;stroke-linecap:round;stroke-linejoin:round;pointer-events:none;transition:stroke .5s,stroke-width .5s,stroke-opacity .5s}
+.ge.in{stroke:#9DB8FF;stroke-opacity:.28;stroke-width:1.2;stroke-dasharray:3 5}
+.ge.fr{stroke:#EAF0FF;stroke-opacity:.9;stroke-width:2.6}
+.ge.bd{stroke:#9DB8FF;stroke-opacity:.9;stroke-width:3}
+.go{fill:none;stroke:#fff;stroke-width:5;stroke-linecap:round;pointer-events:none;opacity:0;transition:opacity .5s}
+.go.on{opacity:1}
+.gt{fill:rgba(255,197,61,.05);stroke:var(--p1);stroke-width:3.5;stroke-dasharray:10 7;pointer-events:none;animation:gdash 1.2s linear infinite,gpulse 1.6s ease-in-out infinite;transition:opacity .4s}
+.gt.sel{fill:rgba(255,197,61,.22);stroke-width:6;stroke-dasharray:none}
+.gt.foc{stroke:#fff;stroke-width:6}
+.gt.wait{opacity:0}
+@keyframes gdash{to{stroke-dashoffset:-17}}
+@keyframes gpulse{50%{fill:rgba(255,197,61,.16)}}
+.gl{pointer-events:none;fill:#fff;text-anchor:middle;paint-order:stroke;stroke:rgba(3,4,14,.72);stroke-linejoin:round;transition:opacity .4s}
+.gl .gn{font-weight:700}
+.gl .gc{font-weight:500;fill:#DCE5FF}
+.gl.fade{opacity:0}
+@media(prefers-reduced-motion:reduce){.gt{animation:none}.gz,.ge,.go,.gl{transition-duration:.2s}}
 .gpanel{display:grid;gap:10px;justify-items:start}
 .gpanel p{margin:0;font-weight:600}
 </style>
@@ -413,8 +423,6 @@ $('form').onsubmit=e=>{
    le propriétaire d'une case voisine ; le duel se joue dans la catégorie de cette case. Le perdant
    est éliminé, le gagnant prend toutes ses cases et a la main pour le duel suivant. */
 let G=null;
-const gcol=i=>'hsl('+Math.round((i*137.508)%360)+' 62% 34%)';
-const gcolHi=i=>'hsl('+Math.round((i*137.508)%360)+' 70% 58%)';
 const gadj=(size,a,b)=>Math.abs(Math.floor(a/size)-Math.floor(b/size))+Math.abs(a%size-b%size)===1;
 function gtargets(){
   const out=[];
@@ -454,27 +462,170 @@ function startGrid(){
   const names=[...$('gnames').querySelectorAll('input')].map((x,i)=>x.value.trim()||'Joueur '+(i+1));
   const keys=shuffle(Object.keys(DATA));
   G={size,n,players:names.map(name=>({name,alive:true})),cells:names.map((_,i)=>({cat:keys[i%keys.length],owner:i})),
-     ch:Math.floor(Math.random()*n),sel:null,last:[],over:false,T:+$('dur').value*1000,oral:true};
+     ch:Math.floor(Math.random()*n),sel:null,anim:null,seed:Math.floor(Math.random()*4294967296),shape:null,over:false,T:+$('dur').value*1000,oral:true};
   S=null;
-  gridRender();show('grid');
+  show('grid');gridRender();
+}
+/* ---------- Plateau SVG ----------
+   Le plateau est un quadrillage déformé : les sommets intérieurs sont déplacés au hasard et les bords
+   intérieurs dessinés en S. La topologie reste celle de la grille : deux zones voisines (haut, bas,
+   gauche, droite) partagent toujours un bord, deux zones en diagonale seulement un sommet. Le voisinage
+   du dessin est donc exactement celui de gadj. La forme est tirée une fois par partie (G.seed). */
+const GNS='http://www.w3.org/2000/svg';
+const sv=(tag,at,par)=>{const e=document.createElementNS(GNS,tag);for(const k in at)e.setAttribute(k,at[k]);if(par)par.appendChild(e);return e};
+function grng(seed){let s=(seed>>>0)||1;return()=>{s^=s<<13;s^=s>>>17;s^=s<<5;return(s>>>0)/4294967296}}
+function gshape(){
+  if(G.shape)return G.shape;
+  const n=G.size,r=grng(G.seed),J=.2,B=.13,P=[],H=[],V=[];
+  for(let y=0;y<=n;y++){P[y]=[];for(let x=0;x<=n;x++)P[y][x]=[x+(x>0&&x<n?(r()*2-1)*J:0),y+(y>0&&y<n?(r()*2-1)*J:0)]}
+  const bend=inner=>{if(!inner)return[0,0];const a=(r()*2-1)*B;return[a,(r()<.6?-1:1)*a*(.5+r()*.5)]};
+  for(let y=0;y<=n;y++){H[y]=[];for(let x=0;x<n;x++)H[y][x]=bend(y>0&&y<n)}
+  for(let y=0;y<n;y++){V[y]=[];for(let x=0;x<=n;x++)V[y][x]=bend(x>0&&x<n)}
+  return G.shape={P,H,V};
+}
+/* Camaïeu de bleus : une teinte par joueur (couleur de sa case de départ), en alternant foncé et clair
+   comme un damier pour que deux voisins se distinguent. Bornes reprises du décor (#0A1F7A → #1740C8). */
+function gcol(i){
+  const n=G.size,p=(Math.floor(i/n)+i%n)%2,k=Math.floor(i/2);
+  const h=[224,214,232,219,228,210,236,221][k%8],l=p?[41,46,37][k%3]:[21,27,24][k%3];
+  return'hsl('+h+' '+(p?74:80)+'% '+l+'%)';
+}
+let GV=null,gAnimT=null;
+const gctx=document.createElement('canvas').getContext('2d');
+const gmeasure=(t,px,w)=>{gctx.font=w+' '+px+'px Poppins,"DM Sans",system-ui,sans-serif';return gctx.measureText(t).width};
+function gfit(t,px,w,max){
+  if(gmeasure(t,px,w)<=max)return t;
+  let a=0,b=t.length;while(a<b){const m=(a+b+1)>>1;gmeasure(t.slice(0,m).trimEnd()+'…',px,w)<=max?a=m:b=m-1}
+  return t.slice(0,Math.max(1,a)).trimEnd()+'…';
+}
+function gwrap(t,px,w,max,lines){
+  const words=t.split(' '),out=[];let cur='';
+  for(let k=0;k<words.length;k++){
+    const tryL=cur?cur+' '+words[k]:words[k];
+    if(gmeasure(tryL,px,w)<=max||!cur){cur=tryL;continue}
+    if(out.length===lines-1){cur+=' '+words.slice(k).join(' ');break}
+    out.push(cur);cur=words[k];
+  }
+  out.push(cur);
+  return out.map(l=>gfit(l,px,w,max));
+}
+/* Dessin complet du plateau. own(i) donne le propriétaire affiché de la case i (pendant une capture,
+   les cases prises gardent l'ancien propriétaire jusqu'au passage de la vague). */
+function gboardBuild(tg){
+  const box=$('gboard'),n=G.size,{P,H,V}=gshape();
+  const Wd=Math.max(260,Math.round(box.clientWidth||700)),narrow=Wd<560,Ht=Math.round(Wd*(narrow?1.05:.7));
+  const sx=Wd/n,sy=Ht/n,pt=q=>[q[0]*sx,q[1]*sy],f=v=>Math.round(v*10)/10;
+  // Un bord : de A à B, deux points de contrôle décalés perpendiculairement (forme en S).
+  const edge=(A,B,o)=>{const dx=B[0]-A[0],dy=B[1]-A[1],L=Math.hypot(dx,dy)||1,px=-dy/L,py=dx/L;
+    return[A,[A[0]+dx/3+px*o[0],A[1]+dy/3+py*o[0]],[A[0]+2*dx/3+px*o[1],A[1]+2*dy/3+py*o[1]],B].map(pt)};
+  const E=[],cellE=[...Array(n*n)].map(()=>[]);
+  const addE=(c,a,b)=>{const e={c,a,b,d:'M'+c[0].map(f)+'C'+c[1].map(f)+' '+c[2].map(f)+' '+c[3].map(f)};E.push(e);if(a>=0)cellE[a].push(e);if(b>=0)cellE[b].push(e);return e};
+  const hE=[],vE=[];
+  for(let y=0;y<=n;y++){hE[y]=[];for(let x=0;x<n;x++)hE[y][x]=addE(edge(P[y][x],P[y][x+1],H[y][x]),y>0?(y-1)*n+x:-1,y<n?y*n+x:-1)}
+  for(let y=0;y<n;y++){vE[y]=[];for(let x=0;x<=n;x++)vE[y][x]=addE(edge(P[y][x],P[y+1][x],V[y][x]),x>0?y*n+x-1:-1,x<n?y*n+x:-1)}
+  const seg=(e,rev)=>{const c=rev?[...e.c].reverse():e.c;return'C'+c[1].map(f)+' '+c[2].map(f)+' '+c[3].map(f)};
+  const cells=G.cells.map((_,i)=>{
+    const y=Math.floor(i/n),x=i%n,co=[P[y][x],P[y][x+1],P[y+1][x+1],P[y+1][x]].map(pt);
+    return{d:'M'+co[0].map(f)+seg(hE[y][x])+seg(vE[y][x+1])+seg(hE[y+1][x],1)+seg(vE[y][x],1)+'Z',
+      cx:co.reduce((a,q)=>a+q[0],0)/4,cy:co.reduce((a,q)=>a+q[1],0)/4};
+  });
+  box.textContent='';
+  const svg=sv('svg',{viewBox:'-6 -6 '+(Wd+12)+' '+(Ht+12),role:'group','aria-label':'Plateau de jeu'},box);
+  const defs=sv('defs',{},svg);
+  const glow=sv('filter',{id:'gglow',x:'-20%',y:'-20%',width:'140%',height:'140%'},defs);
+  sv('feGaussianBlur',{stdDeviation:'4',result:'b'},glow);
+  const fm=sv('feMerge',{},glow);sv('feMergeNode',{in:'b'},fm);sv('feMergeNode',{in:'SourceGraphic'},fm);
+  const lg=sv('linearGradient',{id:'gsheen',x1:0,y1:0,x2:0,y2:1},defs);
+  sv('stop',{offset:0,'stop-color':'#AFC4FF','stop-opacity':.22},lg);sv('stop',{offset:.45,'stop-color':'#AFC4FF','stop-opacity':0},lg);
+  sv('stop',{offset:1,'stop-color':'#03040E','stop-opacity':.25},lg);
+  sv('rect',{x:-4,y:-4,width:Wd+8,height:Ht+8,rx:6,fill:'#03040E',stroke:'#9DB8FF','stroke-opacity':.5,'stroke-width':2,filter:'url(#gglow)'},svg);
+  const gz=sv('g',{},svg),gsh=sv('rect',{x:0,y:0,width:Wd,height:Ht,fill:'url(#gsheen)','pointer-events':'none'},svg);
+  const gan=sv('g',{'pointer-events':'none'},svg),ge=sv('g',{},svg),go=sv('g',{filter:'url(#gglow)'},svg),gt=sv('g',{},svg),gl=sv('g',{},svg);
+  const zones=cells.map((c,i)=>{
+    const isT=tg.includes(i),z=sv('path',{d:c.d,class:'gz'+(isT?' t':''),'data-i':i},gz);
+    if(isT){
+      z.setAttribute('tabindex','0');z.setAttribute('role','button');
+      const pick=()=>{G.sel=G.sel===i?null:i;gridRender();const again=GV&&GV.zones[i];if(again)again.focus()};
+      z.addEventListener('click',pick);
+      z.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();pick()}});
+      const o=sv('path',{d:c.d,class:'gt'+(G.sel===i?' sel':'')},gt);
+      z.addEventListener('focus',()=>o.classList.add('foc'));z.addEventListener('blur',()=>o.classList.remove('foc'));
+    }
+    return z;
+  });
+  E.forEach(e=>{e.el=sv('path',{d:e.d,class:'ge'},ge);e.ol=sv('path',{d:e.d,class:'go'},go)});
+  GV={svg,zones,cells,E,cellE,gan,gl,gt,Wd,Ht,sx,sy,narrow};
+}
+// Couleurs, frontières, contour de l'attaquant et étiquettes, d'après own(i).
+function gpaint(own){
+  const V0=GV,n=G.size;
+  V0.zones.forEach((z,i)=>z.setAttribute('fill',gcol(own(i))));
+  V0.E.forEach(e=>{
+    const oa=e.a<0?-1:own(e.a),ob=e.b<0?-1:own(e.b);
+    e.el.setAttribute('class','ge '+(e.a<0||e.b<0?'bd':oa===ob?'in':'fr'));
+    e.ol.classList.toggle('on',!G.over&&(oa===G.ch)!==(ob===G.ch));
+  });
+  // Étiquettes : nom du joueur dans la case la plus centrale de son territoire, catégorie dans chaque case.
+  V0.gl.textContent='';
+  const terr={};G.cells.forEach((_,i)=>{(terr[own(i)]=terr[own(i)]||[]).push(i)});
+  const home={};
+  for(const o in terr){
+    const L=terr[o],mx=L.reduce((a,i)=>a+V0.cells[i].cx,0)/L.length,my=L.reduce((a,i)=>a+V0.cells[i].cy,0)/L.length;
+    home[o]=L.reduce((b,i)=>Math.hypot(V0.cells[i].cx-mx,V0.cells[i].cy-my)<Math.hypot(V0.cells[b].cx-mx,V0.cells[b].cy-my)?i:b,L[0]);
+  }
+  const ch=V0.sy,cw=V0.sx,max=cw*.82;
+  G.cells.forEach((c,i)=>{
+    const o=own(i),isH=home[o]===i,k=terr[o].length;
+    const cp=Math.max(11,Math.min(15,ch*.1)),cat=gwrap(DATA[c.cat].label,cp,500,max,2);
+    // Nom : plus grand quand le territoire grandit, réduit jusqu'à 11 px pour tenir dans la case, puis tronqué.
+    let np=Math.max(13,Math.min(22,ch*.15))*Math.min(1.35,1+.08*(k-1)),nm=null;
+    if(isH){const full=G.players[o].name;while(np>11&&gmeasure(full,np,700)>max)np-=.5;nm=gfit(full,np,700,max)}
+    const tot=(nm?np*1.15+4:0)+cat.length*cp*1.2;let y=V0.cells[i].cy-tot/2;
+    const t=sv('text',{class:'gl','stroke-width':nm?4:3.5},V0.gl);
+    if(nm){sv('tspan',{x:f1(V0.cells[i].cx),y:f1(y+np*.9),class:'gn','font-size':f1(np)},t).textContent=nm;y+=np*1.15+4}
+    cat.forEach(l=>{sv('tspan',{x:f1(V0.cells[i].cx),y:f1(y+cp*.95),class:'gc','font-size':f1(cp)},t).textContent=l;y+=cp*1.2});
+    V0.zones[i].setAttribute('aria-label',G.players[o].name+', '+DATA[c.cat].label+(V0.zones[i].classList.contains('t')?', case à attaquer':''));
+  });
+}
+const f1=v=>Math.round(v*10)/10;
+/* Capture : une vague de la couleur du gagnant part du bord où s'est joué le duel et recouvre les cases
+   prises, puis les frontières intérieures s'effacent. Sans animation si « animations réduites ». */
+function gcapture(A){
+  const V0=GV,reduce=matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const fin=()=>{gAnimT=null;if(GV!==V0)return;V0.gan.textContent='';V0.gt.classList.remove('wait');gpaint(i=>G.cells[i].owner)};
+  if(reduce||!A.cells.length)return fin();
+  const sh=V0.E.find(e=>(e.a===A.from[0]&&e.b===A.from[1])||(e.a===A.from[1]&&e.b===A.from[0]));
+  const ox=sh?(sh.c[0][0]+sh.c[3][0])/2:V0.cells[A.cells[0]].cx,oy=sh?(sh.c[0][1]+sh.c[3][1])/2:V0.cells[A.cells[0]].cy;
+  let R=0;A.cells.forEach(i=>{const c=V0.cells[i];R=Math.max(R,Math.hypot(c.cx-ox,c.cy-oy)+Math.hypot(V0.sx,V0.sy)*.75)});
+  const cp=sv('clipPath',{id:'gcap'},V0.svg.querySelector('defs'));
+  A.cells.forEach(i=>sv('path',{d:V0.cells[i].d},cp));
+  const g=sv('g',{'clip-path':'url(#gcap)'},V0.gan),col=gcol(A.to);
+  const disc=sv('circle',{cx:f1(ox),cy:f1(oy),r:0,fill:col},g);
+  const ring=sv('circle',{cx:f1(ox),cy:f1(oy),r:0,fill:'none',stroke:'#EAF0FF','stroke-width':10,filter:'url(#gglow)'},g);
+  V0.gt.classList.add('wait');
+  const dur=Math.min(1500,650+130*A.cells.length),t0=performance.now();
+  snd('capture');
+  const step=now=>{
+    if(GV!==V0)return;
+    const p=Math.max(0,Math.min(1,(now-t0)/dur)),e=1-Math.pow(1-p,3),r=f1(R*e);
+    disc.setAttribute('r',r);ring.setAttribute('r',r);ring.setAttribute('stroke-opacity',f1(1-p*p));
+    if(p<1){gAnimT=requestAnimationFrame(step);return}
+    // Les cases prennent leur nouvelle couleur sous la vague, puis la vague disparaît.
+    V0.zones.forEach((z,i)=>{if(A.cells.includes(i)){z.style.transition='none';z.setAttribute('fill',col);z.getBoundingClientRect();z.style.transition=''}});
+    fin();
+  };
+  gAnimT=requestAnimationFrame(step);
 }
 function gbtn(txt,cls,fn){const b=document.createElement('button');b.type='button';b.textContent=txt;if(cls)b.className=cls;b.onclick=fn;return b}
 function gridRender(){
-  const alive=G.players.filter(p=>p.alive).length,tg=G.over?[]:gtargets(),won=G.last;G.last=[];
+  const alive=G.players.filter(p=>p.alive).length,tg=G.over?[]:gtargets();
   $('gtitle').textContent=G.over?G.players[G.ch].name+' remporte la partie !':G.players[G.ch].name+' choisit son adversaire';
-  $('ghint').textContent=G.over?'Toutes les cases lui appartiennent.':'Case(s) de '+G.players[G.ch].name+' : cadre blanc. Cases à attaquer : cadre jaune.';
-  const board=$('gboard');board.style.gridTemplateColumns='repeat('+G.size+',minmax(0,1fr))';board.textContent='';
-  G.cells.forEach((c,i)=>{
-    const own=G.players[c.owner],cat=DATA[c.cat].label,isT=tg.includes(i);
-    const b=document.createElement('button'),nm=document.createElement('span'),ct=document.createElement('span');
-    b.type='button';b.className='gcell'+(c.owner===G.ch?' mine':'')+(isT?' target':'')+(G.sel===i?' sel':'')+(won.includes(i)?' won':'');
-    b.style.setProperty('--gc',gcol(c.owner));b.style.setProperty('--gh',gcolHi(c.owner));
-    nm.className='gn';nm.textContent=own.name;ct.className='gc';ct.textContent=cat;b.append(nm,ct);
-    b.setAttribute('aria-label',own.name+', '+cat+(isT?', case à attaquer':''));
-    b.tabIndex=isT?0:-1;
-    b.onclick=()=>{if(!isT)return;G.sel=G.sel===i?null:i;gridRender()};
-    board.appendChild(b);
-  });
+  $('ghint').textContent=G.over?'Toutes les cases lui appartiennent.':'Territoire de '+G.players[G.ch].name+' : contour blanc. Cases à attaquer : pointillés jaunes.';
+  if(gAnimT){cancelAnimationFrame(gAnimT);gAnimT=null}
+  const A=G.anim;G.anim=null;
+  gboardBuild(tg);
+  gpaint(A?i=>A.cells.includes(i)?A.old:G.cells[i].owner:i=>G.cells[i].owner);
+  if(A)gcapture(A);
   const p=$('gpanel');p.textContent='';
   if(G.over){
     p.append(gbtn('Nouvelle partie','',()=>show('setup')));
@@ -483,7 +634,7 @@ function gridRender(){
     t.textContent=a.name+' défie '+d.name+' en « '+DATA[c.cat].label+' ».';
     p.append(t,gbtn('Lancer le duel','',startGridDuel),gbtn('Changer d’adversaire','alt',()=>{G.sel=null;gridRender()}));
   }else{
-    const t=document.createElement('p');t.textContent='Touchez une case à cadre jaune pour défier son joueur.';p.append(t);
+    const t=document.createElement('p');t.textContent='Touchez une case en pointillés jaunes pour défier son joueur.';p.append(t);
   }
   $('gstat').textContent=alive+' joueur'+(alive>1?'s':'')+' en lice';
 }
@@ -492,17 +643,23 @@ function startGridDuel(){
   startDuel({names:[G.players[a].name,G.players[d].name],pid:[a,d],src:cat.items,cat:cat.label,T:G.T,oral:G.oral});
 }
 function gridAfterDuel(){
-  const w=S.winP,l=S.loseP;
-  G.cells.forEach((c,i)=>{if(c.owner===l){c.owner=w;G.last.push(i)}});
+  const w=S.winP,l=S.loseP,a=G.ch,sel=G.sel,cells=[];
+  // Bord du duel : entre la case défendue et une case voisine de l'attaquant (départ de la vague de capture).
+  const nb=sel==null?-1:G.cells.findIndex((c,j)=>c.owner===a&&gadj(G.size,sel,j));
+  G.cells.forEach((c,i)=>{if(c.owner===l){c.owner=w;cells.push(i)}});
+  G.anim={cells,old:l,to:w,from:[sel,nb]};
   G.players[l].alive=false;G.ch=w;G.sel=null;
   G.over=G.players.filter(p=>p.alive).length===1;
-  gridRender();show('grid');
+  show('grid');gridRender();
 }
 $('wback').onclick=()=>{
   if(!S||!S.pid||S.started||S.counting)return;
-  S.over=true;push();G.sel=null;gridRender();show('grid');
+  S.over=true;push();G.sel=null;show('grid');gridRender();
 };
 $('gquit').onclick=()=>show('setup');
+// Le plateau est dessiné à la largeur réelle de l'écran : on le redessine si elle change, et une fois la police chargée.
+{let rt=0,lw=0;addEventListener('resize',()=>{clearTimeout(rt);rt=setTimeout(()=>{const w=$('gboard').clientWidth;if(G&&!$('grid').hidden&&!gAnimT&&w!==lw){lw=w;gridRender()}},150)})}
+if(document.fonts&&document.fonts.ready)document.fonts.ready.then(()=>{if(G&&!$('grid').hidden&&!gAnimT)gridRender()});
 $('newcode').onclick=()=>{
   if(!S||!S.oral||S.started||S.counting)return;
   resetLink();S.link=null;$('code').textContent='…';$('go').disabled=true;

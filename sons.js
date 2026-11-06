@@ -1,7 +1,7 @@
 /* Sons du jeu « Sur le carreau » : tous synthétisés avec la Web Audio API (aucun fichier audio, aucun droit à gérer).
  *
- * API : SLC_SND.play('beep' | 'go' | 'good' | 'pass' | 'end'), SLC_SND.enabled(), SLC_SND.toggle().
- *  - beep : bip du compte à rebours 3-2-1 ; go : départ ; good : bonne réponse ; pass : « passé » ; end : fin de temps.
+ * API : SLC_SND.play('beep' | 'go' | 'good' | 'pass' | 'end' | 'capture'), SLC_SND.enabled(), SLC_SND.toggle().
+ *  - beep : bip du compte à rebours 3-2-1 ; go : départ ; good : bonne réponse ; pass : « passé » ; end : fin de temps ; capture : prise de territoire sur le plateau.
  * Réglage retenu dans localStorage (clé « slc-sons », « 1 » ou « 0 »). Sans réglage : actif, sauf en mode sérieux.
  * Le navigateur n'autorise le son qu'après un geste : le contexte audio est réveillé au premier clic ou à la première touche.
  * Un petit bouton 🔊/🔇 (en haut à droite) permet de couper les sons ; il n'apparaît pas sur la vue arbitre.
@@ -30,6 +30,7 @@
     go:c=>{note(c,'sine',988,0,0,0.12,0.28);note(c,'sine',1319,0,0.12,0.4,0.28)},
     good:c=>{note(c,'triangle',784,0,0,0.12,0.3);note(c,'triangle',1175,0,0.1,0.28,0.3)},
     pass:c=>{note(c,'sawtooth',260,150,0,0.3,0.18)},
+    capture:c=>{note(c,'sawtooth',220,880,0,0.45,0.07);note(c,'triangle',523,0,0.3,0.45,0.22);note(c,'triangle',659,0,0.38,0.45,0.2);note(c,'triangle',784,0,0.46,0.7,0.22)},
     end:c=>{note(c,'square',150,70,0,0.9,0.2);note(c,'sawtooth',100,50,0,0.9,0.15)}
   };
   function play(name){

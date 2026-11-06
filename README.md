@@ -21,7 +21,7 @@ Dépôt → **Settings** → **Pages** → *Build and deployment* : source **Dep
 
 ## Grille de territoires
 
-Mode par défaut au départ (l'autre choix est « Duel à deux »). Taille 2×2, 3×3 ou 4×4 (4×4 par défaut) : un joueur par case, chaque case a sa catégorie. Le duel se joue dans la catégorie de la case défendue ; le perdant est éliminé et le gagnant prend toutes ses cases. Le gagnant choisit ensuite une case voisine (haut, bas, gauche, droite) à défier. Le dernier joueur en lice gagne. En mode arbitre, l'arbitre voit la catégorie du duel ; le choix de la case se fait sur l'écran du jeu.
+Mode par défaut au départ (l'autre choix est « Duel à deux »). Taille 2×2, 3×3 ou 4×4 (4×4 par défaut) : un joueur par case, chaque case a sa catégorie. Le duel se joue dans la catégorie de la case défendue ; le perdant est éliminé et le gagnant prend toutes ses cases. Le gagnant choisit ensuite une case voisine (haut, bas, gauche, droite) à défier. Le dernier joueur en lice gagne. Le plateau est dessiné en SVG : zones aux bords irréguliers (tirés au hasard à chaque partie), camaïeu de bleus, vague de couleur quand un territoire est capturé. Les cases à attaquer se choisissent aussi au clavier (Tab puis Entrée). En mode arbitre, l'arbitre voit la catégorie du duel ; le choix de la case se fait sur l'écran du jeu.
 
 ## Contenu
 
@@ -53,6 +53,6 @@ docs/contexte-projet.md    règles, décisions, direction visuelle, plan
 3. Grille de territoires et conquête — fait (à essayer avec de vrais appareils)
 4. Mode solo / défi
 5. Multijoueur en ligne (Node.js + Socket.IO)
-6. Finitions : sons, animations, mobile, réponse vocale
+6. Finitions : sons, animations, mobile, réponse vocale (sons et plateau SVG faits)
 
 Détails dans [`docs/contexte-projet.md`](docs/contexte-projet.md).
