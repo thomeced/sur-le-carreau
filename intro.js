@@ -136,6 +136,8 @@
     const q=new URLSearchParams(location.search).get('mode');
     if(q==='serieux'||q==='sérieux'){serious();return skipAll()}   // lien direct : ?mode=serieux
     if(q==='funky'){return build()}                                  // lien direct : ?mode=funky (le son suit le dernier choix)
+    // Retour depuis l'éditeur de catégories : pas d'écran de lancement ni d'intro, on garde le dernier mode.
+    try{if(sessionStorage.getItem('slc-retour')){sessionStorage.removeItem('slc-retour');if(getMode()==='serieux')serious();return skipAll()}}catch(e){}
     cssReady.then(launchScreen,skipAll);
   }
   if(document.body)begin();else document.addEventListener('DOMContentLoaded',begin,{once:true});

@@ -38,11 +38,22 @@ Tout se passe dans `categories.js`, sans toucher au jeu : copier une ligne et la
 
 Une catégorie est un bloc `clé: { label: "Nom affiché", items: [ … ] }`. Une ligne mal écrite est ignorée, avec un avertissement dans la console du navigateur (F12).
 
+### Mes catégories (éditeur)
+
+Le bouton « ✏️ Créer mes catégories » de l'écran de départ ouvre `editeur.html`, pensé pour les enfants : on nomme la catégorie, on choisit le jeu, puis on ajoute les éléments un par un.
+
+- **Mot à trous** : on écrit des mots (plusieurs d'un coup, séparés par des virgules) ; le jeu cache des lettres au hasard, davantage quand le niveau monte.
+- **Photos** : on prend ou choisit des photos, puis on écrit ce qu'elles montrent.
+
+Une catégorie apparaît dans le jeu (avec la mention « perso ») dès 5 éléments. Tout est enregistré dans le navigateur de l'appareil (catégories dans `localStorage`, photos dans IndexedDB) ; l'« Espace parents » permet de sauvegarder dans un fichier et de restaurer ce fichier sur un autre appareil. Pendant le duel, la page arbitre affiche le type de jeu et la consigne à annoncer aux candidats.
+
 ## Structure
 
 ```
 index.html                 le jeu (HTML, CSS, JS)
 categories.js              les catégories et leurs images : le fichier à modifier pour ajouter du contenu
+editeur.html               l'éditeur « Mes catégories » (mots à trous, photos)
+perso.js                   types de jeu, mot à trous, enregistrement des catégories perso (jeu + éditeur)
 docs/contexte-projet.md    règles, décisions, direction visuelle, plan
 ```
 

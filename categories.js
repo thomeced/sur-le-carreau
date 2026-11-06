@@ -7,6 +7,12 @@
  *     ni des articles (le, la, un…) ; la première est celle affichée à l'arbitre ;
  *   - niveau : 1 facile, 2 moyen, 3 difficile (la difficulté monte au fil du duel).
  * Pour ajouter une catégorie : copier un bloc « clé: { label, items } » ci-dessous.
+ * Types de catégorie (champ « type », facultatif) :
+ *   - "emoji" (par défaut) : les lignes ci-dessus ;
+ *   - "trous" (mot à trous) : items: ["vache", "cochon|cochons", ["hippopotame", 3]] ; le jeu cache des
+ *     lettres au hasard, niveau calculé d'après la longueur si on ne le donne pas ;
+ *   - "photo" : items: [["assets/photos/velo.jpg", "vélo", 1]] (adresse de l'image, réponses, niveau).
+ * Les catégories créées avec editeur.html restent dans le navigateur (voir perso.js), pas dans ce fichier.
  * Une ligne mal écrite est ignorée (avertissement dans la console du navigateur).
  */
 const CATEGORIES = {

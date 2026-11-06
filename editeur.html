@@ -1,0 +1,296 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Mes catégories · Sur le carreau</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Poppins:wght@500;600;700&family=DM+Sans:wght@400;600;700&display=swap">
+<style>
+:root{--disp:'Poppins','DM Sans',system-ui,sans-serif;--sky:#03040E;--tile:rgba(8,14,52,.92);--ink:#F4F6FF;--p1:#FFC53D;--p2:#5CE1FF;--ok:#3DDC97;--ko:#FF6B6B;--line:rgba(255,255,255,.22);color-scheme:dark}
+*,*::before,*::after{box-sizing:border-box}
+html,body{margin:0;min-height:100%}
+body{background:radial-gradient(ellipse 80% 40% at 50% 0,rgba(60,90,220,.35),transparent 70%),var(--sky);background-attachment:fixed;color:var(--ink);font:400 17px/1.5 'DM Sans',system-ui,sans-serif;padding:env(safe-area-inset-top,0px) 0 env(safe-area-inset-bottom,0px)}
+[hidden]{display:none!important}
+main{max-width:720px;margin:0 auto;padding:14px 16px 48px}
+h1{font:700 clamp(1.8rem,7vw,2.6rem)/1.15 var(--disp);margin:10px 0 6px}
+h2{font:700 1.25rem/1.3 var(--disp);margin:22px 0 8px}
+p{margin:6px 0}
+.lead{margin:0 0 18px;opacity:.9}
+.panel{background:var(--tile);border:2px solid var(--line);border-radius:8px;padding:16px;margin:12px 0}
+label{display:grid;gap:6px;font:600 1rem/1.3 var(--disp)}
+input,button{font:inherit;color:inherit}
+input[type=text],input:not([type]){background:#050A2C;border:2px solid var(--line);border-radius:6px;padding:12px 14px;font-size:1.15rem;min-width:0;width:100%}
+input:focus-visible,button:focus-visible,a:focus-visible,.choice:focus-within,.filebtn:focus-within{outline:3px solid var(--p1);outline-offset:2px}
+button,.filebtn{cursor:pointer;border:0;border-radius:6px;padding:13px 20px;font:700 1.05rem/1.2 var(--disp);background:var(--p1);color:#101B4D;min-height:48px}
+button.alt{background:transparent;border:2px solid var(--line);color:var(--ink)}
+button.ko{background:var(--ko);color:#2A0606}
+button:disabled{opacity:.45;cursor:not-allowed}
+.big{display:flex;width:100%;justify-content:center;align-items:center;gap:10px;font-size:1.2rem;padding:18px;margin:12px 0}
+.lk{display:inline-block;color:var(--ink);text-decoration:none;font:600 1rem/1.4 var(--disp);border:2px solid var(--line);border-radius:6px;padding:8px 14px;background:transparent;min-height:0}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+.cards{display:grid;gap:10px}
+.ccard{display:grid;grid-template-columns:auto 1fr auto;align-items:center;gap:12px;width:100%;text-align:left;background:var(--tile);border:2px solid var(--line);color:var(--ink);padding:14px 16px}
+.ccard .ic{font-size:1.8rem}
+.ccard b{display:block;font-size:1.1rem;overflow-wrap:anywhere}
+.ccard small{font:500 .9rem/1.3 'DM Sans',sans-serif;opacity:.85}
+.st{font:600 .85rem/1.2 var(--disp);border-radius:99px;padding:4px 10px;white-space:nowrap}
+.st.ok{background:rgba(61,220,151,.18);color:var(--ok)}
+.st.wait{background:rgba(255,197,61,.16);color:var(--p1)}
+.empty{opacity:.8;font-style:italic}
+fieldset{border:0;padding:0;margin:16px 0 0;display:grid;gap:10px}
+legend{font:600 1rem/1.3 var(--disp);margin-bottom:8px;padding:0}
+.choice{display:grid;grid-template-columns:auto 1fr;gap:2px 14px;align-items:center;background:#050A2C;border:2px solid var(--line);border-radius:8px;padding:14px;cursor:pointer;font:400 .98rem/1.4 'DM Sans',sans-serif}
+.choice input{position:absolute;opacity:0}
+.choice .ci{grid-row:span 2;font-size:2.2rem}
+.choice b{font:700 1.15rem/1.2 var(--disp)}
+.choice .ex{grid-column:1/-1;margin-top:6px}
+.choice:has(input:checked){border-color:var(--p1);box-shadow:0 0 0 3px rgba(255,197,61,.3)}
+.row{display:flex;gap:10px;flex-wrap:wrap;align-items:end}
+.row>label{flex:1 1 220px}
+.hint{font-size:.92rem;opacity:.85}
+.badge{display:inline-block;background:rgba(92,225,255,.14);color:var(--p2);font:600 .95rem/1.3 var(--disp);border-radius:99px;padding:4px 12px;margin:6px 0}
+.prog .bar{height:10px;border-radius:99px;background:rgba(255,255,255,.12);overflow:hidden}
+.prog i{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--p1),var(--ok));transition:width .3s}
+.prog p{font-weight:600}
+.prev{background:linear-gradient(#0B1B7E,#13309F);border:3px solid #9DB8FF;border-radius:6px;margin-top:10px;min-height:20px}
+.prevlbl{font-size:.9rem;opacity:.8;margin-top:10px}
+.items{list-style:none;padding:0;margin:0;display:grid;gap:8px}
+.items.mots li{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.3fr) auto;align-items:center;gap:10px;background:var(--tile);border:2px solid var(--line);border-radius:8px;padding:8px 10px}
+.items.mots .w{font:600 1.05rem/1.3 var(--disp);overflow-wrap:anywhere}
+.items.mots .mini{min-width:0}
+.items.photos{grid-template-columns:repeat(auto-fill,minmax(150px,1fr))}
+.items.photos li{background:var(--tile);border:2px solid var(--line);border-radius:8px;padding:8px;display:grid;gap:6px;position:relative}
+.items.photos img{width:100%;aspect-ratio:1;object-fit:cover;border-radius:4px;background:#050A2C}
+.items.photos input{font-size:1rem;padding:8px 10px}
+.x{min-height:40px;min-width:40px;padding:6px 10px;background:transparent;border:2px solid var(--line);color:var(--ink);font-size:1rem}
+.items.photos .x{position:absolute;top:12px;right:12px;background:rgba(3,4,14,.75)}
+#pq img{display:block;max-width:100%;max-height:50vh;margin:8px auto;border-radius:6px}
+.msg{font-weight:600;min-height:1.5em}
+.msg.ok{color:var(--ok)}.msg.ko{color:var(--ko)}
+.danger{margin-top:28px;display:flex;flex-wrap:wrap;gap:10px;align-items:center}
+details.panel summary{cursor:pointer;font:600 1rem/1.4 var(--disp)}
+details .row{margin-top:10px}
+@media(prefers-reduced-motion:reduce){.prog i{transition:none}}
+</style>
+</head>
+<body>
+<main>
+<a href="index.html" class="lk" id="back">← Retour au jeu</a>
+
+<section id="home">
+  <h1>Mes catégories</h1>
+  <p class="lead">Crée tes propres catégories pour le jeu : des mots à trous ou des photos. Elles apparaissent dans le jeu dès <span class="min"></span> éléments, avec la mention « perso ».</p>
+  <div id="list" class="cards"></div>
+  <button type="button" class="big" id="new">＋ Nouvelle catégorie</button>
+  <details class="panel" id="parents">
+    <summary>Espace parents : sauvegarder ou changer d’appareil</summary>
+    <p class="hint">Les catégories sont enregistrées dans ce navigateur, sur cet appareil. Pour les retrouver ailleurs ou les mettre à l’abri, sauvegarde-les dans un fichier, puis restaure ce fichier sur l’autre appareil.</p>
+    <div class="row">
+      <button type="button" id="exp">Sauvegarder dans un fichier</button>
+      <label class="filebtn alt" style="background:transparent;border:2px solid var(--line);color:var(--ink)">Restaurer un fichier<input type="file" id="imp" accept=".json,application/json" class="sr"></label>
+    </div>
+    <p id="pmsg" class="msg" role="status"></p>
+  </details>
+</section>
+
+<section id="create" hidden>
+  <h1>Nouvelle catégorie</h1>
+  <form id="cform" class="panel" autocomplete="off">
+    <label>Comment s’appelle ta catégorie ?<input id="cname" maxlength="40" placeholder="Par exemple : Ma chambre"></label>
+    <fieldset>
+      <legend>Quel jeu ?</legend>
+      <label class="choice"><input type="radio" name="ctype" value="trous" checked><span class="ci">🔤</span><b>Mot à trous</b><span>Tu écris des mots, le jeu cache des lettres.</span><span class="ex prev" id="extrous"></span></label>
+      <label class="choice"><input type="radio" name="ctype" value="photo"><span class="ci">📷</span><b>Photos</b><span>Tu prends des photos, les joueurs disent ce que c’est.</span></label>
+    </fieldset>
+    <p id="cmsg" class="msg ko" role="alert"></p>
+    <button type="submit" class="big">Créer la catégorie</button>
+    <button type="button" class="alt" id="ccancel">Annuler</button>
+  </form>
+</section>
+
+<section id="edit" hidden>
+  <button type="button" class="lk" id="eback">← Mes catégories</button>
+  <div class="panel">
+    <label>Nom de la catégorie<input id="ename" maxlength="40"></label>
+    <p class="badge" id="etype"></p>
+    <div class="prog" id="prog"><div class="bar"><i></i></div><p></p></div>
+  </div>
+
+  <div id="addmot" class="panel" hidden>
+    <form id="mform" class="row" autocomplete="off">
+      <label>Écris un mot<input id="mot" placeholder="Par exemple : girafe" autocapitalize="off" spellcheck="false" enterkeyhint="done"></label>
+      <button type="submit">Ajouter</button>
+    </form>
+    <p class="hint">Astuce : tu peux en écrire plusieurs d’un coup, séparés par des virgules.</p>
+    <p class="prevlbl" id="mprevl" hidden>Ce que verront les joueurs (les trous changent à chaque fois) :</p>
+    <div id="mprev" class="prev" hidden></div>
+    <p id="mmsg" class="msg" role="status"></p>
+  </div>
+
+  <div id="addpho" class="panel" hidden>
+    <label class="filebtn big" id="pbtn">📷 Prendre ou choisir des photos<input type="file" id="pfile" accept="image/*" multiple class="sr"></label>
+    <div id="pq" hidden>
+      <p id="pqn" class="hint"></p>
+      <img id="pqimg" alt="Photo à nommer">
+      <form id="pform" autocomplete="off">
+        <label>Qu’est-ce que c’est ?<input id="pans" placeholder="Par exemple : mon vélo" autocapitalize="off" spellcheck="false" enterkeyhint="done"></label>
+        <div class="row" style="margin-top:10px"><button type="submit">Ajouter</button><button type="button" class="alt" id="pskip">Passer cette photo</button></div>
+      </form>
+    </div>
+    <p id="phmsg" class="msg" role="status"></p>
+  </div>
+
+  <h2 id="ihead"></h2>
+  <ul id="items" class="items"></ul>
+
+  <div class="danger">
+    <button type="button" class="alt" id="del">Supprimer la catégorie</button>
+    <span id="delc" hidden>Supprimer pour de bon ? <button type="button" class="ko" id="dely">Oui, supprimer</button> <button type="button" class="alt" id="deln">Non</button></span>
+  </div>
+</section>
+</main>
+
+<script src="perso.js"></script>
+<script>
+const P=window.SLC_PERSO,$=id=>document.getElementById(id),GOAL=20;
+let cats=P.list(),cur=null,queue=[],pending=null,pendUrl=null;
+document.querySelectorAll('.min').forEach(e=>e.textContent=P.MIN);
+P.persist();
+const norm=s=>String(s).toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g,'').replace(/\s+/g,' ').trim();
+const el=(tag,cls,txt)=>{const e=document.createElement(tag);if(cls)e.className=cls;if(txt!=null)e.textContent=txt;return e};
+const save=()=>{try{P.save(cats);return true}catch(e){flash($(cur&&cur.type==='photo'?'phmsg':'mmsg'),'ko','Impossible d’enregistrer : plus de place sur cet appareil.');return false}};
+const plural=(n,t)=>n+' '+(t==='photo'?(n>1?'photos':'photo'):(n>1?'mots':'mot'));
+function flash(e,cls,txt){e.className='msg '+cls;e.textContent=txt;clearTimeout(e._t);e._t=setTimeout(()=>{e.textContent=''},3500)}
+function view(id){['home','create','edit'].forEach(x=>$(x).hidden=x!==id);$('back').hidden=id!=='home';scrollTo(0,0)}
+
+// ---------- Accueil ----------
+function home(){
+  cats=P.list();const box=$('list');box.textContent='';
+  if(!cats.length)box.appendChild(el('p','empty','Aucune catégorie pour l’instant. Crée la première !'));
+  cats.forEach(c=>{
+    const n=(c.items||[]).length,ok=n>=P.MIN,b=el('button','ccard');b.type='button';
+    const mid=el('span');mid.append(el('b',null,c.label||'Sans nom'),el('small',null,(P.TYPES[c.type]||{}).nom+' · '+plural(n,c.type)));
+    b.append(el('span','ic',(P.TYPES[c.type]||{}).icone||'❔'),mid,el('span','st '+(ok?'ok':'wait'),ok?'Prête à jouer':'Encore '+(P.MIN-n)));
+    b.onclick=()=>edit(c.id);box.appendChild(b);
+  });
+  view('home');
+}
+$('new').onclick=()=>{$('cname').value='';$('cmsg').textContent='';view('create');exTrous();$('cname').focus()};
+$('ccancel').onclick=home;
+function exTrous(){P.renderMot($('extrous'),'G_RA_E')}
+$('cform').onsubmit=e=>{
+  e.preventDefault();
+  const label=$('cname').value.trim(),type=new FormData($('cform')).get('ctype');
+  if(!label){$('cmsg').textContent='Donne un nom à ta catégorie.';$('cname').focus();return}
+  const c={id:P.newId(),label,type,items:[]};cats.push(c);if(!save())return cats.pop();
+  edit(c.id);
+};
+
+// ---------- Une catégorie ----------
+function edit(id){
+  cats=P.list();cur=cats.find(c=>c.id===id);if(!cur)return home();
+  $('ename').value=cur.label;$('etype').textContent=(P.TYPES[cur.type].icone)+' '+P.TYPES[cur.type].nom;
+  $('addmot').hidden=cur.type!=='trous';$('addpho').hidden=cur.type!=='photo';
+  $('mmsg').textContent=$('phmsg').textContent='';$('mprev').hidden=$('mprevl').hidden=true;
+  $('delc').hidden=true;$('del').hidden=false;endQueue();
+  view('edit');items();
+  if(cur.type==='trous')$('mot').focus();
+}
+$('eback').onclick=home;
+$('ename').onchange=()=>{const v=$('ename').value.trim();if(!v){$('ename').value=cur.label;return}cur.label=v;save()};
+function progress(){
+  const n=cur.items.length,p=$('prog');
+  p.querySelector('i').style.width=Math.min(100,n/GOAL*100)+'%';
+  p.querySelector('p').textContent=n<P.MIN?'Encore '+(P.MIN-n)+' avant de pouvoir jouer avec cette catégorie.':n<GOAL?'Elle est prête à jouer ! Avec '+GOAL+' ou plus, c’est encore mieux.':'Super, elle est prête à jouer !';
+  $('ihead').textContent=cur.type==='photo'?'Les photos ('+n+')':'Les mots ('+n+')';
+}
+function items(){
+  const ul=$('items');ul.textContent='';ul.className='items '+(cur.type==='photo'?'photos':'mots');
+  progress();
+  if(!cur.items.length){ul.appendChild(el('li','empty',cur.type==='photo'?'Pas encore de photo.':'Pas encore de mot.'));return}
+  // Les plus récents en premier.
+  [...cur.items].reverse().forEach(it=>{
+    const li=el('li'),x=el('button','x','✕');x.type='button';x.setAttribute('aria-label','Retirer « '+it.a+' »');
+    x.onclick=()=>{cur.items=cur.items.filter(y=>y!==it);save();if(it.id)P.delPhoto(it.id).catch(()=>{});items()};
+    if(cur.type==='trous'){
+      const mini=el('div','mini prev');li.append(el('span','w',it.a),mini,x);ul.appendChild(li);
+      P.renderMot(mini,P.masque(it.a,P.autoLevel(it.a)));
+    }else{
+      const im=el('img');im.alt=it.a;const inp=el('input');inp.value=it.a;inp.maxLength=40;inp.setAttribute('aria-label','Réponse');
+      inp.onchange=()=>{const v=inp.value.trim();if(!v){inp.value=it.a;return}it.a=v;im.alt=v;save()};
+      li.append(im,inp,x);ul.appendChild(li);
+      P.getPhoto(it.id).then(r=>{if(r)im.src=r.thumb}).catch(()=>{});
+    }
+  });
+}
+// Mots à trous
+$('mot').oninput=()=>{
+  const w=$('mot').value.split(',')[0].trim();
+  $('mprev').hidden=$('mprevl').hidden=!w;if(w)P.renderMot($('mprev'),P.masque(w,P.autoLevel(w)));
+};
+$('mform').onsubmit=e=>{
+  e.preventDefault();
+  const words=$('mot').value.split(/[,;\n]/).map(w=>w.trim().replace(/\s+/g,' ')).filter(Boolean);
+  if(!words.length){$('mot').focus();return}
+  const have=new Set(cur.items.map(it=>norm(it.a))),added=[],dup=[],bad=[];
+  words.forEach(w=>{
+    if(P.letters(w)<2)bad.push(w);else if(have.has(norm(w)))dup.push(w);else{have.add(norm(w));cur.items.push({a:w.slice(0,40)});added.push(w)}
+  });
+  if(added.length&&!save()){cur.items=cur.items.slice(0,cur.items.length-added.length);return}
+  const m=[];if(added.length)m.push(added.length>1?added.length+' mots ajoutés':'« '+added[0]+' » ajouté');
+  if(dup.length)m.push((dup.length>1?'déjà là : ':'déjà dans la liste : ')+dup.join(', '));
+  if(bad.length)m.push('trop court : '+bad.join(', '));
+  flash($('mmsg'),added.length?'ok':'ko',m.join(' · '));
+  $('mot').value='';$('mprev').hidden=$('mprevl').hidden=true;$('mot').focus();items();
+};
+// Photos : on les nomme une par une.
+$('pfile').onchange=()=>{queue=[...$('pfile').files];queue.total=queue.length;$('pfile').value='';nextPhoto()};
+function endQueue(){queue=[];pending=null;if(pendUrl)URL.revokeObjectURL(pendUrl);pendUrl=null;$('pq').hidden=true;$('pbtn').hidden=false}
+async function nextPhoto(){
+  if(pendUrl)URL.revokeObjectURL(pendUrl);pendUrl=null;pending=null;
+  if(!queue.length)return endQueue();
+  const total=queue.total,f=queue.shift();
+  $('pbtn').hidden=true;$('pq').hidden=false;$('pqn').textContent=total>1?'Photo '+(total-queue.length)+' sur '+total:'';
+  $('pans').value='';$('pqimg').removeAttribute('src');
+  try{pending=await P.prepPhoto(f)}catch(e){flash($('phmsg'),'ko','Cette photo n’a pas pu être lue.');return nextPhoto()}
+  pendUrl=URL.createObjectURL(pending.blob);$('pqimg').src=pendUrl;$('pans').focus();
+}
+$('pform').onsubmit=async e=>{
+  e.preventDefault();
+  const a=$('pans').value.trim();if(!a){$('pans').focus();return}
+  if(!pending)return;
+  const id=P.newId();
+  try{await P.putPhoto({id,blob:pending.blob,thumb:pending.thumb})}catch(err){flash($('phmsg'),'ko','Impossible d’enregistrer la photo : plus de place sur cet appareil ?');return}
+  cur.items.push({id,a:a.slice(0,40)});
+  if(!save()){cur.items.pop();P.delPhoto(id).catch(()=>{});return}
+  flash($('phmsg'),'ok','« '+a+' » ajouté');items();nextPhoto();
+};
+$('pskip').onclick=nextPhoto;
+// Suppression
+$('del').onclick=()=>{$('del').hidden=true;$('delc').hidden=false;$('deln').focus()};
+$('deln').onclick=()=>{$('del').hidden=false;$('delc').hidden=true};
+$('dely').onclick=()=>{
+  (cur.items||[]).forEach(it=>{if(it.id)P.delPhoto(it.id).catch(()=>{})});
+  cats=cats.filter(c=>c!==cur);save();cur=null;home();
+};
+
+// ---------- Espace parents ----------
+$('exp').onclick=async()=>{
+  try{
+    const d=await P.exportData(),b=new Blob([JSON.stringify(d)],{type:'application/json'}),a=document.createElement('a');
+    a.href=URL.createObjectURL(b);a.download='sur-le-carreau-categories-'+new Date().toISOString().slice(0,10)+'.json';
+    document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(a.href),5000);
+    flash($('pmsg'),'ok','Fichier enregistré ('+d.cats.length+' catégorie'+(d.cats.length>1?'s':'')+').');
+  }catch(e){flash($('pmsg'),'ko','La sauvegarde a échoué.')}
+};
+$('imp').onchange=async()=>{
+  const f=$('imp').files[0];$('imp').value='';if(!f)return;
+  try{const n=await P.importData(JSON.parse(await f.text()));home();$('parents').open=true;flash($('pmsg'),'ok',n+' catégorie'+(n>1?'s':'')+' restaurée'+(n>1?'s':'')+'.')}
+  catch(e){flash($('pmsg'),'ko',e&&e.message&&/Sur le carreau/.test(e.message)?e.message:'Ce fichier n’a pas pu être lu.')}
+};
+// Retour au jeu : sans écran de lancement ni intro.
+$('back').onclick=()=>{try{sessionStorage.setItem('slc-retour','1')}catch(e){}};
+home();
+</script>
+</body>
+</html>
