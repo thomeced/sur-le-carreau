@@ -71,6 +71,11 @@ h1{font-size:clamp(2.2rem,8vw,4rem);line-height:1.1}
 #grid{max-width:760px;margin:0 auto}
 #gtitle{font:700 clamp(1.4rem,5vw,2rem)/1.2 var(--disp);margin:0 0 4px;overflow-wrap:anywhere}
 #ghint,#gstat,#dcat{margin:4px 0}
+#gnote{margin:4px 0;min-height:0;font-weight:700;color:var(--p1)}
+#gnote:empty{display:none}
+.gpanel button[aria-pressed="true"]{border-color:var(--p1);background:rgba(255,197,61,.18)}
+#dgold{margin:4px 0;font-weight:700;color:var(--p1)}
+#dgold:empty{display:none}
 #dcat{font-weight:600}
 .gboard{margin:12px 0;position:relative}
 .gboard svg{display:block;width:100%;height:auto;overflow:visible;font-family:var(--disp);-webkit-tap-highlight-color:transparent}
@@ -98,6 +103,8 @@ h1{font-size:clamp(2.2rem,8vw,4rem);line-height:1.1}
 #card.pho img,#acard.pho img{display:block;max-width:100%;max-height:min(46vh,440px);margin:0 auto;border-radius:4px;object-fit:contain}
 #acard.pho img{max-height:30vh}
 #atype{margin:10px 0;padding:12px 14px}
+#agold{margin:4px 0;font-weight:700;color:var(--p1)}
+#agold:empty{display:none}
 #atype p{margin:0}
 #atype .tn{font:700 1.1rem/1.3 var(--disp)}
 #atype .tc{margin-top:4px}
@@ -172,9 +179,6 @@ a.btnlink:focus-visible{outline:3px solid var(--p1);outline-offset:2px}
       </div>
       <div id="gnames" class="gnames"></div>
     </div>
-    <label>Temps par joueur
-      <select id="dur"><option value="40">40 secondes</option><option value="45" selected>45 secondes</option></select>
-    </label>
     <p id="gowhy" hidden></p>
     <button type="submit" id="gosubmit" aria-describedby="gowhy">Lancer le duel</button>
     <button type="button" class="alt" id="toarb">Je suis l’arbitre</button>
@@ -197,6 +201,7 @@ a.btnlink:focus-visible{outline:3px solid var(--p1);outline-offset:2px}
         <button type="button" class="alt" id="wback" hidden>Retour à la grille</button>
       </div>
       <p id="dcat"></p>
+      <p id="dgold" role="status"></p>
       <div id="who"></div>
       <div id="card" aria-label="Image à nommer"></div>
       <div id="msg" role="status" aria-live="polite"></div>
@@ -212,6 +217,7 @@ a.btnlink:focus-visible{outline:3px solid var(--p1);outline-offset:2px}
 <section id="grid" hidden>
   <h2 id="gtitle"></h2>
   <p id="ghint"></p>
+  <p id="gnote" role="status" aria-live="polite"></p>
   <div id="gboard" class="gboard"></div>
   <div id="gpanel" class="panel gpanel"></div>
   <p id="gstat" role="status"></p>
@@ -231,6 +237,7 @@ a.btnlink:focus-visible{outline:3px solid var(--p1);outline-offset:2px}
       <div class="side" id="a1"><span class="nm"></span><div class="tm"></div></div>
     </div>
     <p id="actx"></p>
+    <p id="agold"></p>
     <div id="atype" class="panel" hidden><p class="tn"></p><p class="tc"></p></div>
     <div id="acard" class="center" aria-label="Image en cours"></div>
     <p id="aans" role="status"></p>
@@ -293,6 +300,8 @@ function isOk(v,list){v=norm(v);if(!v)return false;return list.some(r=>{r=norm(r
 function shuffle(a){for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a}
 function show(id){['setup','game','grid','end','arb'].forEach(x=>$(x).hidden=x!==id)}
 
+// Temps de chaque joueur pour un duel (secondes). Le détenteur de la case d'or peut y ajouter GOLD_SEC.
+const DUEL_SEC=40;
 let S,flashT;
 const CH='ABCDEFGHJKMNPQRSTUVWXYZ23456789',isArb=location.hash==='#arbitre';
 let peerLib;
@@ -415,7 +424,7 @@ function render(){
 }
 function push(){
   if(!(S&&S.oral&&S.link))return;
-  const k=S.cur[0],d={names:S.names,t:S.t.map(Math.round),sc:S.sc,turn:S.turn,card:[k,S.cur[1],S.cur[2]],disp:S.disp,lvl:S.lvl,over:S.over,lock:S.lock,started:S.started,count:S.counting?S.count:0,cat:S.cat,type:S.type,tnom:TYPES[S.type].nom,consigne:TYPES[S.type].consigne};
+  const k=S.cur[0],d={names:S.names,t:S.t.map(Math.round),sc:S.sc,turn:S.turn,card:[k,S.cur[1],S.cur[2]],disp:S.disp,lvl:S.lvl,over:S.over,lock:S.lock,started:S.started,count:S.counting?S.count:0,cat:S.cat,type:S.type,tnom:TYPES[S.type].nom,consigne:TYPES[S.type].consigne,gold:S.gold};
   // Photo : la vignette n'est envoyée à l'arbitre qu'au changement d'image (et de temps en temps, au cas où).
   if(S.type==='photo'&&S.cur[3]&&(S.imgK!==k||++S.imgN%8===0)){d.img=S.cur[3].thumb;S.imgK=k}
   S.link.send('st',d);
@@ -430,6 +439,7 @@ function finish(){
     S.winP=S.pid[w];S.loseP=S.pid[w^1];
     const nc=G.cells.filter(c=>c.owner===S.loseP).length;
     res+=' '+S.names[w]+' prend '+(nc>1?'les '+nc+' cases':'la case')+' de '+S.names[w^1]+'.';
+    if(goldEarns(S.winP))res+=' '+S.names[w]+' gagne la case d’or : +'+GOLD_SEC+' s à utiliser au début d’un prochain duel.';
     $('again').textContent='Retour à la grille';
   }else $('again').textContent='Nouvelle partie';
   $('res').textContent=res;
@@ -491,8 +501,9 @@ function attach(me){
 }
 function startDuel(o){
   if(S){clearInterval(S.h);clearInterval(S.cd)}
-  S={names:o.names,t:[o.T,o.T],turn:Math.random()<.5?0:1,sc:[0,0],src:o.src,cat:o.cat,type:TYPES[o.type]?o.type:'emoji',disp:'',imgK:null,imgN:0,pid:o.pid||null,pool:null,lvl:1,last:performance.now(),lock:false,over:false,started:false,counting:false,count:0,oral:o.oral,n:0};
-  fill();card();render();show('game');$('msg').textContent='';$('dcat').textContent='Catégorie : '+o.cat+(typeName(S.type)?' · '+typeName(S.type):'');
+  const bo=o.bonus||[0,0];
+  S={names:o.names,t:[o.T+bo[0],o.T+bo[1]],goldUse:o.goldUse||[],gold:o.gold||'',turn:Math.random()<.5?0:1,sc:[0,0],src:o.src,cat:o.cat,type:TYPES[o.type]?o.type:'emoji',disp:'',imgK:null,imgN:0,pid:o.pid||null,pool:null,lvl:1,last:performance.now(),lock:false,over:false,started:false,counting:false,count:0,oral:o.oral,n:0};
+  fill();card();render();show('game');$('msg').textContent='';$('dcat').textContent='Catégorie : '+o.cat+(typeName(S.type)?' · '+typeName(S.type):'');$('dgold').textContent=S.gold;
   $('f2').hidden=$('pass').hidden=o.oral;$('wait').hidden=!o.oral;$('wback').hidden=!S.pid;
   if(!o.oral)return launch();
   $('code').textContent=LCODE||'…';$('go').disabled=true;$('wst').textContent='En attente de l’arbitre…';
@@ -504,7 +515,7 @@ $('form').onsubmit=e=>{
   e.preventDefault();
   if($('gmode').value==='grid'){if(PICK.length!==pneed()){pickRender();return}return startGrid()}
   const c=DATA[$('cat').value];
-  startDuel({names:[$('n0').value.trim()||'Joueur 1',$('n1').value.trim()||'Joueur 2'],src:c.items,cat:c.label,type:c.type,T:+$('dur').value*1000,oral:true});
+  startDuel({names:[$('n0').value.trim()||'Joueur 1',$('n1').value.trim()||'Joueur 2'],src:c.items,cat:c.label,type:c.type,T:DUEL_SEC*1000,oral:true});
 };
 
 /* ---------- Grille de territoires ----------
@@ -512,6 +523,13 @@ $('form').onsubmit=e=>{
    le propriétaire d'une case voisine ; le duel se joue dans la catégorie de cette case. Le perdant
    est éliminé, le gagnant prend toutes ses cases et a la main pour le duel suivant. */
 let G=null;
+/* Case d'or : un joueur qui gagne GOLD_STREAK duels d'affilée (en attaque comme en défense) reçoit la case d'or,
+   un bonus de GOLD_SEC secondes qu'il peut ajouter à son chrono au début d'un duel ultérieur (décidé avant le duel).
+   Retourner sur le sol remet la série à zéro. Un seul bonus à la fois : une 3e victoire en le détenant déjà est
+   sans effet (sauf s'il vient de servir dans ce duel). Le bonus est consommé à la fin du duel où il a servi ; il disparaît avec son détenteur s'il est éliminé. */
+const GOLD_STREAK=3,GOLD_SEC=5;
+// Le gagnant de ce duel obtiendrait-il la case d'or ? (Pas lors du dernier duel : la partie est finie.)
+function goldEarns(w){if(!G||w==null)return false;const p=G.players[w],spent=S&&S.goldUse&&S.goldUse.includes(w);return(!p.gold||spent)&&(p.streak||0)+1>=GOLD_STREAK&&G.players.filter(q=>q.alive).length>2}
 const gadj=(size,a,b)=>Math.abs(Math.floor(a/size)-Math.floor(b/size))+Math.abs(a%size-b%size)===1;
 // Adversaires possibles : joueurs dont le territoire touche celui du joueur en cours.
 function gfoes(){const f=new Set();G.cells.forEach((c,i)=>{if(c.owner!==G.ch&&G.cells.some((d,j)=>d.owner===G.ch&&gadj(G.size,i,j)))f.add(c.owner)});return[...f]}
@@ -668,8 +686,8 @@ function startGrid(){
   const size=+$('gsize').value,n=size*size;
   const names=[...$('gnames').querySelectorAll('input')].map((x,i)=>x.value.trim()||'Joueur '+(i+1));
   const keys=shuffle(PICK.slice());
-  G={size,n,players:names.map(name=>({name,alive:true})),cells:names.map((_,i)=>({cat:keys[i%keys.length],owner:i})),
-     ch:Math.floor(Math.random()*n),sel:null,anim:null,draw:false,drawT:null,played:new Set(),seed:Math.floor(Math.random()*4294967296),shape:null,over:false,T:+$('dur').value*1000,oral:true};
+  G={size,n,players:names.map(name=>({name,alive:true,streak:0,gold:false})),cells:names.map((_,i)=>({cat:keys[i%keys.length],owner:i})),
+     ch:Math.floor(Math.random()*n),sel:null,anim:null,draw:false,drawT:null,played:new Set(),use:new Set(),note:'',seed:Math.floor(Math.random()*4294967296),shape:null,over:false,T:DUEL_SEC*1000,oral:true};
   S=null;
   show('grid');gridRender();
 }
@@ -688,8 +706,10 @@ function gshape(){
 }
 /* Couleurs du plateau : un bleu unique pour toutes les cases, violet pour le joueur en cours,
    bleu clair pour les adversaires qu'il peut défier, plus clair encore pour l'adversaire choisi. */
-const GC={base:'#1B3DB0',me:'#7A3FD8',foe:'#3D78EA',sel:'#6A9CFF',pick:'#BFD3FF',flash:['#4F86F7','#6E9BFF','#3F74E8','#8DB0FF','#5A8FFF']};
+const GC={gold:'#D9A21B',goldSel:'#F2C44E',base:'#1B3DB0',me:'#7A3FD8',foe:'#3D78EA',sel:'#6A9CFF',pick:'#BFD3FF',flash:['#4F86F7','#6E9BFF','#3F74E8','#8DB0FF','#5A8FFF']};
+// Le détenteur de la case d'or garde son territoire en jaune (plus clair s'il est l'adversaire choisi).
 function gfill(o,foes){
+  if(G.players[o].gold&&!G.over)return G.sel===o?GC.goldSel:GC.gold;
   if(G.draw)return GC.base;
   if(o===G.ch)return GC.me;
   if(G.sel===o)return GC.sel;
@@ -777,7 +797,7 @@ function gpaint(own){
   const ch=V0.sy,cw=V0.sx,max=cw*.82;
   G.cells.forEach((c,i)=>{
     const o=own(i);
-    V0.zones[i].setAttribute('aria-label',G.players[o].name+', '+DATA[G.cells[o].cat].label+(V0.zones[i].classList.contains('t')?', adversaire possible':''));
+    V0.zones[i].setAttribute('aria-label',G.players[o].name+', '+DATA[G.cells[o].cat].label+(G.players[o].gold?', case d’or':'')+(V0.zones[i].classList.contains('t')?', adversaire possible':''));
     if(o!==i)return;
     const cp=Math.max(11,Math.min(15,ch*.1)),cat=gwrap(DATA[c.cat].label,cp,500,max,2);
     let np=Math.max(13,Math.min(22,ch*.15))*Math.min(1.35,1+.08*(size[o]-1));
@@ -817,7 +837,7 @@ function gcapture(A){
   const rr=grng(G.seed^(A.cells.length*7919+A.to)),ph=[0,0,0,0].map(()=>rr()*Math.PI*2);
   const cp=sv('clipPath',{id:'gcap'},V0.svg.querySelector('defs'));
   A.cells.forEach(i=>sv('path',{d:V0.cells[i].d},cp));
-  const g=sv('g',{'clip-path':'url(#gcap)'},V0.gan),col=GC.me;
+  const g=sv('g',{'clip-path':'url(#gcap)'},V0.gan),col=G.players[A.to].gold?GC.gold:GC.me;
   const glowB=sv('path',{d:'',fill:'#BFD0FF','fill-opacity':.55,filter:'url(#gglow)'},g);
   const body=sv('path',{d:'',fill:col},g);
   const ring=sv('path',{d:'',fill:'none',stroke:'#EAF0FF','stroke-width':6,filter:'url(#gglow)'},g);
@@ -849,12 +869,13 @@ function gdrawPool(){
 function gdraw(){
   if(G.draw||G.over||gAnimT)return;
   const{pool,fresh}=gdrawPool();if(!pool.length)return;
+  G.players[G.ch].streak=0;G.note='';
   const g0=G,pick=pool[Math.floor(Math.random()*pool.length)],reduce=matchMedia('(prefers-reduced-motion: reduce)').matches;
   G.draw=true;G.drawFresh=fresh;G.sel=null;gridRender();
   const V0=GV,T=reduce?600:6000,H=2000,t0=performance.now();
   const cellsOf=o=>G.cells.map((c,i)=>c.owner===o?i:-1).filter(i=>i>=0);
   const paint=(o,col)=>cellsOf(o).forEach(i=>{const z=V0.zones[i];z.style.transition='none';z.setAttribute('fill',col)});
-  const clear=()=>V0.zones.forEach(z=>{z.style.transition='none';z.setAttribute('fill',GC.base)});
+  const clear=()=>V0.zones.forEach((z,i)=>{z.style.transition='none';z.setAttribute('fill',G.players[G.cells[i].owner].gold?GC.gold:GC.base)});
   let last=-1,k=0;
   const alive=()=>G===g0&&GV===V0&&G.draw;
   const land=()=>{
@@ -883,7 +904,9 @@ function gbtn(txt,cls,fn){const b=document.createElement('button');b.type='butto
 function gridRender(){
   const alive=G.players.filter(p=>p.alive).length,tg=G.over||G.draw?[]:gtargets();
   $('gtitle').textContent=G.over?G.players[G.ch].name+' remporte la partie !':G.draw?'Retour sur le sol…':G.players[G.ch].name+' choisit son adversaire';
-  $('ghint').textContent=G.over?'Toutes les cases lui appartiennent.':G.draw?'Tirage au sort parmi les candidats '+(G.drawFresh?'qui n’ont pas encore joué.':'en lice.'):'Territoire de '+G.players[G.ch].name+' : violet. Adversaires possibles : bleu clair.';
+  $('ghint').textContent=G.over?'Toutes les cases lui appartiennent.':G.draw?'Tirage au sort parmi les candidats '+(G.drawFresh?'qui n’ont pas encore joué.':'en lice.'):'Territoire de '+G.players[G.ch].name+' : '+(G.players[G.ch].gold?'jaune (case d’or)':'violet')+'. Adversaires possibles : bleu clair.'+G.players.filter((q,i)=>q.alive&&q.gold&&i!==G.ch).map(q=>' En jaune : '+q.name+' (case d’or).').join('');
+  if(G.sel==null)G.use.clear();else for(const q of G.use)if(q!==G.ch&&q!==G.sel)G.use.delete(q);
+  $('gnote').textContent=G.over?'':G.note;
   if(gAnimT){cancelAnimationFrame(gAnimT);gAnimT=null}
   const A=G.anim;G.anim=null;
   gboardBuild(tg);
@@ -899,17 +922,34 @@ function gridRender(){
     const a=G.players[G.ch],d=G.players[G.sel],t=document.createElement('p');
     const dc=DATA[G.cells[G.sel].cat];
     t.textContent=a.name+' défie '+d.name+' en « '+dc.label+' »'+(typeName(dc.type)?' ('+typeName(dc.type).toLowerCase()+')':'')+'.';
-    p.append(t,gbtn('Lancer le duel','',startGridDuel),gbtn('Changer d’adversaire','alt',()=>{G.sel=null;gridRender()}));
+    p.append(t);
+    // Case d'or : chaque détenteur concerné décide avant le duel s'il l'utilise.
+    [G.ch,G.sel].forEach(q=>{
+      if(!G.players[q].gold)return;
+      const on=G.use.has(q),b=gbtn((on?'★ ':'☆ ')+G.players[q].name+' utilise sa case d’or (+'+GOLD_SEC+' s)','alt',()=>{G.use.has(q)?G.use.delete(q):G.use.add(q);gridRender();const f=[...$('gpanel').querySelectorAll('button')].find(x=>x.dataset.q==q);if(f)f.focus()});
+      b.dataset.q=q;b.setAttribute('aria-pressed',on?'true':'false');p.append(b);
+    });
+    p.append(gbtn('Lancer le duel','',startGridDuel),gbtn('Changer d’adversaire','alt',()=>{G.sel=null;gridRender()}));
   }else{
     const t=document.createElement('p');t.textContent='Touchez une case bleu clair pour défier son joueur, ou retournez sur le sol pour laisser la main à un autre candidat.';
-    p.append(t);const b=sol();if(b)p.append(b);
+    p.append(t);
+    const me=G.players[G.ch],k=me.streak||0,s=document.createElement('p');
+    s.textContent=(me.gold?'★ '+me.name+' détient la case d’or (+'+GOLD_SEC+' s, à utiliser avant un duel). ':'')+
+      (k&&!me.gold?'Série : '+k+' victoire'+(k>1?'s':'')+' d’affilée, encore '+(GOLD_STREAK-k)+' pour la case d’or. Retourner sur le sol remet la série à zéro.':'');
+    if(s.textContent)p.append(s);
+    const b=sol();if(b)p.append(b);
   }
   $('gstat').textContent=alive+' joueur'+(alive>1?'s':'')+' en lice';
 }
 function startGridDuel(){
   // On attaque un joueur : le duel se joue dans sa catégorie d'origine (celle de sa case de départ).
   const a=G.ch,d=G.sel,cat=DATA[G.cells[d].cat];
-  startDuel({names:[G.players[a].name,G.players[d].name],pid:[a,d],src:cat.items,cat:cat.label,type:cat.type,T:G.T,oral:G.oral});
+  const use=[a,d].filter(q=>G.use.has(q)&&G.players[q].gold);
+  const gold=use.map(q=>G.players[q].name).join(' et ');
+  G.note='';
+  startDuel({names:[G.players[a].name,G.players[d].name],pid:[a,d],src:cat.items,cat:cat.label,type:cat.type,T:G.T,oral:G.oral,
+    bonus:[a,d].map(q=>use.includes(q)?GOLD_SEC*1000:0),goldUse:use,
+    gold:gold?'★ Case d’or : '+gold+(use.length>1?' commencent':' commence')+' avec +'+GOLD_SEC+' s':''});
 }
 function gridAfterDuel(){
   const w=S.winP,l=S.loseP,a=G.ch,d=G.sel,cells=[];
@@ -918,9 +958,14 @@ function gridAfterDuel(){
   G.played.add(a);G.played.add(d);
   G.cells.forEach((c,i)=>{if(c.owner===l){c.owner=w;cells.push(i)}});
   G.anim={cells,old:l,to:w,from};
-  G.players[l].alive=false;G.ch=w;G.sel=null;
+  const earn=goldEarns(w),W=G.players[w];
+  S.goldUse.forEach(q=>{G.players[q].gold=false});
+  G.players[l].alive=false;G.players[l].gold=false;G.players[l].streak=0;G.ch=w;G.sel=null;G.use.clear();
   G.over=G.players.filter(p=>p.alive).length===1;
+  W.streak=(W.streak||0)+1;G.note='';
+  if(W.streak>=GOLD_STREAK){W.streak=0;if(earn){W.gold=true;G.note='★ '+W.name+' gagne la case d’or : '+GOLD_STREAK+' victoires d’affilée, +'+GOLD_SEC+' s à utiliser au début d’un prochain duel.'}}
   show('grid');gridRender();
+  if(earn){const g0=G;setTimeout(()=>{if(G===g0)snd('gold')},900)}
 }
 $('wback').onclick=()=>{
   if(!S||!S.pid||S.started||S.counting)return;
@@ -953,7 +998,7 @@ function arbRender(){
   $('ast').textContent='';
   const t=R.t.slice();if(R.started&&!R.over)t[R.turn]-=performance.now()-R.at;
   for(let i=0;i<2;i++){const s=$('a'+i);s.querySelector('.nm').textContent=R.names[i];s.querySelector('.tm').textContent=Math.ceil(Math.max(0,t[i])/1000);s.classList.toggle('on',R.turn===i&&!R.over);s.classList.toggle('low',t[i]<=5000)}
-  $('actx').textContent=R.cat?'Catégorie : '+R.cat:'';
+  $('actx').textContent=R.cat?'Catégorie : '+R.cat:'';$('agold').textContent=R.gold||'';
   // Type de jeu et consigne à annoncer aux candidats.
   $('atype').hidden=!R.consigne;
   if(R.consigne){$('atype').querySelector('.tn').textContent='Type de jeu : '+(R.tnom||'Images');$('atype').querySelector('.tc').textContent='À annoncer : « '+R.consigne+' »'}
