@@ -188,6 +188,7 @@ Chaque chantier est prévu dans sa propre conversation du projet, sur sa propre 
 - **Affichage** : annonce sur l'écran de fin de duel et sur la grille (`#gnote`, annoncée), carillon `gold`, « ★ Case d'or » sous le nom du détenteur sur le plateau (et dans l'étiquette accessible), série en cours dans le panneau, rappel sur l'écran de duel (`#dgold`) et chez l'arbitre (`#agold`).
 - Code : `GOLD_STREAK`, `GOLD_SEC`, `goldEarns` ; `G.players[i].streak` et `.gold`, `G.use` (bonus cochés), `G.note` ; `startDuel` accepte `bonus`, `goldUse`, `gold`.
 - Tests (navigateur automatisé, 1440×900 et 390×844, grille 3×3) : trois victoires → case d'or, bouton coché / décoché au clavier, chrono à 50 s, bonus consommé, série relancée à 1, retour sur le sol → série à 0 ; aucune erreur JavaScript.
+- Ajustements demandés par Ced : le territoire du détenteur est peint en jaune (`GC.gold`, plus clair s'il est l'adversaire choisi) au lieu d'une mention « ★ Case d'or » sous son nom ; le sélecteur de temps de l'écran de départ est supprimé, chrono fixe de 40 s (`DUEL_SEC`), donc 45 s avec la case d'or.
 - Écarts possibles avec l'émission, à confirmer par Ced : les victoires en défense comptent ; pas d'échange de catégorie à la place du bonus.
 
 ## Comment reprendre dans un nouveau projet Claude

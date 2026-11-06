@@ -73,7 +73,6 @@ h1{font-size:clamp(2.2rem,8vw,4rem);line-height:1.1}
 #ghint,#gstat,#dcat{margin:4px 0}
 #gnote{margin:4px 0;min-height:0;font-weight:700;color:var(--p1)}
 #gnote:empty{display:none}
-.gl .gg{font-weight:700;fill:#FFC53D}
 .gpanel button[aria-pressed="true"]{border-color:var(--p1);background:rgba(255,197,61,.18)}
 #dgold{margin:4px 0;font-weight:700;color:var(--p1)}
 #dgold:empty{display:none}
@@ -180,9 +179,6 @@ a.btnlink:focus-visible{outline:3px solid var(--p1);outline-offset:2px}
       </div>
       <div id="gnames" class="gnames"></div>
     </div>
-    <label>Temps par joueur
-      <select id="dur"><option value="40">40 secondes</option><option value="45" selected>45 secondes</option></select>
-    </label>
     <p id="gowhy" hidden></p>
     <button type="submit" id="gosubmit" aria-describedby="gowhy">Lancer le duel</button>
     <button type="button" class="alt" id="toarb">Je suis l’arbitre</button>
@@ -304,6 +300,8 @@ function isOk(v,list){v=norm(v);if(!v)return false;return list.some(r=>{r=norm(r
 function shuffle(a){for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a}
 function show(id){['setup','game','grid','end','arb'].forEach(x=>$(x).hidden=x!==id)}
 
+// Temps de chaque joueur pour un duel (secondes). Le détenteur de la case d'or peut y ajouter GOLD_SEC.
+const DUEL_SEC=40;
 let S,flashT;
 const CH='ABCDEFGHJKMNPQRSTUVWXYZ23456789',isArb=location.hash==='#arbitre';
 let peerLib;
@@ -517,7 +515,7 @@ $('form').onsubmit=e=>{
   e.preventDefault();
   if($('gmode').value==='grid'){if(PICK.length!==pneed()){pickRender();return}return startGrid()}
   const c=DATA[$('cat').value];
-  startDuel({names:[$('n0').value.trim()||'Joueur 1',$('n1').value.trim()||'Joueur 2'],src:c.items,cat:c.label,type:c.type,T:+$('dur').value*1000,oral:true});
+  startDuel({names:[$('n0').value.trim()||'Joueur 1',$('n1').value.trim()||'Joueur 2'],src:c.items,cat:c.label,type:c.type,T:DUEL_SEC*1000,oral:true});
 };
 
 /* ---------- Grille de territoires ----------
@@ -689,7 +687,7 @@ function startGrid(){
   const names=[...$('gnames').querySelectorAll('input')].map((x,i)=>x.value.trim()||'Joueur '+(i+1));
   const keys=shuffle(PICK.slice());
   G={size,n,players:names.map(name=>({name,alive:true,streak:0,gold:false})),cells:names.map((_,i)=>({cat:keys[i%keys.length],owner:i})),
-     ch:Math.floor(Math.random()*n),sel:null,anim:null,draw:false,drawT:null,played:new Set(),use:new Set(),note:'',seed:Math.floor(Math.random()*4294967296),shape:null,over:false,T:+$('dur').value*1000,oral:true};
+     ch:Math.floor(Math.random()*n),sel:null,anim:null,draw:false,drawT:null,played:new Set(),use:new Set(),note:'',seed:Math.floor(Math.random()*4294967296),shape:null,over:false,T:DUEL_SEC*1000,oral:true};
   S=null;
   show('grid');gridRender();
 }
@@ -708,8 +706,10 @@ function gshape(){
 }
 /* Couleurs du plateau : un bleu unique pour toutes les cases, violet pour le joueur en cours,
    bleu clair pour les adversaires qu'il peut défier, plus clair encore pour l'adversaire choisi. */
-const GC={base:'#1B3DB0',me:'#7A3FD8',foe:'#3D78EA',sel:'#6A9CFF',pick:'#BFD3FF',flash:['#4F86F7','#6E9BFF','#3F74E8','#8DB0FF','#5A8FFF']};
+const GC={gold:'#D9A21B',goldSel:'#F2C44E',base:'#1B3DB0',me:'#7A3FD8',foe:'#3D78EA',sel:'#6A9CFF',pick:'#BFD3FF',flash:['#4F86F7','#6E9BFF','#3F74E8','#8DB0FF','#5A8FFF']};
+// Le détenteur de la case d'or garde son territoire en jaune (plus clair s'il est l'adversaire choisi).
 function gfill(o,foes){
+  if(G.players[o].gold&&!G.over)return G.sel===o?GC.goldSel:GC.gold;
   if(G.draw)return GC.base;
   if(o===G.ch)return GC.me;
   if(G.sel===o)return GC.sel;
@@ -802,12 +802,10 @@ function gpaint(own){
     const cp=Math.max(11,Math.min(15,ch*.1)),cat=gwrap(DATA[c.cat].label,cp,500,max,2);
     let np=Math.max(13,Math.min(22,ch*.15))*Math.min(1.35,1+.08*(size[o]-1));
     const full=G.players[o].name;while(np>11&&gmeasure(full,np,700)>max)np-=.5;const nm=gfit(full,np,700,max);
-    const gold=G.players[o].gold&&!G.over;
-    const tot=np*1.15+4+cat.length*cp*1.2+(gold?cp*1.25:0);let y=V0.cells[i].cy-tot/2;
+    const tot=np*1.15+4+cat.length*cp*1.2;let y=V0.cells[i].cy-tot/2;
     const t=sv('text',{class:'gl','stroke-width':4},V0.gl);
     sv('tspan',{x:f1(V0.cells[i].cx),y:f1(y+np*.9),class:'gn','font-size':f1(np)},t).textContent=nm;y+=np*1.15+4;
     cat.forEach(l=>{sv('tspan',{x:f1(V0.cells[i].cx),y:f1(y+cp*.95),class:'gc','font-size':f1(cp)},t).textContent=l;y+=cp*1.2});
-    if(gold)sv('tspan',{x:f1(V0.cells[i].cx),y:f1(y+cp*1.05),class:'gg','font-size':f1(cp)},t).textContent='★ Case d’or';
   });
 }
 const f1=v=>Math.round(v*10)/10;
@@ -839,7 +837,7 @@ function gcapture(A){
   const rr=grng(G.seed^(A.cells.length*7919+A.to)),ph=[0,0,0,0].map(()=>rr()*Math.PI*2);
   const cp=sv('clipPath',{id:'gcap'},V0.svg.querySelector('defs'));
   A.cells.forEach(i=>sv('path',{d:V0.cells[i].d},cp));
-  const g=sv('g',{'clip-path':'url(#gcap)'},V0.gan),col=GC.me;
+  const g=sv('g',{'clip-path':'url(#gcap)'},V0.gan),col=G.players[A.to].gold?GC.gold:GC.me;
   const glowB=sv('path',{d:'',fill:'#BFD0FF','fill-opacity':.55,filter:'url(#gglow)'},g);
   const body=sv('path',{d:'',fill:col},g);
   const ring=sv('path',{d:'',fill:'none',stroke:'#EAF0FF','stroke-width':6,filter:'url(#gglow)'},g);
@@ -877,7 +875,7 @@ function gdraw(){
   const V0=GV,T=reduce?600:6000,H=2000,t0=performance.now();
   const cellsOf=o=>G.cells.map((c,i)=>c.owner===o?i:-1).filter(i=>i>=0);
   const paint=(o,col)=>cellsOf(o).forEach(i=>{const z=V0.zones[i];z.style.transition='none';z.setAttribute('fill',col)});
-  const clear=()=>V0.zones.forEach(z=>{z.style.transition='none';z.setAttribute('fill',GC.base)});
+  const clear=()=>V0.zones.forEach((z,i)=>{z.style.transition='none';z.setAttribute('fill',G.players[G.cells[i].owner].gold?GC.gold:GC.base)});
   let last=-1,k=0;
   const alive=()=>G===g0&&GV===V0&&G.draw;
   const land=()=>{
@@ -906,7 +904,7 @@ function gbtn(txt,cls,fn){const b=document.createElement('button');b.type='butto
 function gridRender(){
   const alive=G.players.filter(p=>p.alive).length,tg=G.over||G.draw?[]:gtargets();
   $('gtitle').textContent=G.over?G.players[G.ch].name+' remporte la partie !':G.draw?'Retour sur le sol…':G.players[G.ch].name+' choisit son adversaire';
-  $('ghint').textContent=G.over?'Toutes les cases lui appartiennent.':G.draw?'Tirage au sort parmi les candidats '+(G.drawFresh?'qui n’ont pas encore joué.':'en lice.'):'Territoire de '+G.players[G.ch].name+' : violet. Adversaires possibles : bleu clair.';
+  $('ghint').textContent=G.over?'Toutes les cases lui appartiennent.':G.draw?'Tirage au sort parmi les candidats '+(G.drawFresh?'qui n’ont pas encore joué.':'en lice.'):'Territoire de '+G.players[G.ch].name+' : '+(G.players[G.ch].gold?'jaune (case d’or)':'violet')+'. Adversaires possibles : bleu clair.'+G.players.filter((q,i)=>q.alive&&q.gold&&i!==G.ch).map(q=>' En jaune : '+q.name+' (case d’or).').join('');
   if(G.sel==null)G.use.clear();else for(const q of G.use)if(q!==G.ch&&q!==G.sel)G.use.delete(q);
   $('gnote').textContent=G.over?'':G.note;
   if(gAnimT){cancelAnimationFrame(gAnimT);gAnimT=null}
