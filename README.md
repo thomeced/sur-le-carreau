@@ -6,6 +6,8 @@ Jeu web de duels de catégories, inspiré du principe des jeux télévisés de �
 
 Ouvrir `index.html` dans un navigateur (le fichier `categories.js` doit rester à côté). Aucune installation, aucune dépendance (hormis une police Google Fonts).
 
+Au lancement, un écran propose le **mode funky** (générique animé et son) ou le **mode sérieux** (sans intro, fond noir). Pour aller directement au jeu sobre, mettre `?mode=serieux` à la fin de l'adresse en favori.
+
 Un compte à rebours 3-2-1 précède chaque duel.
 
 - **Réponses à l'oral** : les joueurs répondent de vive voix, un arbitre valide depuis une autre page (bouton « Je suis l'arbitre » ou `#arbitre` dans l'adresse) en saisissant le code à 4 caractères affiché par le jeu. Le code reste valable d'une partie à l'autre : l'arbitre n'a pas à recharger sa page ; le bouton « Nouveau code » en génère un autre si besoin.

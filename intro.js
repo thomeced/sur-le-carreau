@@ -9,6 +9,9 @@
  * - Bouton son (générique assets/intro/generique.mp3) : coupé par défaut, car les navigateurs
  *   bloquent le son sans geste de l'utilisateur. Le choix est retenu (localStorage) et réessayé à la visite suivante.
  * - Pas d'intro sur la vue arbitre (#arbitre).
+ * - Écran de lancement : « mode funky » (intro + son) ou « mode sérieux » (sans intro, fond noir épuré, classe slc-serieux
+ *   sur <html>). Le dernier choix est retenu (localStorage « slc-mode ») et pré-sélectionné. Liens directs :
+ *   ?mode=serieux (saute l'écran de lancement) et ?mode=funky.
  * - Si une image ne se charge pas, l'intro est sautée.
  * - Fin de l'intro : événement « slc:intro-end » sur document.
  * - Version autonome (artefact claude.ai) : définir avant ce script window.SLC_INTRO_ASSETS
@@ -83,7 +86,7 @@
       '<div class="slci-ctrl">'+(A.music?'<button type="button" class="slci-snd" aria-pressed="false">🔇 Son</button>':'')+'<button type="button" class="slci-skip">Passer l’intro</button></div>';
     document.body.appendChild(box);
     box.querySelector('.slci-skip').onclick=end;
-    sndBtn=box.querySelector('.slci-snd');if(sndBtn){sndBtn.onclick=toggleSnd;showSnd(false);audio=new Audio(A.music);audio.preload='auto'}
+    sndBtn=box.querySelector('.slci-snd');if(sndBtn){sndBtn.onclick=toggleSnd;showSnd(false);if(!audio){audio=new Audio(A.music);audio.preload='auto'}}
     addEventListener('keydown',onKey);
     const fail=setTimeout(end,6000); // réseau trop lent : on n'attend pas plus
     Promise.all([cssReady,load(A.decor),load(A.host),load(A.candLeft),load(A.candRight)]).then(()=>{
@@ -97,6 +100,44 @@
       }));
     },()=>{clearTimeout(fail);end()});
   }
-  if(document.body)build();else document.addEventListener('DOMContentLoaded',build,{once:true});
-  addEventListener('hashchange',()=>{if(location.hash==='#arbitre')end()});
+  // ---- Écran de lancement : mode « funky » (intro + son) ou mode « sérieux » (sans intro, fond noir) ----
+  const MKEY='slc-mode';
+  const getMode=()=>{try{return localStorage.getItem(MKEY)}catch(e){return null}};
+  const setMode=v=>{try{localStorage.setItem(MKEY,v)}catch(e){}};
+  function serious(){root.classList.add('slc-serieux')}
+  function skipAll(){ // pas d'intro : on rend la main au jeu tout de suite
+    done=true;root.classList.remove('slci-on');hide.remove();
+    document.dispatchEvent(new CustomEvent('slc:intro-end'));
+  }
+  function launchScreen(){
+    const last=getMode();
+    const lb=document.createElement('div');lb.className='slcl';
+    lb.innerHTML=
+      '<div class="slcl-in">'+
+        '<h1 class="slcl-title">Sur le carreau</h1>'+
+        '<p class="slcl-lead">Comment voulez-vous lancer le jeu ?</p>'+
+        '<button type="button" class="slcl-funky"><b>🎬 Mode funky</b><span>Générique animé et son</span></button>'+
+        '<button type="button" class="slcl-serious"><b>Mode sérieux</b><span>Sans intro, fond noir épuré</span></button>'+
+      '</div>';
+    document.body.appendChild(lb);
+    const kill=()=>lb.remove();
+    lb.querySelector('.slcl-funky').onclick=()=>{
+      setMode('funky');setPref(true);
+      // Ce clic est le geste qui autorise le son : on « débloque » l'élément audio (utile sur iPhone).
+      if(A.music){try{audio=new Audio(A.music);audio.preload='auto';audio.muted=true;
+        const p=audio.play();const un=()=>{try{audio.pause();audio.currentTime=0;audio.muted=false}catch(e){}};
+        if(p&&p.then)p.then(un,()=>{audio.muted=false});else un()}catch(e){}}
+      kill();build();
+    };
+    lb.querySelector('.slcl-serious').onclick=()=>{setMode('serieux');setPref(false);serious();kill();skipAll()};
+    (lb.querySelector(last==='serieux'?'.slcl-serious':'.slcl-funky')).focus({preventScroll:true});
+  }
+  function begin(){
+    const q=new URLSearchParams(location.search).get('mode');
+    if(q==='serieux'||q==='sérieux'){serious();return skipAll()}   // lien direct : ?mode=serieux
+    if(q==='funky'){return build()}                                  // lien direct : ?mode=funky (le son suit le dernier choix)
+    cssReady.then(launchScreen,skipAll);
+  }
+  if(document.body)begin();else document.addEventListener('DOMContentLoaded',begin,{once:true});
+  addEventListener('hashchange',()=>{if(location.hash==='#arbitre'){if(box)end();else{const l=document.querySelector('.slcl');if(l)l.remove();skipAll()}}});
 })();

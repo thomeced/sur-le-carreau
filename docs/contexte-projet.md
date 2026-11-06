@@ -112,5 +112,12 @@ Réalisée dans une conversation séparée du même projet, sans toucher à la l
 - **Choix par défaut, à revoir si besoin** : intro à chaque ouverture de la page (pas de mémoire du navigateur).
 - **Point d'attention** : le calque des candidats reproduit des candidats reconnaissables de l'émission. À remplacer par des silhouettes ou des personnages inventés avant une publication publique sur GitHub Pages.
 
+## Écran de lancement : mode funky / mode sérieux (novembre 2026)
+- Au chargement de la page (hors vue arbitre), un écran propose deux boutons : **Mode funky** (générique animé + son activé : le clic est le geste qui autorise le son) et **Mode sérieux** (pas d'intro, fond noir uni sans étoiles ni sol bleu, sans lueur sur le titre). Le dernier choix est retenu (`localStorage`, clé `slc-mode`) et pré-sélectionné, mais l'écran revient à chaque ouverture.
+- Liens directs, pour sauter l'écran : `?mode=serieux` (idéal en favori au bureau) et `?mode=funky` (le son suit alors le dernier choix, car il faut un geste pour l'activer).
+- Mise en œuvre : tout dans `intro.js` et `intro.css` (écran `.slcl`, classe `slc-serieux` sur `<html>`) ; `index.html` n'a pas changé. Pas d'écran de lancement ni d'intro sur `#arbitre`.
+- Limite : le mode sérieux ne s'applique pas à la page arbitre (autre appareil, autre navigateur). Les tests automatisés ouvrent le jeu avec `?mode=serieux`.
+- Version autonome (aperçu claude.ai) : pas encore reconstruite avec l'intro ni l'écran de lancement.
+
 ## Comment reprendre dans un nouveau projet Claude
 Reliez le dépôt GitHub (référence du code) et gardez ce document dans le projet, puis demandez par exemple : « Lis le document de contexte et reprends le jeu : ajoute l'éditeur de catégories. » Le fichier `sur-le-carreau.html` du projet est la version autonome du jeu (catégories incluses) ; la référence reste le dépôt.
