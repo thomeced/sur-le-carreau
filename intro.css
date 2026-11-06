@@ -65,3 +65,22 @@
   .slci-run .slci-black{animation-duration:.3s}
   @keyframes slci-title{0%,30%{opacity:0}45%,100%{opacity:1}}
 }
+
+/* Écran de lancement : choix du mode funky / sérieux */
+.slcl{position:fixed;inset:0;z-index:1001;display:flex;align-items:center;justify-content:center;padding:24px 16px;overflow:auto;color:#F4F6FF;
+  background:radial-gradient(ellipse 60% 45% at 50% 12%,rgba(120,150,255,.28),transparent 70%),#03040E;font-family:'Poppins','DM Sans',system-ui,sans-serif}
+.slcl-in{width:100%;max-width:420px;display:grid;gap:14px;text-align:center}
+.slcl-title{margin:0;font:700 clamp(2.4rem,10vw,3.6rem)/1.1 'Poppins','DM Sans',system-ui,sans-serif;text-shadow:0 0 28px rgba(110,150,255,.8)}
+.slcl-lead{margin:0 0 8px;opacity:.85}
+.slcl button{display:grid;gap:2px;width:100%;cursor:pointer;border-radius:4px;padding:16px 18px;font:inherit;text-align:center}
+.slcl button b{font-size:1.15rem}
+.slcl button span{font-size:.9rem;opacity:.8;font-weight:500}
+.slcl-funky{border:0;background:#FFC53D;color:#101B4D;box-shadow:0 0 18px rgba(255,197,61,.45)}
+.slcl-serious{background:transparent;color:#F4F6FF;border:2px solid rgba(255,255,255,.35)}
+.slcl button:focus-visible{outline:3px solid #FFC53D;outline-offset:3px}
+/* Mode sérieux : fond noir uni, sans étoiles, sol ni lueurs */
+html.slc-serieux{--sky:#000}
+html.slc-serieux body{background:#000}
+html.slc-serieux body::before,html.slc-serieux body::after{display:none}
+html.slc-serieux h1{text-shadow:none}
+html.slc-serieux .panel,html.slc-serieux .side{backdrop-filter:none}
