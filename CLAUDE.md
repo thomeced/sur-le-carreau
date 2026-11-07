@@ -18,11 +18,13 @@ Jeu web de salon inspiré de The Floor : duels de catégories sur une grille de 
 - `categories.js` : `const CATEGORIES={clé:{label,type?,items:[…]}}` ; format expliqué en tête du fichier. Validé au chargement (lignes invalides et doublons ignorés avec un avertissement en console).
 - `perso.js` : catégories perso de l'éditeur, `normItem`, masquage du mot à trous, affichage des indices (`renderInd`).
 - `editeur.html` : éditeur de catégories.
+- `photos.js` (généré, ne pas modifier à la main) : `CATEGORIES_PHOTOS` et `PHOTO_CREDITS` ; photos dans `assets/photos/<catégorie>/`. `credits.html` : crédits photos (auteur, licence, lien Commons).
+- `tools/photos-commons/` : `liste.txt` (catégories photo, niveau, réponses, article Wikipédia ou `File:` imposé) et `photos-commons.py` (téléchargement depuis Commons, à lancer **dans le Terminal du Mac de Ced** : le réseau de Claude bloque Wikimedia). `tools/photos-js.py` verse le résultat dans le dépôt (photos réduites à 640 px).
 - `intro.js`, `intro.css`, `assets/intro/` : écran de lancement et intro. `tools/generique-intro.py` génère le générique.
 - `sons.js` : sons synthétisés (Web Audio), appelés par `snd(nom)`.
 
 ## Règles
-- **Duel** : deux chronos de 40 s (`DUEL_SEC`, plus de sélecteur sur l'écran de départ ; 45 s avec la case d'or), seul celui du joueur qui a la main tourne. Bonne réponse : la main passe. « Passé » : réponse révélée, −3 s. À 0 s, le joueur perd. Compte à rebours 3-2-1 avant le départ. Niveaux 1 à 3 : +1 toutes les 4 bonnes réponses du duel ; un niveau épuisé est recyclé.
+- **Duel** : deux chronos de 40 s (`DUEL_SEC`, plus de sélecteur sur l'écran de départ ; 45 s avec la case d'or), seul celui du joueur qui a la main tourne. Bonne réponse : la main passe. « Passé » : réponse révélée, −3 s. À 0 s, le joueur perd. Compte à rebours 3-2-1 avant le départ. Niveaux 1 à 5 (`LVL_MAX`) : +1 toutes les 3 bonnes réponses du duel (`LVL_STEP`) ; sans élément au niveau visé, on prend le plus proche ; un niveau épuisé est recyclé ; le niveau affiché est celui de l'élément tiré.
 - **Grille** (mode par défaut) : 2×2, 3×3 ou 4×4 (4×4 par défaut), un joueur et une catégorie par case. Premier attaquant tiré au sort. On attaque un voisin orthogonal (n'importe quelle case de son territoire) ; le duel se joue dans la **catégorie d'origine du défenseur**. Le perdant est éliminé et le gagnant prend toutes ses cases, puis il défie un voisin ou **retourne sur le sol** : tirage en priorité parmi ceux qui n'ont pas encore joué (`G.played`), sinon parmi tous. Le dernier en lice gagne.
 - **Case d'or** (toujours active, en grille) : 3 duels gagnés d'affilée (attaque ou défense) donnent un bonus de +5 s, que le détenteur peut ajouter à son chrono au début d'un duel ultérieur (bouton avant « Lancer le duel »). Retourner sur le sol remet la série à 0. Un seul bonus à la fois (une 3e victoire en le détenant est sans effet, sauf s'il vient de servir). Consommé à la fin du duel où il a servi ; perdu si le détenteur est éliminé ; pas attribué au dernier duel. Constantes `GOLD_STREAK`, `GOLD_SEC` ; état `G.players[i].streak`, `.gold`, `G.use`, `G.note` ; `goldEarns`.
 - **Réponses** : toujours à l'oral, avec arbitre. Le mode clavier (validation tolérante : accents, articles, Levenshtein) reste dans le code, inutilisé, pour les tests.
@@ -34,27 +36,30 @@ Jeu web de salon inspiré de The Floor : duels de catégories sur une grille de 
 - **Arbitre** : code à 4 caractères gardé d'un duel à l'autre (`getLink`, `resetLink`, bouton « Nouveau code »). L'arbitre voit les chronos, l'image ou le mot masqué, les réponses acceptées, le type de jeu, la consigne à annoncer et l'usage de la case d'or. Boutons « Bonne réponse » et « Passé ». Messages `st`, `act`, `hi` ; chaque verdict porte l'élément concerné, pour ignorer les doubles clics.
 - **Liaison** `link()` : capacité `room` de claude.ai, sinon PeerJS 1.5.4 (identifiant `slc-<code>`, serveurs STUN et relais TURN publics), sinon `BroadcastChannel`.
 - **Sons** : `beep`, `go`, `good`, `pass`, `end`, `urgent` (tic-tac des 5 dernières secondes), `capture`, `tick`/`tock`, `impact`, `gold` (case d'or gagnée). Bouton 🔊/🔇 (`slc-sons`). Chrono en rouge à 5 s ou moins.
-- **Contenu** : 31 catégories, dont 18 en emojis (441 images), 10 en mot à trous pour adultes (319 mots) et 3 en indices (Films, Villes du monde, Pays : 79 énigmes). Types : `emoji`, `trous`, `photo`, `indices`.
+- **Contenu** : 33 catégories : 15 en photos (375 photos Wikimedia Commons, 25 par catégorie, 5 par niveau de 1 à 5), 5 en emojis (Films en rébus, Jeux vidéo, Métiers, Fêtes, Corps humain : 117 images), 10 en mot à trous pour adultes (319 mots) et 3 en indices (Films, Villes du monde, Pays : 79 énigmes). Types : `emoji`, `trous`, `photo`, `indices`.
+- **Photos Commons** : Animaux, Fruits et légumes, Transports, Drapeaux (image P41 de Wikidata), Sports et loisirs, Instruments de musique, Outils et bricolage, Nature et météo, Vêtements et accessoires, Plats et gourmandises, Lieux et monuments, Espace et sciences, Insectes, Portraits historiques, Objets technologiques. Chaîne : article Wikipédia → Wikidata (P18) → Commons, avec images de secours (autres P18, image principale des articles fr et en) ; licences retenues : domaine public, CC0, CC BY, CC BY-SA, « Attribution », « No restrictions », « Copyrighted free use » (pas la GFDL seule). Chaque photo relue à l'œil ; les mauvaises remplacées via `python3 photos-commons.py --candidats` (8 propositions par élément listé dans `candidats.txt`) puis `> File:` dans `liste.txt`. Bouton « 📷 Crédits photos » sur l'écran de départ.
 - **Indices** : 2 à 5 indices visibles dès le début, en liste (`[["indice", …], "réponse", niveau]`, `IND_MIN`, `IND_MAX`) ; sans niveau, 4 indices ou plus = 1, 3 = 2, 2 = 3 (`autoLevelInd`). Pas d'acteurs ni de personnes vivantes dans les indices.
 - **Éditeur** (`editeur.html`) : catégories perso en mot à trous, en photos ou en indices (une réponse et 2 à 5 indices). Stockage dans `localStorage` (`slc-perso`) et IndexedDB (photos réduites à 900 px, vignettes de 200 px). Jouable dès 5 éléments (`MIN`), 20 conseillés. Sauvegarde et restauration en JSON (« Espace parents »). Mot à trous : lettres masquées mot par mot selon le niveau ; niveau automatique d'après le mot le plus long.
 - **Intro** : 4 calques webp et `generique.mp3` (musique originale), boutons « Passer » et son, touche Échap. Durée réglée par `DUR` (`intro.js`) et `--slci-dur` (`intro.css`).
 
 ## Conventions
 - Pas de visuel ni de musique protégés ; pas de marques ni de personnes vivantes dans les catégories.
+- Photos : licence libre seulement, crédit dans `credits.html` ; pas de personne reconnaissable (sauf les portraits historiques, de personnes décédées), pas de marque mise en avant, pas de texte qui donne la réponse, pas de bâtiment récent encore protégé.
 - `prefers-reduced-motion` respecté partout ; messages annoncés (`aria-live`) ; tout jouable au clavier.
 - Tests automatisés : page ouverte avec `?mode=serieux`, écrans 1440×900 et 390×844.
 
 ## Risques et points ouverts
 - **Jamais testé sur deux vrais appareils avec PeerJS** (ni avec les photos) : priorité, test à faire par Ced.
 - Le calque des candidats de l'intro reproduit des candidats reconnaissables de l'émission : à remplacer avant toute publication publique.
-- Drapeaux en emoji illisibles sous Windows. Codes à 4 caractères devinables. PeerJS et les relais TURN sont des services publics sans garantie.
+- Codes à 4 caractères devinables. PeerJS et les relais TURN sont des services publics sans garantie.
 - Catégories perso liées à un appareil et un navigateur ; photos d'enfants : usage privé.
+- Photos Commons : 16 sans auteur dans les métadonnées (la page Commons, liée dans les crédits, fait foi) ; l'arbitre reçoit la photo entière (640 px) faute de vignette ; quelques petites marques restent visibles (thérémine, cadenas, électroménager).
 - Pas de sauvegarde de partie ; ni pause ni bouton « mauvaise réponse » pour l'arbitre.
 - **Navigateur des TV Samsung** (testé par Ced, novembre 2026, photo à l'appui) : la vague de capture **déborde des cases capturées** : elle recouvre les cases voisines, le cadre et le titre. Le `clip-path` (`#gcap`) qui la découpe est ignoré par ce navigateur (ancien Chromium de Tizen). S'y ajoutent le coût de l'animation (3 contours de 72 points recalculés à chaque image, filtres de flou `#gglow`), et `color-mix()` et `backdrop-filter` non pris en charge. Correction prévue : une vague sans `clip-path` ni flou, case par case (chaque case capturée prend la couleur du gagnant avec un délai selon sa distance au point de départ), utilisée quand le navigateur ne gère pas `color-mix()` (test `CSS.supports`), avec des couleurs de secours pour `color-mix()`.
 - `index.html` est volumineux : le découper en modules facilitera les prochains chantiers.
 
 ## Pistes (non priorisées)
-Mode solo ; multijoueur en ligne avec serveur (Node.js et WebSocket) ; extras arbitre (mauvaise réponse, pause, annulation) ; vraies images libres ; image floue qui se précise ; niveaux réglables à la main ; devinettes et lettres mélangées ; indices révélés un à un ; son de victoire de partie ; photos dans le dépôt.
+Mode solo ; multijoueur en ligne avec serveur (Node.js et WebSocket) ; extras arbitre (mauvaise réponse, pause, annulation) ; image floue qui se précise ; niveaux réglables à la main ; devinettes et lettres mélangées ; indices révélés un à un ;son de victoire de partie ; vignettes légères pour l'arbitre.
 
 ## Reprendre
 « Lis l'état actuel du projet, puis [chantier]. » Fin de chantier : mettre à jour ce fichier et sa copie dans le projet claude.ai (remplacer, pas ajouter).

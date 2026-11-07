@@ -50,7 +50,7 @@ Object.values(C).forEach(cat=>{
       const c=K[src]||{},li=el('li'),im=el('img'),txt=el('div');
       im.src=src;im.alt='';im.loading='lazy';
       txt.append(el('b',ans.split('|')[0]));
-      const l1=el('span');l1.append('Auteur : '+(c.a||'inconnu'));
+      const l1=el('span');l1.append('Auteur : '+(c.a||'non indiqué (voir la page Commons)'));
       const l2=el('span');l2.append('Licence : ',link(c.u,c.l||'?'),' · ',link(c.s,'page Commons'));
       txt.append(l1,l2);li.append(im,txt);ul.appendChild(li);
     });

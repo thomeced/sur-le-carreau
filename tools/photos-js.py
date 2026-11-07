@@ -13,7 +13,7 @@ Sortie, à la racine du dépôt :
 Les photos des catégories absentes du manifeste sont laissées telles quelles ; celles qui ne sont plus
 retenues dans une catégorie traitée sont supprimées.
 """
-import json, os, shutil, sys
+import json, os, re, shutil, sys
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 MIN = 5
@@ -47,7 +47,9 @@ def main():
             wanted.add(name)
             path = 'assets/photos/%s/%s' % (key, name)
             items.append([path, it['a'], it['l']])
-            credits[path] = {'a': it.get('auteur') or 'Auteur inconnu', 'l': it.get('licence', ''),
+            auteur = re.sub(r'(?i)^(auteur inconnu|unknown author|unknown)(\s+(unknown author|auteur inconnu))?$', '',
+                            (it.get('auteur') or '').strip())
+            credits[path] = {'a': auteur[:160], 'l': it.get('licence', ''),
                              'u': it.get('licenceUrl', ''), 's': it.get('page', '')}
             kept += 1
         for f in os.listdir(dest_dir):
