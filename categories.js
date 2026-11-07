@@ -5,7 +5,7 @@
  *   - emoji(s) : ce que voient les joueurs (un rébus peut en utiliser plusieurs) ;
  *   - réponses : séparées par |, sans se soucier des accents, des majuscules
  *     ni des articles (le, la, un…) ; la première est celle affichée à l'arbitre ;
- *   - niveau : 1 facile, 2 moyen, 3 difficile (la difficulté monte au fil du duel).
+ *   - niveau : de 1 (facile) à 5 (très difficile) ; la difficulté monte au fil du duel.
  * Pour ajouter une catégorie : copier un bloc « clé: { label, items } » ci-dessous.
  * Types de catégorie (champ « type », facultatif) :
  *   - "emoji" (par défaut) : les lignes ci-dessus ;

@@ -184,6 +184,7 @@ a.btnlink:focus-visible{outline:3px solid var(--p1);outline-offset:2px}
     <button type="submit" id="gosubmit" aria-describedby="gowhy">Lancer le duel</button>
     <button type="button" class="alt" id="toarb">Je suis l’arbitre</button>
     <a class="btnlink" href="editeur.html" id="toedit">✏️ Créer mes catégories (mots à trous, photos, indices)</a>
+    <a class="btnlink" href="credits.html" id="tocredits">📷 Crédits photos</a>
   </form>
 </section>
 
@@ -259,6 +260,7 @@ a.btnlink:focus-visible{outline:3px solid var(--p1);outline-offset:2px}
 </main>
 
 <script src="categories.js"></script>
+<script src="photos.js"></script>
 <script src="perso.js"></script>
 <script>
 const DATA={};
@@ -268,11 +270,14 @@ const $=id=>document.getElementById(id);
    ce que voient les joueurs est calculé à chaque tirage (lettres cachées au hasard). */
 const TYPES=(window.SLC_PERSO&&SLC_PERSO.TYPES)||{emoji:{nom:'Images',consigne:'Nommez ce que montre l’image.'}};
 const typeName=t=>t&&t!=='emoji'&&TYPES[t]?TYPES[t].nom:'';
+/* Niveaux de difficulté de 1 à 5 : +1 toutes les LVL_STEP bonnes réponses du duel. Une catégorie qui ne va que
+   jusqu'au niveau 3 reste au niveau 3 (on prend le niveau le plus proche qui a encore des éléments). */
+const LVL_MAX=5,LVL_STEP=3,LVLS=[1,2,3,4,5];
 function normItem(type,it){
   if(type==='trous'){
     const w=typeof it==='string'?it:Array.isArray(it)?it[0]:null;
     if(typeof w!=='string'||!w.trim())return null;
-    const l=Array.isArray(it)&&[1,2,3].includes(it[1])?it[1]:window.SLC_PERSO?SLC_PERSO.autoLevel(w):2;
+    const l=Array.isArray(it)&&LVLS.includes(it[1])?it[1]:window.SLC_PERSO?SLC_PERSO.autoLevel(w):2;
     return['mot:'+w.split('|')[0].trim().toLowerCase(),w,l];
   }
   if(type==='indices'){
@@ -280,12 +285,12 @@ function normItem(type,it){
     const P=window.SLC_PERSO,mx=P?P.IND_MAX:5,mn=P?P.IND_MIN:2;
     const clues=(Array.isArray(it[0])?it[0]:typeof it[0]==='string'?it[0].split('|'):[]).filter(c=>typeof c==='string').map(c=>c.replace(/\s+/g,' ').trim()).filter(Boolean).slice(0,mx);
     if(clues.length<mn)return null;
-    const l=[1,2,3].includes(it[2])?it[2]:P?P.autoLevelInd(clues.length):2;
+    const l=LVLS.includes(it[2])?it[2]:P?P.autoLevelInd(clues.length):2;
     return['ind:'+it[1].split('|')[0].trim().toLowerCase(),it[1],l,{clues}];
   }
   if(!Array.isArray(it)||typeof it[0]!=='string'||!it[0]||typeof it[1]!=='string'||!it[1].trim())return null;
-  if(type==='photo')return['photo:'+it[0],it[1],[1,2,3].includes(it[2])?it[2]:1,{img:it[0],thumb:typeof it[3]==='string'?it[3]:it[0]}];
-  return[1,2,3].includes(it[2])?[it[0],it[1],it[2]]:null;
+  if(type==='photo')return['photo:'+it[0],it[1],LVLS.includes(it[2])?it[2]:1,{img:it[0],thumb:typeof it[3]==='string'?it[3]:it[0]}];
+  return LVLS.includes(it[2])?[it[0],it[1],it[2]]:null;
 }
 function addCats(src){
   if(src&&typeof src==='object')for(const [k,v] of Object.entries(src)){
@@ -302,6 +307,7 @@ function addCats(src){
   }
 }
 addCats(typeof CATEGORIES==='undefined'?null:CATEGORIES);
+addCats(typeof CATEGORIES_PHOTOS==='undefined'?null:CATEGORIES_PHOTOS); // photos Wikimedia Commons (photos.js)
 
 const norm=s=>s.toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g,'').replace(/[^a-z0-9 ]/g,' ').replace(/\b(le|la|les|l|un|une|des|du|de|d)\b/g,' ').replace(/\s+/g,' ').trim();
 function lev(a,b){const m=[...Array(b.length+1).keys()];for(let i=1;i<=a.length;i++){let p=m[0];m[0]=i;for(let j=1;j<=b.length;j++){const t=m[j];m[j]=Math.min(m[j]+1,m[j-1]+1,p+(a[i-1]===b[j-1]?0:1));p=t}}return m[b.length]}
@@ -397,15 +403,15 @@ const linkMsg=(mode,st)=>{
   if(mode==='peer')return{ok:'Liaison entre appareils : active',wait:'Liaison entre appareils : prête, en attente de l’arbitre',search:'Liaison entre appareils : recherche du duel… vérifiez le code',down:'Liaison entre appareils : interrompue, nouvelle tentative…',blocked:'Jeu trouvé, mais la connexion directe n’aboutit pas (réseau bloquant) : essayez le même wifi pour les deux appareils'}[st]||'Liaison entre appareils : connexion…';
   return'Liaison entre appareils : indisponible (seuls les onglets du même navigateur se voient)';
 };
-const lvl=()=>Math.min(3,1+Math.floor((S.sc[0]+S.sc[1])/4));
-function fill(){S.pool=[[],[],[],[]];for(const it of S.src)S.pool[it[2]].push(it);S.pool.forEach(shuffle)}
+const lvl=()=>Math.min(LVL_MAX,1+Math.floor((S.sc[0]+S.sc[1])/LVL_STEP));
+function fill(){S.pool=LVLS.map(()=>[]).concat([[]]);for(const it of S.src)S.pool[it[2]].push(it);S.pool.forEach(shuffle)}
 function card(){
-  const L=lvl(),order=[L,L-1,L+1,L-2,L+2].filter(l=>l>=1&&l<=3);
-  S.lvl=L;
+  const L=lvl(),order=[L,L-1,L+1,L-2,L+2,L-3,L+3,L-4,L+4].filter(l=>l>=1&&l<=LVL_MAX);
   if(!S.pool[L].length)S.pool[L]=shuffle(S.src.filter(x=>x[2]===L&&x!==S.cur));
   let l=order.find(x=>S.pool[x].length);
   if(!l){fill();l=order.find(x=>S.pool[x].length)}
   S.cur=S.pool[l].pop();
+  S.lvl=S.cur[2]; // niveau affiché : celui de l'élément tiré
   S.disp=S.type==='trous'&&window.SLC_PERSO?SLC_PERSO.masque(S.cur[1],S.cur[2]):S.type==='photo'?'':S.type==='indices'?S.cur[3].clues.join('\n'):S.cur[0];
   showCard();
 }
