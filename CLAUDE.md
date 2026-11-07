@@ -59,7 +59,7 @@ Jeu web de salon inspiré de The Floor : duels de catégories sur une grille de 
 - `index.html` est volumineux : le découper en modules facilitera les prochains chantiers.
 
 ## Pistes (non priorisées)
-Mode solo ; multijoueur en ligne avec serveur (Node.js et WebSocket) ; extras arbitre (mauvaise réponse, pause, annulation) ; image floue qui se précise ; niveaux réglables à la main ; devinettes et lettres mélangées ; indices révélés un à un ;son de victoire de partie ; vignettes légères pour l'arbitre.
+Mode solo ; multijoueur en ligne avec serveur (Node.js et WebSocket) ; extras arbitre (mauvaise réponse, pause, annulation) ; image floue qui se précise ; niveaux réglables à la main ; devinettes et lettres mélangées ; indices révélés un à un ; son de victoire de partie ; vignettes légères pour l'arbitre.
 
 ## Reprendre
 « Lis l'état actuel du projet, puis [chantier]. » Fin de chantier : mettre à jour ce fichier et sa copie dans le projet claude.ai (remplacer, pas ajouter).
