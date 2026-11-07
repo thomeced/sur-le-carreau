@@ -10,14 +10,14 @@ Au lancement, un écran propose le **mode funky** (générique animé et son) ou
 
 Un compte à rebours 3-2-1 précède chaque duel.
 
-- **Réponses à l'oral** : les joueurs répondent de vive voix, un arbitre valide depuis une autre page (bouton « Je suis l'arbitre » ou `#arbitre` dans l'adresse) en saisissant le code à 4 caractères affiché par le jeu. Le code reste valable d'une partie à l'autre : l'arbitre n'a pas à recharger sa page ; le bouton « Nouveau code » en génère un autre si besoin.
+- **Le téléphone est la régie** : l'écran du jeu (TV ou ordinateur) affiche un QR code ; on le scanne avec le téléphone, qui configure la partie (mode, taille, noms, catégories), la lance, puis sert d'arbitre (les joueurs répondent de vive voix). Le choix Funky ou Sérieux se fait sur l'écran du jeu. Sans QR code : « Ouvrir la régie sur cet appareil » (ou `#arbitre` dans l'adresse) puis le code à 4 caractères. Pour configurer sans téléphone : « Configurer sur cet écran ».
 
 > **Liaison jeu ↔ arbitre.** Sur claude.ai, elle passe par la capacité `room` des artefacts. Partout ailleurs (GitHub Pages…), elle passe par [PeerJS](https://peerjs.com) : les deux appareils se connectent en direct, le service public de PeerJS ne sert qu'à les mettre en relation. Si aucun des deux n'est disponible, seuls deux onglets du même navigateur peuvent communiquer (`BroadcastChannel`). Un indicateur affiche l'état de la liaison sur les deux écrans.
 > Sur certains réseaux mobiles très fermés, la connexion directe peut échouer : mettre alors le jeu et l'arbitre sur le même wifi.
 
 ## Héberger sur GitHub Pages
 
-Dépôt → **Settings** → **Pages** → *Build and deployment* : source **Deploy from a branch**, branche `main`, dossier `/ (root)`. Le jeu est ensuite servi à `https://<utilisateur>.github.io/sur-le-carreau/`. L'arbitre ouvre la même adresse (bouton « Je suis l'arbitre ») et saisit le code affiché sur l'écran du jeu.
+Dépôt → **Settings** → **Pages** → *Build and deployment* : source **Deploy from a branch**, branche `main`, dossier `/ (root)`. Le jeu est ensuite servi à `https://<utilisateur>.github.io/sur-le-carreau/`. Le téléphone scanne le QR code affiché par l'écran du jeu (ou ouvre la même adresse, touche « Ouvrir la régie sur cet appareil » et saisit le code).
 
 ## Grille de territoires
 

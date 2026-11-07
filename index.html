@@ -47,7 +47,7 @@ button.alt{background:transparent;border:2px solid var(--line);color:var(--ink);
 .answer input{flex:1;font-size:1.2rem}
 #end .panel{max-width:520px}
 #end h2{font:400 2rem/1.1 var(--disp);margin:0 0 8px}
-#acard{font-size:clamp(4rem,18vw,7rem)}
+#acard{font-size:clamp(4rem,18vw,7rem);text-align:center}
 #aans{font-weight:700;font-size:1.3rem;min-height:1.6em}
 #pcode{font:700 2.8rem/1 var(--disp);letter-spacing:.2em;color:var(--p1);margin:6px 0 4px}
 .pair{position:fixed;inset:0;z-index:60;display:flex;align-items:center;justify-content:center;padding:16px;overflow:auto;background:rgba(3,4,14,.94)}
@@ -156,6 +156,39 @@ a.btnlink:focus-visible{outline:3px solid var(--p1);outline-offset:2px}
 .padd{background:transparent;color:var(--ink);border:2px dashed rgba(255,255,255,.4);box-shadow:none;padding:4px 10px;font-size:.92rem;font-weight:600}
 .padd:hover:not(:disabled){border-color:var(--p1)}
 #gowhy{margin:0;color:var(--ko);font-weight:700}
+/* Écran d'accueil (écran du jeu) et régie (téléphone) */
+.steps{display:flex;flex-wrap:wrap;justify-content:center;gap:6px 10px;list-style:none;margin:0 0 16px;padding:0;font:600 .95rem/1.3 var(--disp)}
+.steps li{border:2px solid var(--line);border-radius:999px;padding:4px 12px;opacity:.6}
+.steps li.done{border-color:var(--ok);color:var(--ok);opacity:1}
+.steps li.cur{border-color:var(--p1);background:rgba(255,197,61,.15);opacity:1}
+#home{text-align:center}
+#home h1{margin-top:4px}
+.hpanel{max-width:520px;margin:0 auto 14px;text-align:center}
+.hpanel h2{font:700 clamp(1.4rem,4.4vw,2rem)/1.2 var(--disp);margin:0 0 10px}
+#hqr svg{display:block;width:min(62vw,300px,42vh);height:auto;margin:0 auto;border-radius:6px}
+#hqr:empty{display:none}
+.bigcode{font:700 clamp(2.6rem,9vw,4rem)/1 var(--disp);letter-spacing:.2em;color:var(--p1);margin:12px 0 4px}
+#hst,#hpst{font-weight:700;min-height:1.5em;margin:6px 0}
+#hst.on,#hpst.on{color:var(--ok)}
+.hlinks{display:flex;flex-wrap:wrap;justify-content:center;gap:4px 18px;margin:8px 0 0;font-size:.9rem}
+.hlinks a,.hlinks button.lnk{color:var(--ink);opacity:.7;background:none;border:0;box-shadow:none;padding:6px 2px;font:600 .9rem/1.3 var(--disp);text-decoration:underline;text-underline-offset:3px}
+.hlinks a:hover,.hlinks button.lnk:hover{opacity:1}
+.hlinks a:focus-visible{outline:3px solid var(--p1);outline-offset:2px}
+.hwait{animation:hwait 1.6s ease-in-out infinite alternate}
+@keyframes hwait{to{opacity:.55}}
+@media(prefers-reduced-motion:reduce){.hwait{animation:none}}
+#arb .steps{margin-bottom:8px}
+#rscreen{text-align:center;margin:0 0 12px;font-weight:600;opacity:.85}
+#rscreen:empty{display:none}
+#rwait{text-align:center;display:grid;gap:10px}
+#rwait p{margin:0}
+#rwmsg{font:600 1.1rem/1.4 var(--disp)}
+#rinfo{font:600 1.05rem/1.4 var(--disp);text-align:center;margin:8px 0}
+#rinfo:empty{display:none}
+#rctl{display:grid;gap:8px;margin-top:14px}
+html.slc-arb #setup{padding-top:0}
+@media(max-width:420px){.steps{gap:4px 6px;font-size:.8rem}.steps li{padding:3px 8px}}
+html.slc-arb main{padding-top:12px}
 </style>
 <script src="intro.js"></script>
 <script src="sons.js"></script>
@@ -163,8 +196,27 @@ a.btnlink:focus-visible{outline:3px solid var(--p1);outline-offset:2px}
 </head>
 <body>
 <main>
-<section id="setup">
+<!-- Écran d'accueil de l'écran du jeu : QR code pour que le téléphone prenne la main, puis attente de la configuration. -->
+<section id="home">
   <h1>Sur le carreau</h1>
+  <ol class="steps" id="hsteps" aria-label="Étapes"><li>1. Connexion</li><li>2. Configuration</li><li>3. Partie</li></ol>
+  <div id="hconnect" class="panel hpanel">
+    <h2 id="hh2">Scannez pour prendre la main</h2>
+    <div id="hqr" aria-hidden="true"></div>
+    <div id="hcode" class="bigcode" aria-label="Code de l’écran"></div>
+    <p id="hhow"></p>
+    <p id="hst" role="status" aria-live="polite"></p>
+    <p id="hlnk" class="plnk"></p>
+  </div>
+  <div id="hprep" class="panel hpanel" hidden>
+    <h2 class="hwait" id="hph2">Partie en préparation sur le téléphone…</h2>
+    <p id="hpst" role="status" aria-live="polite"></p>
+  </div>
+  <p class="hlinks"><button type="button" class="lnk" id="hlocal">Configurer sur cet écran</button><a href="editeur.html" id="hedit">Créer mes catégories</a><a href="#arbitre">Ouvrir la régie sur cet appareil</a></p>
+</section>
+
+<section id="setup" hidden>
+  <h1 id="sh1">Sur le carreau</h1>
   <p class="lead" id="lead"></p>
   <p id="cerr" role="alert" hidden></p>
   <form id="form" class="panel setup">
@@ -199,6 +251,7 @@ a.btnlink:focus-visible{outline:3px solid var(--p1);outline-offset:2px}
     <button type="submit" id="gosubmit" aria-describedby="gowhy">Lancer le duel</button>
     <a class="btnlink" href="editeur.html" id="toedit">✏️ Créer mes catégories (mots à trous, photos, indices)</a>
     <a class="btnlink" href="credits.html" id="tocredits">📷 Crédits photos</a>
+    <button type="button" class="alt" id="tophone">📱 Configurer depuis le téléphone</button>
   </form>
 </section>
 
@@ -210,7 +263,7 @@ a.btnlink:focus-visible{outline:3px solid var(--p1);outline-offset:2px}
       <div id="wait" class="panel" hidden>
         <p id="wst" role="status"></p>
         <button type="button" id="go" disabled>Démarrer le duel</button>
-        <button type="button" class="alt" id="wpair" hidden>Connecter l’arbitre</button>
+        <button type="button" class="alt" id="wpair" hidden>Connecter la régie</button>
         <button type="button" class="alt" id="wback" hidden>Retour à la grille</button>
       </div>
       <p id="dcat"></p>
@@ -237,11 +290,11 @@ a.btnlink:focus-visible{outline:3px solid var(--p1);outline-offset:2px}
   <button type="button" class="alt" id="gquit">Quitter la partie</button>
 </section>
 
-<!-- Connexion de l'arbitre : au lancement du jeu, puis à la demande (badge « Arbitre »). Le code n'est affiché qu'ici. -->
-<div id="pair" class="pair" role="dialog" aria-modal="true" aria-labelledby="ptitle" hidden>
+<!-- Reconnexion de la régie pendant une partie (badge « Régie »). Au départ, le code s'affiche sur l'écran d'accueil (#home). -->
+<div id="pair" class="pair" role="dialog" aria-modal="true" aria-labelledby="pairtitle" hidden>
   <div class="panel">
-    <h2 id="ptitle">Connecter l’arbitre</h2>
-    <p class="phow" id="phow">Sur le téléphone de l’arbitre, scannez ce QR code. Ou ouvrez le jeu, choisissez « Je suis l’arbitre » et saisissez le code.</p>
+    <h2 id="pairtitle">Connecter la régie</h2>
+    <p class="phow" id="phow"></p>
     <div id="pqr" aria-hidden="true"></div>
     <div id="pcode" aria-label="Code arbitre"></div>
     <p id="pst" role="status" aria-live="polite"></p>
@@ -252,14 +305,26 @@ a.btnlink:focus-visible{outline:3px solid var(--p1);outline-offset:2px}
 </div>
 <button type="button" id="arbadge" class="arbadge" hidden>Arbitre</button>
 
+<!-- Régie (téléphone) : connexion à l'écran, configuration (#setup, partagé avec l'écran du jeu) et arbitrage. -->
 <section id="arb" hidden>
-  <h1>Arbitre</h1>
+  <h1>Régie</h1>
+  <ol class="steps" id="rsteps" aria-label="Étapes"><li>1. Connexion</li><li>2. Configuration</li><li>3. Partie</li></ol>
+  <p id="rscreen"></p>
   <form id="rj" class="panel setup">
     <label>Code affiché sur l’écran du jeu<input id="rc" maxlength="4" autocomplete="off" autocapitalize="characters" spellcheck="false"></label>
-    <button type="submit">Rejoindre le duel</button>
+    <button type="submit">Se connecter à l’écran</button>
     <button type="button" class="alt" id="arback">Retour</button>
   </form>
+  <div id="rwait" class="panel" hidden>
+    <p id="rwmsg" role="status" aria-live="polite"></p>
+    <button type="button" id="rwbtn" hidden></button>
+    <p id="rwlk" class="plnk"></p>
+    <button type="button" class="alt" id="rchange">Changer d’écran</button>
+  </div>
   <div id="rl" hidden>
+    <p id="rinfo" role="status" aria-live="polite"></p>
+    <button type="button" class="big" id="rgo" hidden>Démarrer le duel</button>
+    <div id="rduel">
     <div class="row2">
       <div class="side" id="a0"><span class="nm"></span><div class="tm"></div></div>
       <div class="side" id="a1"><span class="nm"></span><div class="tm"></div></div>
@@ -272,7 +337,12 @@ a.btnlink:focus-visible{outline:3px solid var(--p1);outline-offset:2px}
     <button type="button" class="big good" id="bok" disabled>Bonne réponse</button>
     <button type="button" class="big skip" id="bpass" disabled>Passé (−3 s)</button>
     <p id="ast" role="status"></p>
-    <p id="alk" role="status"></p>
+    </div>
+    <div id="rctl">
+      <button type="button" id="rnew" hidden>Nouvelle partie</button>
+      <button type="button" class="alt" id="rquit" hidden>Arrêter la partie</button>
+    </div>
+    <p id="alk" class="plnk" role="status"></p>
   </div>
 </section>
 
@@ -338,14 +408,16 @@ addCats(typeof CATEGORIES_PHOTOS==='undefined'?null:CATEGORIES_PHOTOS); // photo
 const norm=s=>s.toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g,'').replace(/[^a-z0-9 ]/g,' ').replace(/\b(le|la|les|l|un|une|des|du|de|d)\b/g,' ').replace(/\s+/g,' ').trim();
 function lev(a,b){const m=[...Array(b.length+1).keys()];for(let i=1;i<=a.length;i++){let p=m[0];m[0]=i;for(let j=1;j<=b.length;j++){const t=m[j];m[j]=Math.min(m[j]+1,m[j-1]+1,p+(a[i-1]===b[j-1]?0:1));p=t}}return m[b.length]}
 function isOk(v,list){v=norm(v);if(!v)return false;return list.some(r=>{r=norm(r);if(v===r)return true;const t=r.length>=9?2:r.length>=5?1:0;return t>0&&lev(v,r)<=t})}
+const hasCat=k=>typeof k==='string'&&Object.prototype.hasOwnProperty.call(DATA,k);
 function shuffle(a){for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a}
-function show(id){['setup','game','grid','end','arb'].forEach(x=>$(x).hidden=x!==id)}
+function show(id){['home','setup','game','grid','end','arb'].forEach(x=>$(x).hidden=x!==id)}
 
 // Temps de chaque joueur pour un duel (secondes). Le détenteur de la case d'or peut y ajouter GOLD_SEC.
 const DUEL_SEC=40;
 let S,flashT;
 const CH='ABCDEFGHJKMNPQRSTUVWXYZ23456789',isArb=location.hash.startsWith('#arbitre');
 // Lien du QR code : #arbitre=CODE ouvre la page arbitre et rejoint le duel directement.
+let GS=null; // régie : dernier état reçu de l'écran du jeu
 const ARB_CODE=isArb?(location.hash.split('=')[1]||'').toUpperCase().replace(/[^A-Z0-9]/g,'').slice(0,4):'';
 let peerLib;
 function loadPeer(){
@@ -366,6 +438,10 @@ const ICE=[
   {urls:'turn:us-0.turn.peerjs.com:3478',username:'peerjs',credential:'peerjsp'},
   {urls:['turn:openrelay.metered.ca:80','turn:openrelay.metered.ca:443','turn:openrelay.metered.ca:443?transport=tcp','turns:openrelay.metered.ca:443?transport=tcp'],username:'openrelayproject',credential:'openrelayproject'}
 ];
+/* Messages : st (état du duel, écran → régie), act (verdict, régie → écran), hi (présence de la régie),
+   gs (état de l'écran : étape, catégories perso…, écran → régie), cfg (configuration, régie → écran),
+   cfgr (réponse à cfg, écran → régie), cmd (commande : go, new, quit, prep ; régie → écran). */
+const LTOPICS=['st','act','hi','gs','cfg','cfgr','cmd'];
 async function link(code,role,onmsg,onstat){
   let bc=null;try{if(typeof BroadcastChannel==='function')bc=new BroadcastChannel('slc-'+code)}catch(e){bc=null}
   const seen=new Set();
@@ -373,7 +449,7 @@ async function link(code,role,onmsg,onstat){
   if(bc)bc.onmessage=e=>hear(e.data.topic,e.data.d);
   let room=null,peer=null,conns=[],mode='local',missing=false;
   const stat=st=>{try{if(onstat)onstat(mode,st)}catch(e){}};
-  try{const r=window.claude&&await claude.use('room');if(r){room=await r.join('slc-'+code.toLowerCase());['st','act','hi'].forEach(t=>room.on(t,m=>hear(t,m.data),()=>{}));mode='claude'}}catch(e){room=null}
+  try{const r=window.claude&&await claude.use('room');if(r){room=await r.join('slc-'+code.toLowerCase());LTOPICS.forEach(t=>room.on(t,m=>hear(t,m.data),()=>{}));mode='claude'}}catch(e){room=null}
   if(room)stat('ok');
   else{
     try{
@@ -516,10 +592,24 @@ function skip(){
 let LINKP=null,LINK=null,LCODE='',lastHi=0,LSTAT=null;
 const onmsg=(topic,d)=>{
   if(topic==='hi'){
-    lastHi=Date.now();if(S)S.imgK=null;
-    pairTick();
+    const was=arbOn();lastHi=Date.now();if(S)S.imgK=null;
+    homeArb();pairTick();
+    if(!was)gsSend(true);
     push();
   }else if(topic==='act'&&S&&S.oral&&S.started&&!S.over&&!S.lock&&d.c===S.cur[0]){d.a==='ok'?good():d.a==='pass'&&skip()}
+  else if(topic==='cfg'){
+    lastHi=Date.now();
+    const ph=gphase();
+    const err=ph==='prep'||ph==='local'?applyCfg(d.cfg):'Une partie est déjà en cours sur l’écran du jeu.';
+    if(!err)ORIGIN='phone';
+    if(LINK)LINK.send('cfgr',{rid:d.rid,ok:!err,err});
+    gsSend(true);
+  }else if(topic==='cmd'){
+    lastHi=Date.now();
+    if(d.c==='go'){if(S&&S.oral&&S.link&&!S.started&&!S.counting&&!S.over&&!$('game').hidden)launch()}
+    else if(d.c==='new'||d.c==='quit'||d.c==='prep')toPrep();
+    gsSend(true);
+  }
 };
 function getLink(){
   if(LINKP)return LINKP;
@@ -542,37 +632,42 @@ function resetLink(){if(LINK&&LINK.close)LINK.close();LINK=null;LINKP=null;LCODE
 const arbOn=()=>Date.now()-lastHi<7000;
 let pairBack=null;
 function pairURL(){return /^https?:$/.test(location.protocol)?location.origin+location.pathname+'#arbitre='+LCODE:''}
+// QR code (SVG) du lien de la régie, dans la boîte donnée.
+function qrInto(box,u){
+  box.textContent='';if(!u)return;
+  const m=SLC_QR(u),n=m.length,q=3,NS='http://www.w3.org/2000/svg',svg=document.createElementNS(NS,'svg');
+  svg.setAttribute('viewBox','0 0 '+(n+2*q)+' '+(n+2*q));svg.setAttribute('shape-rendering','crispEdges');
+  let d='';m.forEach((row,r)=>row.forEach((on,c)=>{if(on)d+='M'+(c+q)+' '+(r+q)+'h1v1h-1z'}));
+  const bg=document.createElementNS(NS,'rect');bg.setAttribute('width',n+2*q);bg.setAttribute('height',n+2*q);bg.setAttribute('fill','#fff');
+  const p=document.createElementNS(NS,'path');p.setAttribute('d',d);p.setAttribute('fill','#03040E');
+  svg.append(bg,p);box.appendChild(svg);
+}
+const HOWTXT=u=>u?'Scannez le QR code avec le téléphone. Sinon, ouvrez le jeu sur le téléphone, touchez « Ouvrir la régie sur cet appareil » et saisissez le code.'
+  :'Sur le téléphone, ouvrez le jeu, touchez « Ouvrir la régie sur cet appareil » et saisissez le code.';
 function pairRender(){
-  $('pcode').textContent=LCODE||'…';
-  const u=LCODE&&window.SLC_QR&&pairURL(),box=$('pqr');box.textContent='';
-  if(u){
-    const m=SLC_QR(u),n=m.length,q=3,NS='http://www.w3.org/2000/svg',svg=document.createElementNS(NS,'svg');
-    svg.setAttribute('viewBox','0 0 '+(n+2*q)+' '+(n+2*q));svg.setAttribute('shape-rendering','crispEdges');
-    let d='';m.forEach((row,r)=>row.forEach((on,c)=>{if(on)d+='M'+(c+q)+' '+(r+q)+'h1v1h-1z'}));
-    const bg=document.createElementNS(NS,'rect');bg.setAttribute('width',n+2*q);bg.setAttribute('height',n+2*q);bg.setAttribute('fill','#fff');
-    const p=document.createElementNS(NS,'path');p.setAttribute('d',d);p.setAttribute('fill','#03040E');
-    svg.append(bg,p);box.appendChild(svg);
-  }
-  $('phow').textContent=u?'Sur le téléphone de l’arbitre, scannez ce QR code. Ou ouvrez le jeu, choisissez « Je suis l’arbitre » et saisissez le code.'
-    :'Sur l’appareil de l’arbitre, ouvrez le jeu, choisissez « Je suis l’arbitre » et saisissez le code.';
+  $('pcode').textContent=LCODE||'…';$('hcode').textContent=LCODE||'…';
+  const u=LCODE&&window.SLC_QR&&pairURL();
+  qrInto($('pqr'),u);qrInto($('hqr'),u);
+  $('phow').textContent=$('hhow').textContent=HOWTXT(u);
   pairTick();
 }
 function pairTick(){
   if(isArb)return;
   const on=arbOn(),b=$('arbadge'),busy=S&&(S.counting||(S.started&&!S.over));
-  b.textContent=on?'Arbitre connecté ✓':'Arbitre non connecté';b.classList.toggle('on',on);
-  b.setAttribute('aria-label',(on?'Arbitre connecté':'Arbitre non connecté')+' : ouvrir la connexion de l’arbitre');
-  b.hidden=!$('pair').hidden||!LINKP;
+  b.textContent=on?'Régie connectée ✓':'Régie non connectée';b.classList.toggle('on',on);
+  b.setAttribute('aria-label',(on?'Régie connectée':'Régie non connectée')+' : ouvrir la connexion de la régie');
+  b.hidden=!$('pair').hidden||!LINKP||!$('home').hidden;
   document.documentElement.classList.toggle('slc-badge',!b.hidden);
-  const st=$('pst'),txt=!LCODE?'Création du code…':on?'Arbitre connecté ✓':'En attente de l’arbitre…';
+  const st=$('pst'),txt=!LCODE?'Création du code…':on?'Régie connectée ✓':'En attente du téléphone…';
   if(st.textContent!==txt)st.textContent=txt;st.classList.toggle('on',on);
-  $('plnk').textContent=LSTAT?linkMsg(LSTAT[0],LSTAT[1]):'';
+  $('plnk').textContent=$('hlnk').textContent=LSTAT?linkMsg(LSTAT[0],LSTAT[1]):'';
+  homeRender();gsSend();
   $('pok').textContent=on?'Continuer':'Continuer sans attendre';$('pok').className=on?'':'alt';
   $('pnew').disabled=!!busy;
   // Panneau d'attente avant un duel : pas de code, seulement l'état et, si besoin, l'accès à la connexion.
   if(S&&S.oral&&!S.started&&!S.counting&&!S.over){
     $('go').disabled=!on||!S.link;$('wpair').hidden=on;
-    const w=on?'Arbitre connecté. Vous pouvez démarrer.':'L’arbitre n’est pas connecté.';
+    const w=on?'Régie connectée. Démarrez ici ou sur le téléphone.':'La régie (le téléphone) n’est pas connectée.';
     if($('wst').textContent!==w)$('wst').textContent=w;
   }
 }
@@ -584,7 +679,7 @@ function openPair(){
 function closePair(){
   $('pair').hidden=true;pairTick();
   const t=pairBack&&pairBack!==document.body&&document.contains(pairBack)&&!pairBack.closest('[hidden]')?pairBack:null;pairBack=null;
-  (t||(!$('wait').hidden&&!$('game').hidden?($('go').disabled?$('wpair'):$('go')):null)||(!$('setup').hidden?$('gosubmit'):null)||$('arbadge')).focus();
+  (t||(!$('wait').hidden&&!$('game').hidden?($('go').disabled?$('wpair'):$('go')):null)||(!$('setup').hidden?$('gosubmit'):null)||($('home').hidden?$('arbadge'):document.body)).focus();
 }
 $('pok').onclick=closePair;
 $('pair').addEventListener('keydown',e=>{if(e.key==='Escape')closePair()});
@@ -595,15 +690,77 @@ $('pnew').onclick=()=>{
   resetLink();if(S)S.link=null;pairRender();
   getLink().then(()=>{if(S&&S.oral&&!S.started)attach(S)});
 };
-if(!isArb){
-  setInterval(pairTick,1000);
-  // Premier lancement dans cet onglet : écran de connexion après l'intro. Sinon (rechargement, retour de
-  // l'éditeur ou des crédits) : on reprend le même code en arrière-plan, l'arbitre se reconnecte seul.
-  let first=true;try{first=!sessionStorage.getItem('slc-code')}catch(e){}
-  const go=()=>{if(first)openPair();else getLink().then(pairTick)};
-  if(window.SLC_INTRO_DONE||!document.querySelector('script[src="intro.js"]'))go();
-  else document.addEventListener('slc:intro-end',go,{once:true});
+/* ---------- Écran d'accueil de l'écran du jeu ----------
+   HOMEST : 'home' (QR code, en attente du téléphone), 'launch' (choix Funky ou Sérieux puis intro, sur l'écran
+   du jeu : ce geste débloque le son), 'prep' (le téléphone configure la partie).
+   ORIGIN : d'où vient la partie en cours ('phone' ou 'screen'), pour savoir où revenir à la fin. */
+let HOMEST='home',ORIGIN='phone';
+const setSteps=(ol,cur)=>[...ol.children].forEach((li,i)=>{li.className=i<cur?'done':i===cur?'cur':'';if(i===cur)li.setAttribute('aria-current','step');else li.removeAttribute('aria-current')});
+function startIntro(){const I=window.SLC_INTRO;if(I&&!I.started)I.start()}
+// Le téléphone vient de se connecter : choix du lancement sur l'écran du jeu, puis attente de la configuration.
+function homeArb(){
+  if(isArb||HOMEST!=='home'||$('home').hidden)return;
+  const I=window.SLC_INTRO;
+  if(!I||I.started||window.SLC_INTRO_DONE){HOMEST='prep';homeRender();return}
+  HOMEST='launch';homeRender();
+  document.addEventListener('slc:intro-end',()=>{HOMEST='prep';homeRender();gsSend(true)},{once:true});
+  I.start();
 }
+function homeRender(){
+  if(isArb)return;
+  const on=arbOn(),prep=HOMEST!=='home';
+  $('hconnect').hidden=prep&&on;$('hprep').hidden=!prep;
+  $('hh2').textContent=prep?'Reconnectez le téléphone':'Scannez pour prendre la main';
+  const t=!LCODE?'Création du code…':on?'Téléphone connecté ✓':'En attente du téléphone…',st=$('hst');
+  if(st.textContent!==t)st.textContent=t;st.classList.toggle('on',on);
+  const pt=on?'Régie connectée ✓ · écran '+LCODE:'La régie s’est déconnectée : reconnectez le téléphone.',ps=$('hpst');
+  if(ps.textContent!==pt)ps.textContent=pt;ps.classList.toggle('on',on);
+  $('hph2').textContent=HOMEST==='launch'?'Lancement…':'Partie en préparation sur le téléphone…';
+  setSteps($('hsteps'),prep&&on?1:0);
+}
+// Étape de l'écran du jeu, envoyée à la régie : home, launch, prep, local (configuration sur l'écran), play, over.
+function gphase(){
+  if(!$('home').hidden)return HOMEST;
+  if(!$('setup').hidden)return'local';
+  if(G&&!$('grid').hidden)return G.over?'over':'play';
+  if(S&&S.pid)return'play';
+  if(S&&S.over&&!$('end').hidden)return'over';
+  return S?'play':'prep';
+}
+function ginfo(){
+  if(G&&!$('grid').hidden)return $('gtitle').textContent;
+  if(!$('end').hidden)return $('win').textContent;
+  if(S&&!$('game').hidden)return S.names[0]+' contre '+S.names[1]+' · '+S.cat;
+  return'';
+}
+const persoList=()=>Object.keys(DATA).filter(k=>DATA[k].perso).map(k=>[k,DATA[k].label,DATA[k].type,DATA[k].items.length]);
+let GSK='',GST=0;
+function gsSend(force){
+  if(isArb||!LINK)return;
+  const d={phase:gphase(),code:LCODE,info:ginfo(),win:/Windows/.test(navigator.userAgent),perso:persoList(),
+    duel:!!(S&&!S.over&&!$('game').hidden),wait:!!(S&&S.oral&&S.link&&!S.started&&!S.counting&&!S.over&&!$('game').hidden)};
+  const k=JSON.stringify(d);
+  if(!force&&k===GSK&&Date.now()-GST<3000)return;
+  GSK=k;GST=Date.now();LINK.send('gs',d);
+}
+// Retour à l'attente de la configuration par le téléphone (nouvelle partie, partie arrêtée).
+function toPrep(){
+  if(isArb)return;
+  if(S){clearInterval(S.h);clearInterval(S.cd);if(!S.over){S.over=true;push()}}
+  if(G){clearTimeout(G.drawT);G.draw=false}
+  if(gAnimT){cancelAnimationFrame(gAnimT);gAnimT=null}
+  S=null;G=null;ORIGIN='phone';HOMEST='prep';
+  try{sessionStorage.removeItem('slc-vue')}catch(e){}
+  if(!$('pair').hidden)$('pair').hidden=true;
+  show('home');pairTick();gsSend(true);
+}
+function backToStart(){
+  if(ORIGIN!=='screen')return toPrep();
+  if(G){clearTimeout(G.drawT);G.draw=false}
+  show('setup');gsSend(true);
+}
+$('hlocal').onclick=()=>{ORIGIN='screen';HOMEST='prep';try{sessionStorage.setItem('slc-vue','setup')}catch(e){}show('setup');pairTick();gsSend(true);startIntro();$('gmode').focus()};
+$('tophone').onclick=toPrep;
 function attach(me){
   getLink().then(l=>{
     if(me!==S)return;
@@ -623,11 +780,34 @@ function startDuel(o){
   if(LINK)S.link=LINK;
   attach(S);pairTick();
 }
+// Configuration lue sur le formulaire de départ (le même sur l'écran du jeu et sur la régie).
+function formCfg(){
+  if($('gmode').value==='grid')return{mode:'grid',size:+$('gsize').value,names:[...$('gnames').querySelectorAll('input')].map(x=>x.value.trim()),keys:PICK.slice()};
+  return{mode:'duel',names:[$('n0').value.trim(),$('n1').value.trim()],cat:$('cat').value};
+}
+// Vérifie une configuration et lance la partie. Renvoie un message d'erreur, ou '' si tout va bien.
+function applyCfg(c){
+  if(!c||typeof c!=='object')return'Configuration illisible.';
+  const nm=(a,n)=>Array.from({length:n},(_,i)=>(Array.isArray(a)&&typeof a[i]==='string'?a[i].replace(/\s+/g,' ').trim().slice(0,14):'')||'Joueur '+(i+1));
+  if(c.mode==='grid'){
+    const size=+c.size;if(![2,3,4].includes(size))return'Taille de grille inconnue.';
+    const keys=Array.isArray(c.keys)?[...new Set(c.keys)]:[];
+    const miss=keys.filter(k=>!hasCat(k));
+    if(miss.length)return'Catégorie inconnue sur l’écran du jeu : '+miss.join(', ')+'. Rechargez les deux appareils.';
+    if(keys.length!==size*size)return'Il faut '+size*size+' catégories pour une grille '+size+'×'+size+' ('+keys.length+' reçues).';
+    startGrid({size,names:nm(c.names,size*size),keys});return'';
+  }
+  if(c.mode==='duel'){
+    const d=hasCat(c.cat)&&DATA[c.cat];if(!d)return'Catégorie inconnue sur l’écran du jeu. Rechargez les deux appareils.';
+    startDuel({names:nm(c.names,2),src:d.items,cat:d.label,type:d.type,T:DUEL_SEC*1000,oral:true});return'';
+  }
+  return'Mode de jeu inconnu.';
+}
 $('form').onsubmit=e=>{
   e.preventDefault();
-  if($('gmode').value==='grid'){if(PICK.length!==pneed()){pickRender();return}return startGrid()}
-  const c=DATA[$('cat').value];
-  startDuel({names:[$('n0').value.trim()||'Joueur 1',$('n1').value.trim()||'Joueur 2'],src:c.items,cat:c.label,type:c.type,T:DUEL_SEC*1000,oral:true});
+  if($('gmode').value==='grid'&&PICK.length!==pneed()){pickRender();return}
+  if(isArb)return sendCfg();
+  ORIGIN='screen';applyCfg(formCfg());
 };
 
 /* ---------- Grille de territoires ----------
@@ -679,10 +859,12 @@ function ptrim(){const n=Math.max(0,PICK.length-pneed());for(let i=0;i<n;i++)PIC
 function pickSync(){PICK=PICK.filter(k=>DATA[k]);if(!PTOUCH)pdraw();pickRender()}
 // Avertissements non bloquants sur une catégorie choisie.
 const flagRe=/[\u{1F1E6}-\u{1F1FF}]{2}/u;
+// Les drapeaux dépendent de l'appareil qui affiche le jeu : sur la régie, c'est l'écran du jeu qui compte.
+const scrWin=()=>isArb?!!(GS&&GS.win):/Windows/.test(navigator.userAgent);
 function pwarnOf(k){
   const v=DATA[k],w=[];
   if(v.items.length<PFEW)w.push('seulement '+pplural(v.items.length,'élément')+', certains risquent de revenir pendant le duel');
-  if(v.type==='emoji'&&/Windows/.test(navigator.userAgent)&&v.items.some(it=>flagRe.test(it[0])))w.push('les drapeaux s’affichent en lettres sous Windows');
+  if(v.type==='emoji'&&scrWin()&&v.items.some(it=>flagRe.test(it[0])))w.push('les drapeaux s’affichent en lettres sous Windows');
   return w;
 }
 function pickRender(focus){
@@ -792,12 +974,12 @@ $('gsize').onchange=()=>{
 };
 gmodeRender();
 catsUI();
-if(window.SLC_PERSO)SLC_PERSO.load().then(p=>{if(Object.keys(p).length){addCats(p);catsUI()}}).catch(e=>console.warn('Catégories perso indisponibles :',e));
-function startGrid(){
+if(window.SLC_PERSO&&!isArb)SLC_PERSO.load().then(p=>{if(Object.keys(p).length){addCats(p);catsUI()}}).catch(e=>console.warn('Catégories perso indisponibles :',e));
+// o = {size, names, keys} : depuis l'écran de départ (gridFromForm) ou depuis la régie (cfg).
+function startGrid(o){
   if(S){clearInterval(S.h);clearInterval(S.cd)}
-  const size=+$('gsize').value,n=size*size;
-  const names=[...$('gnames').querySelectorAll('input')].map((x,i)=>x.value.trim()||'Joueur '+(i+1));
-  const keys=shuffle(PICK.slice());
+  const size=o.size,n=size*size,names=o.names;
+  const keys=shuffle(o.keys.slice());
   G={size,n,players:names.map(name=>({name,alive:true,streak:0,gold:false})),cells:names.map((_,i)=>({cat:keys[i%keys.length],owner:i})),
      ch:Math.floor(Math.random()*n),sel:null,anim:null,draw:false,drawT:null,played:new Set(),use:new Set(),note:'',seed:Math.floor(Math.random()*4294967296),shape:null,over:false,T:DUEL_SEC*1000,oral:true};
   S=null;
@@ -1027,7 +1209,7 @@ function gridRender(){
   const p=$('gpanel');p.textContent='';
   const sol=()=>gdrawPool().pool.length?gbtn('Retourner sur le sol','alt',gdraw):null;
   if(G.over){
-    p.append(gbtn('Nouvelle partie','',()=>show('setup')));
+    p.append(gbtn('Nouvelle partie','',backToStart));
   }else if(G.draw){
     const t=document.createElement('p');t.textContent='Tirage au sort d’un candidat…';p.append(t);
   }else if(G.sel!=null){
@@ -1083,7 +1265,7 @@ $('wback').onclick=()=>{
   if(!S||!S.pid||S.started||S.counting)return;
   S.over=true;push();G.sel=null;show('grid');gridRender();
 };
-$('gquit').onclick=()=>{if(G){clearTimeout(G.drawT);G.draw=false}show('setup')};
+$('gquit').onclick=backToStart;
 // Le plateau est dessiné à la largeur réelle de l'écran : on le redessine si elle change, et une fois la police chargée.
 {let rt=0,lw=0;addEventListener('resize',()=>{clearTimeout(rt);rt=setTimeout(()=>{const w=$('gboard').clientWidth;if(G&&!$('grid').hidden&&!gAnimT&&!G.draw&&w!==lw){lw=w;gridRender()}},150)})}
 if(document.fonts&&document.fonts.ready)document.fonts.ready.then(()=>{if(G&&!$('grid').hidden&&!gAnimT&&!G.draw)gridRender()});
@@ -1096,11 +1278,15 @@ $('f2').onsubmit=e=>{
 };
 $('pass').onclick=skip;
 $('go').onclick=launch;
-$('again').onclick=()=>{if(S&&S.pid&&S.over&&G&&S.winP!=null)gridAfterDuel();else show('setup')};
+$('again').onclick=()=>{if(S&&S.pid&&S.over&&G&&S.winP!=null)gridAfterDuel();else backToStart()};
 
-let R,L,cool=false,AFACE='',AIMG={k:null,src:null};
+/* ---------- Régie (téléphone) ----------
+   Connexion à l'écran du jeu (code ou QR code), configuration de la partie (formulaire #setup, déplacé ici),
+   puis arbitrage. La vue suit l'étape envoyée par l'écran (message gs). Le code est retenu (localStorage
+   « slc-arb-code » et adresse #arbitre=CODE) : après une mise en veille ou un rechargement, la régie se reconnecte seule. */
+let R,L,cool=false,AFACE='',AIMG={k:null,src:null},GSAT=0,RCODE='',CFGW=null,CFGT=0,PSK='',RWIN=null;
 function arbRender(){
-  if(!R){$('ast').textContent='En attente du jeu…';return}
+  if(!R){$('ast').textContent='En attente du duel…';$('bok').disabled=$('bpass').disabled=true;return}
   $('ast').textContent='';
   const t=R.t.slice();if(R.started&&!R.over)t[R.turn]-=performance.now()-R.at;
   for(let i=0;i<2;i++){const s=$('a'+i);s.querySelector('.nm').textContent=R.names[i];s.querySelector('.tm').textContent=Math.ceil(Math.max(0,t[i])/1000);s.classList.toggle('on',R.turn===i&&!R.over);s.classList.toggle('low',t[i]<=5000)}
@@ -1110,21 +1296,108 @@ function arbRender(){
   if(R.consigne){$('atype').querySelector('.tn').textContent='Type de jeu : '+(R.tnom||'Images');$('atype').querySelector('.tc').textContent='À annoncer : « '+R.consigne+' »'}
   const fk=R.started?'c|'+R.card[0]+'|'+R.disp+'|'+(R.type==='photo'&&AIMG.k===R.card[0]):'n|'+(R.count||'?');
   if(fk!==AFACE){AFACE=fk;if(R.started)paintCard($('acard'),R.type||'emoji',R.disp!=null?R.disp:R.card[0],AIMG.k===R.card[0]?AIMG.src:null);else{$('acard').className='';$('acard').textContent=R.count||'?'}}
-  $('aans').textContent=R.over?'Duel terminé · en attente du prochain duel':R.count?'Départ dans '+R.count+'…':!R.started?'Le duel n’a pas encore démarré':'À '+R.names[R.turn]+' (niveau '+R.lvl+') · réponse : '+R.card[1].split('|').join(' / ');
+  $('aans').textContent=R.over?'Duel terminé':R.count?'Départ dans '+R.count+'…':!R.started?'Le duel n’a pas encore démarré':'À '+R.names[R.turn]+' (niveau '+R.lvl+') · réponse : '+R.card[1].split('|').join(' / ');
   $('bok').disabled=$('bpass').disabled=!R.started||R.over||R.lock||cool;
 }
 function act(a){if(!L||!R||cool)return;L.send('act',{a,c:R.card[0]});cool=true;arbRender();setTimeout(()=>{cool=false;arbRender()},700)}
 $('bok').onclick=()=>act('ok');
 $('bpass').onclick=()=>act('pass');
+const cmd=c=>{if(L)L.send('cmd',{c})};
+// Vue de la régie : code, attente, configuration ou partie, d'après l'étape de l'écran du jeu.
+function arbView(){
+  const fresh=GS&&Date.now()-GSAT<9000,ph=GS&&GS.phase;
+  const v=!RCODE?'code':!GS?'wait':ph==='prep'?'cfg':ph==='play'||ph==='over'?'play':'wait';
+  $('rscreen').textContent=RCODE?'Écran '+RCODE+(fresh?' · relié ✓':' · connexion…'):'';
+  $('rj').hidden=v!=='code';$('rwait').hidden=v!=='wait';$('setup').hidden=v!=='cfg';$('rl').hidden=v!=='play';
+  setSteps($('rsteps'),!GS?0:v==='play'?2:1);
+  let m='',b='';
+  if(v==='wait'){
+    if(!GS)m='Connexion à l’écran '+RCODE+'…';
+    else if(ph==='local'){m='La partie se configure sur l’écran du jeu.';b='Configurer depuis le téléphone'}
+    else m='Connecté ✓ Sur l’écran du jeu, choisissez « Mode funky » ou « Mode sérieux ».';
+  }
+  if($('rwmsg').textContent!==m)$('rwmsg').textContent=m;
+  $('rwbtn').hidden=!b;$('rwbtn').textContent=b;
+  if(v==='play'){
+    $('rduel').hidden=!GS.duel;
+    const inf=GS.duel?'':GS.info||'';if($('rinfo').textContent!==inf)$('rinfo').textContent=inf;
+    $('rgo').hidden=!GS.wait;$('rnew').hidden=ph!=='over';$('rquit').hidden=ph!=='play';
+  }
+}
+// Catégories perso : créées sur l'ordinateur du jeu, la régie n'en reçoit que la liste (clé, nom, type, nombre).
+function persoSync(list){
+  const k=JSON.stringify(list||[]);if(k===PSK)return;PSK=k;
+  for(const x of Object.keys(DATA))if(DATA[x].stub)delete DATA[x];
+  for(const it of Array.isArray(list)?list:[]){
+    const[key,label,type,n]=Array.isArray(it)?it:[];
+    if(typeof key!=='string'||hasCat(key)||!TYPES[type])continue;
+    DATA[key]={label:String(label),type,items:Array.from({length:Math.max(0,Math.min(999,+n||0))},()=>['','',1]),perso:true,stub:true};
+  }
+  catsUI();
+}
+const goText=()=>$('gmode').value==='grid'?'Commencer la partie':'Lancer le duel';
+function cfgDone(err){
+  CFGW=null;clearTimeout(CFGT);
+  $('gosubmit').textContent=goText();pickRender();
+  if(err){$('gosubmit').disabled=false;$('gowhy').hidden=false;$('gowhy').textContent=err}
+}
+function sendCfg(){
+  if(!L||CFGW)return;
+  const rid=rnd();CFGW=rid;
+  $('gosubmit').disabled=true;$('gosubmit').textContent='Envoi à l’écran…';$('gowhy').hidden=true;
+  L.send('cfg',{rid,cfg:formCfg()});
+  CFGT=setTimeout(()=>{if(CFGW===rid)cfgDone('L’écran du jeu ne répond pas : vérifiez la liaison et réessayez.')},8000);
+}
+const ronmsg=(topic,d)=>{
+  if(topic==='st'){if(d.img)AIMG={k:d.card[0],src:d.img};R=d;R.at=performance.now();arbRender()}
+  else if(topic==='gs'){
+    GS=d;GSAT=Date.now();persoSync(d.perso);
+    if(RWIN!==!!d.win){RWIN=!!d.win;if(!$('setup').hidden)pickRender()}
+    if(d.phase!=='play'&&d.phase!=='over')R=null;
+    arbView();
+  }else if(topic==='cfgr'&&d.rid===CFGW)cfgDone(d.ok?'':d.err||'Configuration refusée par l’écran du jeu.');
+};
+function arbJoin(c){
+  RCODE=c;try{localStorage.setItem('slc-arb-code',c)}catch(e){}
+  // L'adresse garde le code : un rechargement rejoint le même écran (replaceState ne recharge pas la page).
+  try{if(location.hash!=='#arbitre='+c)history.replaceState(null,'','#arbitre='+c)}catch(e){}
+  arbView();$('alk').textContent=$('rwlk').textContent='Liaison entre appareils : connexion…';
+  link(c,'arb',ronmsg,(m,st)=>{$('alk').textContent=$('rwlk').textContent=linkMsg(m,st)}).then(l=>{
+    L=l;const hi=()=>L.send('hi',{});hi();setInterval(hi,3000);setInterval(arbRender,100);setInterval(arbView,1000);
+    document.addEventListener('visibilitychange',()=>{if(!document.hidden)hi()});
+  });
+}
 $('rj').onsubmit=e=>{
   e.preventDefault();
-  const c=$('rc').value.trim().toUpperCase();if(!c)return;
-  $('rj').hidden=true;$('rl').hidden=false;arbRender();$('alk').textContent='Liaison entre appareils : connexion…';
-  link(c,'arb',(topic,d)=>{if(topic==='st'){if(d.img)AIMG={k:d.card[0],src:d.img};R=d;R.at=performance.now();arbRender()}},(m,st)=>{$('alk').textContent=linkMsg(m,st)}).then(l=>{L=l;L.send('hi',{});setInterval(()=>L.send('hi',{}),3000);setInterval(arbRender,100)});
+  const c=$('rc').value.trim().toUpperCase().replace(/[^A-Z0-9]/g,'');
+  if(c.length!==4){$('rc').setCustomValidity('Le code compte 4 caractères.');$('rc').reportValidity();return}
+  arbJoin(c);
 };
-// Retour depuis la page arbitre : on quitte #arbitre (la page se recharge sur l'écran de lancement).
+$('rc').oninput=()=>$('rc').setCustomValidity('');
+$('rwbtn').onclick=()=>cmd('prep');
+$('rgo').onclick=()=>cmd('go');
+$('rnew').onclick=()=>cmd('new');
+$('rquit').onclick=()=>{if(confirm('Arrêter la partie en cours ?'))cmd('quit')};
+$('rchange').onclick=()=>{try{localStorage.removeItem('slc-arb-code')}catch(e){}location.hash='#arbitre'};
+// Retour depuis la régie : on quitte #arbitre (la page se recharge sur l'écran d'accueil).
 $('arback').onclick=()=>{location.hash=''};
-if(isArb){show('arb');if(ARB_CODE){$('rc').value=ARB_CODE;$('rj').requestSubmit?$('rj').requestSubmit():$('rj').onsubmit(new Event('submit'))}}
+if(isArb){
+  document.documentElement.classList.add('slc-arb');
+  ['sh1','toedit','tocredits','tophone'].forEach(id=>$(id).hidden=true);
+  $('arb').insertBefore($('setup'),$('rl'));
+  show('arb');
+  let saved='';try{saved=localStorage.getItem('slc-arb-code')||''}catch(e){}
+  if(ARB_CODE.length===4)arbJoin(ARB_CODE);
+  else{if(/^[A-Z0-9]{4}$/.test(saved))$('rc').value=saved;arbView()}
+}
+if(!isArb){
+  setInterval(pairTick,1000);
+  // Le code et le QR code s'affichent dès l'ouverture. Après un rechargement ou un retour de l'éditeur,
+  // le même code est repris (sessionStorage « slc-code ») : le téléphone se reconnecte seul.
+  let vue='';try{vue=sessionStorage.getItem('slc-vue')||''}catch(e){}
+  if(vue==='setup'){ORIGIN='screen';HOMEST='prep';show('setup');startIntro()}else show('home');
+  getLink();pairRender();
+}
 addEventListener('hashchange',()=>location.reload());
 </script>
 </body>

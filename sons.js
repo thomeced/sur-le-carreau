@@ -60,13 +60,13 @@
   function show(){if(!btn)return;const on=enabled();btn.textContent=on?'🔊':'🔇';btn.setAttribute('aria-pressed',on?'true':'false');btn.setAttribute('aria-label',on?'Couper les sons du jeu':'Activer les sons du jeu');btn.title=on?'Sons du jeu : activés':'Sons du jeu : coupés'}
   function toggle(){set(enabled()?'0':'1');show();if(enabled())play('beep')}
   function mount(){
-    if(location.hash==='#arbitre'||btn)return;
+    if(location.hash.startsWith('#arbitre')||btn)return;
     btn=document.createElement('button');btn.type='button';btn.className='slc-snd-btn';
     btn.onclick=toggle;document.body.appendChild(btn);show();
   }
   const wake=()=>{if(enabled())ac()};
   addEventListener('pointerdown',wake,{capture:true});addEventListener('keydown',wake,{capture:true});
-  addEventListener('hashchange',()=>{if(location.hash==='#arbitre'&&btn){btn.remove();btn=null}else mount()});
+  addEventListener('hashchange',()=>{if(location.hash.startsWith('#arbitre')&&btn){btn.remove();btn=null}else mount()});
   // Le mode (funky / sérieux) est choisi après le chargement : on réaffiche l'état du bouton à ce moment.
   document.addEventListener('slc:intro-end',show);
   if(document.body)mount();else document.addEventListener('DOMContentLoaded',mount,{once:true});
