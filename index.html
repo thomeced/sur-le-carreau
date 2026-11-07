@@ -49,17 +49,31 @@ button.alt{background:transparent;border:2px solid var(--line);color:var(--ink);
 #end h2{font:400 2rem/1.1 var(--disp);margin:0 0 8px}
 #acard{font-size:clamp(4rem,18vw,7rem)}
 #aans{font-weight:700;font-size:1.3rem;min-height:1.6em}
-#code{font:400 2.6rem/1 var(--disp);letter-spacing:.2em;color:var(--p1);margin:0 0 12px}
+#pcode{font:700 2.8rem/1 var(--disp);letter-spacing:.2em;color:var(--p1);margin:6px 0 4px}
+.pair{position:fixed;inset:0;z-index:60;display:flex;align-items:center;justify-content:center;padding:16px;overflow:auto;background:rgba(3,4,14,.94)}
+.pair[hidden]{display:none}
+.pair .panel{max-width:440px;width:100%;margin:auto}
+.pair h2{font:700 1.6rem/1.2 var(--disp);margin:0 0 6px}
+.phow{margin:0 0 10px}
+#pqr svg{display:block;width:min(58vw,220px);height:auto;margin:0 auto;border-radius:6px}
+#pqr:empty{display:none}
+#pst{font-weight:700;min-height:1.5em;margin:6px 0}
+#pst.on{color:var(--ok)}
+.plnk{font-size:.85rem;opacity:.75;margin:0 0 8px}
+.arbadge{position:fixed;top:calc(10px + env(safe-area-inset-top,0px));left:10px;z-index:50;min-height:40px;padding:6px 12px;font-size:.85rem;background:rgba(4,8,36,.7);border:2px solid var(--ko);color:var(--ink);box-shadow:none}
+.arbadge.on{border-color:var(--ok)}
+.pair .panel{text-align:center}
+/* Petits écrans : on laisse la place du badge (et du bouton son) au-dessus du contenu. */
+@media(max-width:760px){html.slc-badge #setup,html.slc-badge #game,html.slc-badge #grid,html.slc-badge #end{padding-top:46px}}
 .big{display:block;width:100%;margin:10px 0;padding:22px;font-size:1.4rem}
 .good{background:var(--ok);box-shadow:0 0 18px rgba(61,220,151,.45)}
 .skip{background:var(--ko);box-shadow:0 0 18px rgba(255,107,107,.45)}
 button:disabled{opacity:.4;cursor:not-allowed}
 .slc-snd-btn{position:fixed;top:calc(10px + env(safe-area-inset-top,0px));right:10px;z-index:50;width:40px;height:40px;padding:0;font-size:1.1rem;line-height:1;background:rgba(4,8,36,.7);border:2px solid var(--line);color:var(--ink);box-shadow:none}
 button,.nm,#who,#aans,label{font-family:var(--disp);font-weight:600}
-h1,.tm,#code,#end h2{font-weight:700}
+h1,.tm,#end h2{font-weight:700}
 h1{font-size:clamp(2.2rem,8vw,4rem);line-height:1.1}
 .tm{font-size:clamp(2.4rem,8vw,4rem);line-height:1.15}
-#code{font-size:2.4rem}
 #end h2{font-size:1.8rem}
 .nm{font-size:1rem}
 #aans{font-size:1.15rem}
@@ -145,6 +159,7 @@ a.btnlink:focus-visible{outline:3px solid var(--p1);outline-offset:2px}
 </style>
 <script src="intro.js"></script>
 <script src="sons.js"></script>
+<script src="qrcode.js"></script>
 </head>
 <body>
 <main>
@@ -182,7 +197,6 @@ a.btnlink:focus-visible{outline:3px solid var(--p1);outline-offset:2px}
     </div>
     <p id="gowhy" hidden></p>
     <button type="submit" id="gosubmit" aria-describedby="gowhy">Lancer le duel</button>
-    <button type="button" class="alt" id="toarb">Je suis l’arbitre</button>
     <a class="btnlink" href="editeur.html" id="toedit">✏️ Créer mes catégories (mots à trous, photos, indices)</a>
     <a class="btnlink" href="credits.html" id="tocredits">📷 Crédits photos</a>
   </form>
@@ -194,12 +208,9 @@ a.btnlink:focus-visible{outline:3px solid var(--p1);outline-offset:2px}
     <div class="side" id="s1"><span class="nm" id="nm1"></span><div class="tm" id="tm1"></div><div id="sc1"></div></div>
     <div class="center">
       <div id="wait" class="panel" hidden>
-        <p>Code à saisir sur la page arbitre</p>
-        <div id="code"></div>
         <p id="wst" role="status"></p>
-        <p id="lnk" role="status"></p>
         <button type="button" id="go" disabled>Démarrer le duel</button>
-        <button type="button" class="alt" id="newcode">Nouveau code</button>
+        <button type="button" class="alt" id="wpair" hidden>Connecter l’arbitre</button>
         <button type="button" class="alt" id="wback" hidden>Retour à la grille</button>
       </div>
       <p id="dcat"></p>
@@ -225,6 +236,21 @@ a.btnlink:focus-visible{outline:3px solid var(--p1);outline-offset:2px}
   <p id="gstat" role="status"></p>
   <button type="button" class="alt" id="gquit">Quitter la partie</button>
 </section>
+
+<!-- Connexion de l'arbitre : au lancement du jeu, puis à la demande (badge « Arbitre »). Le code n'est affiché qu'ici. -->
+<div id="pair" class="pair" role="dialog" aria-modal="true" aria-labelledby="ptitle" hidden>
+  <div class="panel">
+    <h2 id="ptitle">Connecter l’arbitre</h2>
+    <p class="phow" id="phow">Sur le téléphone de l’arbitre, scannez ce QR code. Ou ouvrez le jeu, choisissez « Je suis l’arbitre » et saisissez le code.</p>
+    <div id="pqr" aria-hidden="true"></div>
+    <div id="pcode" aria-label="Code arbitre"></div>
+    <p id="pst" role="status" aria-live="polite"></p>
+    <p id="plnk" class="plnk"></p>
+    <button type="button" id="pok">Continuer</button>
+    <button type="button" class="alt" id="pnew">Nouveau code</button>
+  </div>
+</div>
+<button type="button" id="arbadge" class="arbadge" hidden>Arbitre</button>
 
 <section id="arb" hidden>
   <h1>Arbitre</h1>
@@ -318,7 +344,9 @@ function show(id){['setup','game','grid','end','arb'].forEach(x=>$(x).hidden=x!=
 // Temps de chaque joueur pour un duel (secondes). Le détenteur de la case d'or peut y ajouter GOLD_SEC.
 const DUEL_SEC=40;
 let S,flashT;
-const CH='ABCDEFGHJKMNPQRSTUVWXYZ23456789',isArb=location.hash==='#arbitre';
+const CH='ABCDEFGHJKMNPQRSTUVWXYZ23456789',isArb=location.hash.startsWith('#arbitre');
+// Lien du QR code : #arbitre=CODE ouvre la page arbitre et rejoint le duel directement.
+const ARB_CODE=isArb?(location.hash.split('=')[1]||'').toUpperCase().replace(/[^A-Z0-9]/g,'').slice(0,4):'';
 let peerLib;
 function loadPeer(){
   if(window.Peer)return Promise.resolve();
@@ -489,29 +517,98 @@ let LINKP=null,LINK=null,LCODE='',lastHi=0,LSTAT=null;
 const onmsg=(topic,d)=>{
   if(topic==='hi'){
     lastHi=Date.now();if(S)S.imgK=null;
-    if(S&&S.oral&&!S.started&&!S.counting&&!S.over){$('go').disabled=false;$('wst').textContent='Arbitre connecté. Vous pouvez démarrer.'}
+    pairTick();
     push();
   }else if(topic==='act'&&S&&S.oral&&S.started&&!S.over&&!S.lock&&d.c===S.cur[0]){d.a==='ok'?good():d.a==='pass'&&skip()}
 };
 function getLink(){
   if(LINKP)return LINKP;
   return LINKP=(async()=>{
+    let saved='';try{saved=sessionStorage.getItem('slc-code')||''}catch(e){}
     for(let n=0;n<8;n++){
-      const code=Array.from({length:4},()=>CH[Math.floor(Math.random()*CH.length)]).join('');
-      const l=await link(code,'game',onmsg,(m,st)=>{LSTAT=[m,st];$('lnk').textContent=linkMsg(m,st)});
-      if(!l.taken){LINK=l;LCODE=code;return l}
+      // On reprend d'abord le code de cet onglet (rechargement, retour de l'éditeur) : l'arbitre se reconnecte seul.
+      const code=n===0&&/^[A-Z0-9]{4}$/.test(saved)?saved:Array.from({length:4},()=>CH[Math.floor(Math.random()*CH.length)]).join('');
+      const l=await link(code,'game',onmsg,(m,st)=>{LSTAT=[m,st];pairTick()});
+      if(!l.taken){LINK=l;LCODE=code;try{sessionStorage.setItem('slc-code',code)}catch(e){}pairRender();return l}
     }
     return null;
   })();
 }
-function resetLink(){if(LINK&&LINK.close)LINK.close();LINK=null;LINKP=null;LCODE='';lastHi=0;LSTAT=null}
+function resetLink(){if(LINK&&LINK.close)LINK.close();LINK=null;LINKP=null;LCODE='';lastHi=0;LSTAT=null;try{sessionStorage.removeItem('slc-code')}catch(e){}}
+/* ---------- Connexion de l'arbitre ----------
+   Écran « Connecter l'arbitre » (#pair) : ouvert au premier lancement dans l'onglet, puis par le badge
+   « Arbitre » ou le bouton du panneau d'attente. Seul endroit où le code (et son QR code) s'affiche.
+   L'arbitre est « connecté » s'il a envoyé un « hi » depuis moins de 7 s (il en envoie toutes les 3 s). */
+const arbOn=()=>Date.now()-lastHi<7000;
+let pairBack=null;
+function pairURL(){return /^https?:$/.test(location.protocol)?location.origin+location.pathname+'#arbitre='+LCODE:''}
+function pairRender(){
+  $('pcode').textContent=LCODE||'…';
+  const u=LCODE&&window.SLC_QR&&pairURL(),box=$('pqr');box.textContent='';
+  if(u){
+    const m=SLC_QR(u),n=m.length,q=3,NS='http://www.w3.org/2000/svg',svg=document.createElementNS(NS,'svg');
+    svg.setAttribute('viewBox','0 0 '+(n+2*q)+' '+(n+2*q));svg.setAttribute('shape-rendering','crispEdges');
+    let d='';m.forEach((row,r)=>row.forEach((on,c)=>{if(on)d+='M'+(c+q)+' '+(r+q)+'h1v1h-1z'}));
+    const bg=document.createElementNS(NS,'rect');bg.setAttribute('width',n+2*q);bg.setAttribute('height',n+2*q);bg.setAttribute('fill','#fff');
+    const p=document.createElementNS(NS,'path');p.setAttribute('d',d);p.setAttribute('fill','#03040E');
+    svg.append(bg,p);box.appendChild(svg);
+  }
+  $('phow').textContent=u?'Sur le téléphone de l’arbitre, scannez ce QR code. Ou ouvrez le jeu, choisissez « Je suis l’arbitre » et saisissez le code.'
+    :'Sur l’appareil de l’arbitre, ouvrez le jeu, choisissez « Je suis l’arbitre » et saisissez le code.';
+  pairTick();
+}
+function pairTick(){
+  if(isArb)return;
+  const on=arbOn(),b=$('arbadge'),busy=S&&(S.counting||(S.started&&!S.over));
+  b.textContent=on?'Arbitre connecté ✓':'Arbitre non connecté';b.classList.toggle('on',on);
+  b.setAttribute('aria-label',(on?'Arbitre connecté':'Arbitre non connecté')+' : ouvrir la connexion de l’arbitre');
+  b.hidden=!$('pair').hidden||!LINKP;
+  document.documentElement.classList.toggle('slc-badge',!b.hidden);
+  const st=$('pst'),txt=!LCODE?'Création du code…':on?'Arbitre connecté ✓':'En attente de l’arbitre…';
+  if(st.textContent!==txt)st.textContent=txt;st.classList.toggle('on',on);
+  $('plnk').textContent=LSTAT?linkMsg(LSTAT[0],LSTAT[1]):'';
+  $('pok').textContent=on?'Continuer':'Continuer sans attendre';$('pok').className=on?'':'alt';
+  $('pnew').disabled=!!busy;
+  // Panneau d'attente avant un duel : pas de code, seulement l'état et, si besoin, l'accès à la connexion.
+  if(S&&S.oral&&!S.started&&!S.counting&&!S.over){
+    $('go').disabled=!on||!S.link;$('wpair').hidden=on;
+    const w=on?'Arbitre connecté. Vous pouvez démarrer.':'L’arbitre n’est pas connecté.';
+    if($('wst').textContent!==w)$('wst').textContent=w;
+  }
+}
+function openPair(){
+  if(isArb)return;
+  pairBack=document.activeElement;$('pair').hidden=false;
+  getLink();pairRender();$('pok').focus();
+}
+function closePair(){
+  $('pair').hidden=true;pairTick();
+  const t=pairBack&&pairBack!==document.body&&document.contains(pairBack)&&!pairBack.closest('[hidden]')?pairBack:null;pairBack=null;
+  (t||(!$('wait').hidden&&!$('game').hidden?($('go').disabled?$('wpair'):$('go')):null)||(!$('setup').hidden?$('gosubmit'):null)||$('arbadge')).focus();
+}
+$('pok').onclick=closePair;
+$('pair').addEventListener('keydown',e=>{if(e.key==='Escape')closePair()});
+$('arbadge').onclick=openPair;
+$('wpair').onclick=openPair;
+$('pnew').onclick=()=>{
+  if(S&&(S.counting||(S.started&&!S.over)))return;
+  resetLink();if(S)S.link=null;pairRender();
+  getLink().then(()=>{if(S&&S.oral&&!S.started)attach(S)});
+};
+if(!isArb){
+  setInterval(pairTick,1000);
+  // Premier lancement dans cet onglet : écran de connexion après l'intro. Sinon (rechargement, retour de
+  // l'éditeur ou des crédits) : on reprend le même code en arrière-plan, l'arbitre se reconnecte seul.
+  let first=true;try{first=!sessionStorage.getItem('slc-code')}catch(e){}
+  const go=()=>{if(first)openPair();else getLink().then(pairTick)};
+  if(window.SLC_INTRO_DONE||!document.querySelector('script[src="intro.js"]'))go();
+  else document.addEventListener('slc:intro-end',go,{once:true});
+}
 function attach(me){
   getLink().then(l=>{
     if(me!==S)return;
-    if(!l){$('code').textContent='—';$('wst').textContent='Impossible de créer un code : rechargez la page.';return}
-    S.code=LCODE;S.link=l;$('code').textContent=LCODE;
-    if(LSTAT)$('lnk').textContent=linkMsg(LSTAT[0],LSTAT[1]);
-    if(Date.now()-lastHi<7000){$('go').disabled=false;$('wst').textContent='Arbitre connecté. Vous pouvez démarrer.'}
+    if(!l){$('wst').textContent='Impossible de créer un code : rechargez la page.';return}
+    S.code=LCODE;S.link=l;pairTick();
     push();
   });
 }
@@ -522,10 +619,9 @@ function startDuel(o){
   fill();card();render();show('game');$('msg').textContent='';$('dcat').textContent='Catégorie : '+o.cat+(typeName(S.type)?' · '+typeName(S.type):'');$('dgold').textContent=S.gold;
   $('f2').hidden=$('pass').hidden=o.oral;$('wait').hidden=!o.oral;$('wback').hidden=!S.pid;
   if(!o.oral)return launch();
-  $('code').textContent=LCODE||'…';$('go').disabled=true;$('wst').textContent='En attente de l’arbitre…';
-  $('lnk').textContent=LSTAT?linkMsg(LSTAT[0],LSTAT[1]):'Liaison entre appareils : connexion…';
+  $('go').disabled=true;$('wst').textContent='';
   if(LINK)S.link=LINK;
-  attach(S);
+  attach(S);pairTick();
 }
 $('form').onsubmit=e=>{
   e.preventDefault();
@@ -991,12 +1087,6 @@ $('gquit').onclick=()=>{if(G){clearTimeout(G.drawT);G.draw=false}show('setup')};
 // Le plateau est dessiné à la largeur réelle de l'écran : on le redessine si elle change, et une fois la police chargée.
 {let rt=0,lw=0;addEventListener('resize',()=>{clearTimeout(rt);rt=setTimeout(()=>{const w=$('gboard').clientWidth;if(G&&!$('grid').hidden&&!gAnimT&&!G.draw&&w!==lw){lw=w;gridRender()}},150)})}
 if(document.fonts&&document.fonts.ready)document.fonts.ready.then(()=>{if(G&&!$('grid').hidden&&!gAnimT&&!G.draw)gridRender()});
-$('newcode').onclick=()=>{
-  if(!S||!S.oral||S.started||S.counting)return;
-  resetLink();S.link=null;$('code').textContent='…';$('go').disabled=true;
-  $('wst').textContent='En attente de l’arbitre…';$('lnk').textContent='Liaison entre appareils : connexion…';
-  attach(S);
-};
 $('f2').onsubmit=e=>{
   e.preventDefault();
   if(!S.started||S.lock||S.over)return;
@@ -1032,9 +1122,9 @@ $('rj').onsubmit=e=>{
   $('rj').hidden=true;$('rl').hidden=false;arbRender();$('alk').textContent='Liaison entre appareils : connexion…';
   link(c,'arb',(topic,d)=>{if(topic==='st'){if(d.img)AIMG={k:d.card[0],src:d.img};R=d;R.at=performance.now();arbRender()}},(m,st)=>{$('alk').textContent=linkMsg(m,st)}).then(l=>{L=l;L.send('hi',{});setInterval(()=>L.send('hi',{}),3000);setInterval(arbRender,100)});
 };
-$('toarb').onclick=()=>show('arb');
-$('arback').onclick=()=>show('setup');
-if(isArb)show('arb');
+// Retour depuis la page arbitre : on quitte #arbitre (la page se recharge sur l'écran de lancement).
+$('arback').onclick=()=>{location.hash=''};
+if(isArb){show('arb');if(ARB_CODE){$('rc').value=ARB_CODE;$('rj').requestSubmit?$('rj').requestSubmit():$('rj').onsubmit(new Event('submit'))}}
 addEventListener('hashchange',()=>location.reload());
 </script>
 </body>

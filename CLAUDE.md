@@ -22,6 +22,7 @@ Jeu web de salon inspiré de The Floor : duels de catégories sur une grille de 
 - `tools/photos-commons/` : `liste.txt` (catégories photo, niveau, réponses, article Wikipédia ou `File:` imposé) et `photos-commons.py` (téléchargement depuis Commons, à lancer **dans le Terminal du Mac de Ced** : le réseau de Claude bloque Wikimedia). `tools/photos-js.py` verse le résultat dans le dépôt (photos réduites à 640 px).
 - `intro.js`, `intro.css`, `assets/intro/` : écran de lancement et intro. `tools/generique-intro.py` génère le générique.
 - `sons.js` : sons synthétisés (Web Audio), appelés par `snd(nom)`.
+- `qrcode.js` : générateur de QR code (Kazuhiko Arase, licence MIT, repris du paquet npm qrcode-terminal), `SLC_QR(texte)`.
 
 ## Règles
 - **Duel** : deux chronos de 40 s (`DUEL_SEC`, plus de sélecteur sur l'écran de départ ; 45 s avec la case d'or), seul celui du joueur qui a la main tourne. Bonne réponse : la main passe. « Passé » : réponse révélée, −3 s. À 0 s, le joueur perd. Compte à rebours 3-2-1 avant le départ. Niveaux 1 à 5 (`LVL_MAX`) : +1 toutes les 3 bonnes réponses du duel (`LVL_STEP`) ; sans élément au niveau visé, on prend le plus proche ; un niveau épuisé est recyclé ; le niveau affiché est celui de l'élément tiré.
@@ -30,10 +31,11 @@ Jeu web de salon inspiré de The Floor : duels de catégories sur une grille de 
 - **Réponses** : toujours à l'oral, avec arbitre. Le mode clavier (validation tolérante : accents, articles, Levenshtein) reste dans le code, inutilisé, pour les tests.
 
 ## Fonctionnalités en place
-- **Écran de lancement** : Mode funky (intro de 10 s, son activé) ou Mode sérieux (pas d'intro, fond noir uni, sons coupés). Choix retenu (`slc-mode`), raccourcis `?mode=serieux` et `?mode=funky`. Absent sur `#arbitre` et au retour de l'éditeur.
+- **Écran de lancement** : Mode funky (intro de 10 s, son activé), Mode sérieux (pas d'intro, fond noir uni, sons coupés) ou « Je suis l'arbitre » (ouvre `#arbitre`). Choix retenu (`slc-mode`), raccourcis `?mode=serieux` et `?mode=funky`. Absent sur `#arbitre` et au retour de l'éditeur. Fin de l'intro : `slc:intro-end` et `window.SLC_INTRO_DONE`.
 - **Écran de départ** : mode (grille ou duel), taille, noms. Zone « Catégories de la partie » : tirage au hasard, ✕ pour retirer, + pour ajouter (par type), compteur ; lancement bloqué si le compte est faux ; avertissement si une catégorie a moins de 15 éléments ou contient des drapeaux (Windows). Code : `PICK`, `pdraw`, `pfill`, `ptrim`, `pickSync`, `pickRender`.
 - **Plateau SVG** (`#gboard`) : cases `#1B3DB0`, joueur en cours en violet `#7A3FD8`, adversaires possibles `#3D78EA`, adversaire choisi `#6A9CFF`. Territoires fusionnés, étiquette (nom et catégorie) sur la case d'origine seulement. Vague de capture (`gcapture`, `gblob`), tirage animé « Retourner sur le sol » (`gdraw`). `G.sel` = numéro du joueur ; voisinage via `gadj`, `gfoes`, `gtargets`. Accessible au clavier. Territoire du détenteur de la case d'or en jaune `#D9A21B` (`#F2C44E` s'il est l'adversaire choisi), y compris pendant la vague de capture et le tirage ; série affichée dans le panneau.
-- **Arbitre** : code à 4 caractères gardé d'un duel à l'autre (`getLink`, `resetLink`, bouton « Nouveau code »). L'arbitre voit les chronos, l'image ou le mot masqué, les réponses acceptées, le type de jeu, la consigne à annoncer et l'usage de la case d'or. Boutons « Bonne réponse » et « Passé ». Messages `st`, `act`, `hi` ; chaque verdict porte l'élément concerné, pour ignorer les doubles clics.
+- **Connexion de l'arbitre** (`#pair`, seul endroit où le code s'affiche) : ouverte au premier lancement dans l'onglet, après l'intro ; code à 4 caractères, QR code (lien `#arbitre=CODE`, qui rejoint directement), état de la liaison, « Continuer » (ou « Continuer sans attendre ») et « Nouveau code » (pas pendant un duel). Code gardé dans l'onglet (`sessionStorage` `slc-code`) : après un rechargement ou un retour de l'éditeur, même code et reconnexion seule, sans rouvrir l'écran. Pendant les parties, aucun code : badge `#arbadge` (« Arbitre connecté ✓ » ou « non connecté », ouvre la connexion) et panneau d'attente avant chaque duel (« Démarrer le duel » actif seulement si l'arbitre est connecté, sinon « Connecter l'arbitre »). Connecté = un `hi` reçu il y a moins de 7 s (`arbOn`, `pairTick` chaque seconde). Code : `getLink`, `resetLink`, `openPair`, `closePair`, `pairRender`.
+- **Arbitre** : voit les chronos, l'image ou le mot masqué, les réponses acceptées, le type de jeu, la consigne à annoncer et l'usage de la case d'or. Boutons « Bonne réponse » et « Passé ». Messages `st`, `act`, `hi` ; chaque verdict porte l'élément concerné, pour ignorer les doubles clics.
 - **Liaison** `link()` : capacité `room` de claude.ai, sinon PeerJS 1.5.4 (identifiant `slc-<code>`, serveurs STUN et relais TURN publics), sinon `BroadcastChannel`.
 - **Sons** : `beep`, `go`, `good`, `pass`, `end`, `urgent` (tic-tac des 5 dernières secondes), `capture`, `tick`/`tock`, `impact`, `gold` (case d'or gagnée). Bouton 🔊/🔇 (`slc-sons`). Chrono en rouge à 5 s ou moins.
 - **Contenu** : 33 catégories : 15 en photos (375 photos Wikimedia Commons, 25 par catégorie, 5 par niveau de 1 à 5), 5 en emojis (Films en rébus, Jeux vidéo, Métiers, Fêtes, Corps humain : 117 images), 10 en mot à trous pour adultes (319 mots) et 3 en indices (Films, Villes du monde, Pays : 79 énigmes). Types : `emoji`, `trous`, `photo`, `indices`.
@@ -46,7 +48,7 @@ Jeu web de salon inspiré de The Floor : duels de catégories sur une grille de 
 - Pas de visuel ni de musique protégés ; pas de marques ni de personnes vivantes dans les catégories.
 - Photos : licence libre seulement, crédit dans `credits.html` ; pas de personne reconnaissable (sauf les portraits historiques, de personnes décédées), pas de marque mise en avant, pas de texte qui donne la réponse, pas de bâtiment récent encore protégé.
 - `prefers-reduced-motion` respecté partout ; messages annoncés (`aria-live`) ; tout jouable au clavier.
-- Tests automatisés : page ouverte avec `?mode=serieux`, écrans 1440×900 et 390×844.
+- Tests automatisés : page ouverte avec `?mode=serieux`, écrans 1440×900 et 390×844 (au premier chargement, l'écran « Connecter l'arbitre » s'ouvre : « Continuer sans attendre » pour le fermer).
 
 ## Risques et points ouverts
 - **Jamais testé sur deux vrais appareils avec PeerJS** (ni avec les photos) : priorité, test à faire par Ced.
@@ -59,7 +61,7 @@ Jeu web de salon inspiré de The Floor : duels de catégories sur une grille de 
 - `index.html` est volumineux : le découper en modules facilitera les prochains chantiers.
 
 ## Pistes (non priorisées)
-Mode solo ; multijoueur en ligne avec serveur (Node.js et WebSocket) ; extras arbitre (mauvaise réponse, pause, annulation) ; image floue qui se précise ; niveaux réglables à la main ; devinettes et lettres mélangées ; indices révélés un à un ; son de victoire de partie ; vignettes légères pour l'arbitre.
+Mode solo ; multijoueur en ligne avec serveur (Node.js et WebSocket) ; extras arbitre (mauvaise réponse, pause, annulation) ; image floue qui se précise ; niveaux réglables à la main ; devinettes et lettres mélangées ; indices révélés un à un ; son de victoire de partie ; vignettes légères pour l'arbitre ; code plus long caché dans le QR code.
 
 ## Reprendre
 « Lis l'état actuel du projet, puis [chantier]. » Fin de chantier : mettre à jour ce fichier et sa copie dans le projet claude.ai (remplacer, pas ajouter).
