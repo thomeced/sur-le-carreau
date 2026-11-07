@@ -206,5 +206,11 @@ Chaque chantier est prévu dans sa propre conversation du projet, sur sa propre 
 - Jeu : niveaux 1 à 5, +1 toutes les 3 bonnes réponses ; 13 catégories emoji retirées (5 gardées) ; `photos.js` généré par `tools/photos-js.py` (640 px, JPEG 70, PNG pour les drapeaux : 18 Mo) ; `credits.html`.
 - Tests (navigateur automatisé, 1440×900 et 390×844) : 33 catégories, les 375 photos chargées, duels Animaux et Drapeaux, montée des niveaux 1 → 5 et repli sur le niveau le plus proche, page de crédits ; aucune erreur JavaScript.
 
+## Connexion de l'arbitre en amont (novembre 2026)
+- Demande de Ced : sortir la connexion par code des parties, la faire en amont, sans changer les duels.
+- Avant : le panneau d'attente de chaque duel affichait le code, l'état de la liaison et « Nouveau code » ; « Je suis l'arbitre » était sur l'écran de départ.
+- Après : « Je suis l'arbitre » sur l'écran de lancement ; écran « Connecter l'arbitre » (`#pair`) après l'intro, au premier lancement dans l'onglet, avec QR code (`qrcode.js`, lien `#arbitre=CODE` qui remplit et envoie le code) ; code gardé dans l'onglet (`slc-code`) pour se reconnecter seul après un rechargement ; pendant les parties, un badge d'état et un panneau d'attente sans code. Pas de mode sans arbitre ajouté, pas de code plus long (piste).
+- QR code vérifié en le décodant (OpenCV) depuis une capture d'écran. Tests (navigateur automatisé, deux onglets reliés par `BroadcastChannel`, 1440×900 et 390×844) : lancement, connexion par le lien du QR code, duel sans code affiché, départ de l'arbitre (badge, bouton bloqué, « Connecter l'arbitre »), rechargement (même code, écran non rouvert), bouton arbitre du lancement ; aucune erreur JavaScript.
+
 ## Comment reprendre dans un nouveau projet Claude
 Reliez le dépôt GitHub (référence du code) et gardez ce document dans le projet, puis demandez par exemple : « Lis le document de contexte et reprends le jeu : ajoute l'éditeur de catégories. » Le fichier `sur-le-carreau.html` du projet est la version autonome du jeu (catégories incluses) ; la référence reste le dépôt.

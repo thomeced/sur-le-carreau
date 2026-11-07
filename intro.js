@@ -13,12 +13,13 @@
  *   sur <html>). Le dernier choix est retenu (localStorage « slc-mode ») et pré-sélectionné. Liens directs :
  *   ?mode=serieux (saute l'écran de lancement) et ?mode=funky.
  * - Si une image ne se charge pas, l'intro est sautée.
- * - Fin de l'intro : événement « slc:intro-end » sur document.
+ * - Fin de l'intro : événement « slc:intro-end » sur document, et window.SLC_INTRO_DONE = true.
+ * - Bouton « Je suis l'arbitre » : ouvre la vue arbitre (#arbitre).
  * - Version autonome (artefact claude.ai) : définir avant ce script window.SLC_INTRO_ASSETS
  *   = {decor, host, candLeft, candRight, music} (adresses data:) et window.SLC_INTRO_CSS_INLINE = true.
  */
 (function(){
-  if(location.hash==='#arbitre')return;
+  if(location.hash.startsWith('#arbitre')){window.SLC_INTRO_DONE=true;return}
   const root=document.documentElement,me=document.currentScript;
   const base=(me&&me.src?me.src.replace(/[^/]*$/,''):'');
   const A=window.SLC_INTRO_ASSETS||{
@@ -63,7 +64,7 @@
     removeEventListener('keydown',onKey);
     fadeOut(450);
     root.classList.remove('slci-on');
-    const fin=()=>{if(box)box.remove();hide.remove();document.dispatchEvent(new CustomEvent('slc:intro-end'))};
+    const fin=()=>{if(box)box.remove();hide.remove();window.SLC_INTRO_DONE=true;document.dispatchEvent(new CustomEvent('slc:intro-end'))};
     if(box&&box.classList.contains('slci-ready')){box.classList.add('slci-out');setTimeout(fin,500)}else fin();
   }
   function onKey(e){if(e.key==='Escape')end()}
@@ -107,7 +108,7 @@
   function serious(){root.classList.add('slc-serieux')}
   function skipAll(){ // pas d'intro : on rend la main au jeu tout de suite
     done=true;root.classList.remove('slci-on');hide.remove();
-    document.dispatchEvent(new CustomEvent('slc:intro-end'));
+    window.SLC_INTRO_DONE=true;document.dispatchEvent(new CustomEvent('slc:intro-end'));
   }
   function launchScreen(){
     const last=getMode();
@@ -118,6 +119,7 @@
         '<p class="slcl-lead">Comment voulez-vous lancer le jeu ?</p>'+
         '<button type="button" class="slcl-funky"><b>🎬 Mode funky</b><span>Générique animé et son</span></button>'+
         '<button type="button" class="slcl-serious"><b>Mode sérieux</b><span>Sans intro, fond noir épuré</span></button>'+
+        '<button type="button" class="slcl-arb"><b>🧑‍⚖️ Je suis l’arbitre</b><span>Sur le téléphone qui valide les réponses</span></button>'+
       '</div>';
     document.body.appendChild(lb);
     const kill=()=>lb.remove();
@@ -129,6 +131,8 @@
         if(p&&p.then)p.then(un,()=>{audio.muted=false});else un()}catch(e){}}
       kill();build();
     };
+    // Arbitre : la page se recharge sur la vue arbitre (#arbitre), sans intro.
+    lb.querySelector('.slcl-arb').onclick=()=>{location.hash='#arbitre'};
     lb.querySelector('.slcl-serious').onclick=()=>{setMode('serieux');setPref(false);try{localStorage.setItem('slc-sons','0')}catch(e){}serious();kill();skipAll()};
     (lb.querySelector(last==='serieux'?'.slcl-serious':'.slcl-funky')).focus({preventScroll:true});
   }
@@ -141,5 +145,5 @@
     cssReady.then(launchScreen,skipAll);
   }
   if(document.body)begin();else document.addEventListener('DOMContentLoaded',begin,{once:true});
-  addEventListener('hashchange',()=>{if(location.hash==='#arbitre'){if(box)end();else{const l=document.querySelector('.slcl');if(l)l.remove();skipAll()}}});
+  addEventListener('hashchange',()=>{if(location.hash.startsWith('#arbitre')){if(box)end();else{const l=document.querySelector('.slcl');if(l)l.remove();skipAll()}}});
 })();
