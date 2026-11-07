@@ -219,5 +219,11 @@ Chaque chantier est prévu dans sa propre conversation du projet, sur sa propre 
 - Corrigés au passage : bouton son affiché sur la régie ouverte par le QR code (`#arbitre=CODE`) ; identifiant `ptitle` en double (catégories et connexion) ; image de la régie alignée à gauche.
 - Tests (navigateur automatisé, deux onglets reliés par `BroadcastChannel`, 1440×900 et 390×844) : accueil, connexion par le lien du QR code, Sérieux et Funky (intro puis préparation), grille 2×2 lancée du téléphone, duel démarré et arbitré du téléphone, « Arrêter la partie », duel à deux jusqu'à la fin et « Nouvelle partie », rechargement du téléphone en fin de partie (reconnexion), rechargement de l'écran et retour de l'éditeur (même code, pas de nouveau choix de lancement), « Configurer sur cet écran » puis « Configurer depuis le téléphone » ; aucune erreur JavaScript.
 
+## Nouveaux types de jeu : lettres mélangées et titres à l'envers (novembre 2026)
+- Demande de Ced : ajouter des types de jeu. Choix : lettres mélangées et « titres de livres, films, chansons en version antonyme » ; jeu seulement (pas dans l'éditeur) ; 2 ou 3 catégories toutes faites par type.
+- `perso.js` : types `melange` (🔀, `melange`, `autoLevelMel`, affichage en tuiles avec `renderMot`) et `envers` (🙃, `renderEnv`). `index.html` : `normItem`, tirage (`card`) et `paintCard` (écran et régie) ; le choix des catégories les range seuls par type.
+- Contenu : Animaux, Pays et Cuisine « en vrac » (25 mots chacune, 5 par niveau) ; Films, Livres et contes, Chansons « à l'envers » (79 titres, niveaux 1 à 5).
+- Tests (navigateur automatisé, deux onglets reliés par `BroadcastChannel`, 1440×900 et 390×844) : duels dans les deux types, affichage sur l'écran et la régie, montée jusqu'au niveau 5, groupes dans le choix des catégories ; aucune erreur JavaScript.
+
 ## Comment reprendre dans un nouveau projet Claude
 Reliez le dépôt GitHub (référence du code) et gardez ce document dans le projet, puis demandez par exemple : « Lis le document de contexte et reprends le jeu : ajoute l'éditeur de catégories. » Le fichier `sur-le-carreau.html` du projet est la version autonome du jeu (catégories incluses) ; la référence reste le dépôt.

@@ -15,6 +15,11 @@
  *   - "indices" : items: [[["Tour Eiffel", "Seine", "Capitale"], "Paris", 1]] (de 2 à 5 indices, tous
  *     visibles dès le début, puis réponses et niveau ; sans niveau : 4 indices ou plus = 1, 3 = 2, 2 = 3).
  *     Pas d'acteurs ni de personnes vivantes dans les indices.
+ *   - "melange" (lettres mélangées) : items: [["girafe", 2], ["porc-épic|porc épic", 5]] ; le jeu mélange les lettres
+ *     de chaque mot à chaque tirage (aux niveaux 1 et 2, la première lettre reste à sa place) ; sans niveau, il est
+ *     calculé d'après le nombre de lettres ;
+ *   - "envers" (titres à l'envers) : items: [["Le Grand Prince", "le petit prince", 1]] (titre d'un film, d'un livre
+ *     ou d'une chanson dont les mots sont remplacés par leur contraire, puis le vrai titre et ses variantes, et le niveau).
  * Les catégories créées avec editeur.html restent dans le navigateur (voir perso.js), pas dans ce fichier.
  * Les catégories en photos (Wikimedia Commons) sont dans photos.js, généré par tools/photos-js.py.
  * Une ligne mal écrite est ignorée (avertissement dans la console du navigateur).
@@ -675,6 +680,157 @@ const CATEGORIES = {
       [["Mille lacs", "Saunas", "Laponie"], "Finlande", 3],
       [["Everest", "Katmandou", "Drapeau qui n'est pas rectangulaire"], "Népal", 3],
       [["Volcans", "Geysers", "Pas d'armée"], "Islande", 3],
+    ],
+  },
+
+  // ---------- Lettres mélangées : les lettres de chaque mot sont mélangées à chaque tirage ----------
+  vrac_animaux: {
+    label: "Animaux en vrac",
+    type: "melange",
+    items: [
+      // Niveau 1 et 2 : la première lettre de chaque mot reste à sa place
+      ["lapin", 1], ["tigre", 1], ["cheval", 1], ["mouton", 1], ["singe", 1],
+      ["girafe", 2], ["renard", 2], ["castor", 2], ["dauphin", 2], ["panthère", 2],
+      // Niveau 3 à 5 : tout est mélangé
+      ["éléphant", 3], ["kangourou", 3], ["crocodile", 3], ["écureuil", 3], ["flamant|flamant rose", 3],
+      ["rhinocéros", 4], ["salamandre", 4], ["chauve-souris|chauve souris", 4], ["chinchilla", 4], ["hérisson", 4],
+      ["ornithorynque", 5], ["hippopotame", 5], ["dromadaire", 5], ["porc-épic|porc épic", 5], ["chimpanzé", 5],
+    ],
+  },
+  vrac_pays: {
+    label: "Pays en vrac",
+    type: "melange",
+    items: [
+      ["italie", 1], ["france", 1], ["japon", 1], ["chine", 1], ["maroc", 1],
+      ["espagne", 2], ["canada", 2], ["brésil", 2], ["mexique", 2], ["égypte", 2],
+      ["allemagne", 3], ["portugal", 3], ["argentine", 3], ["australie", 3], ["norvège", 3],
+      ["islande", 4], ["singapour", 4], ["colombie", 4], ["roumanie", 4], ["éthiopie", 4],
+      ["kazakhstan", 5], ["mozambique", 5], ["afghanistan", 5], ["liechtenstein", 5], ["ouzbékistan", 5],
+    ],
+  },
+  vrac_cuisine: {
+    label: "Cuisine en vrac",
+    type: "melange",
+    items: [
+      ["pâtes", 1], ["salade", 1], ["crêpe|crêpes", 1], ["gâteau", 1], ["tarte", 1],
+      ["fromage", 2], ["poulet", 2], ["omelette", 2], ["quiche", 2], ["chocolat", 2],
+      ["raclette", 3], ["baguette", 3], ["vinaigrette", 3], ["couscous", 3], ["choucroute", 3],
+      ["ratatouille", 4], ["cassoulet", 4], ["profiteroles|profiterole", 4], ["tartiflette", 4], ["madeleine|madeleines", 4],
+      ["bouillabaisse", 5], ["blanquette", 5], ["mille-feuille|mille feuille", 5], ["clafoutis", 5], ["pot-au-feu|pot au feu", 5],
+    ],
+  },
+
+  // ---------- Titres à l'envers : ["titre transformé", "vrai titre|variante", niveau] ----------
+  envers_films: {
+    label: "Films à l'envers",
+    type: "envers",
+    items: [
+      // Niveau 1
+      ["La Laide et le Génie", "la belle et la bête", 1],
+      ["Départ vers le passé", "retour vers le futur", 1],
+      ["Touchables", "intouchables", 1],
+      ["La Petite Vadrouille", "la grande vadrouille", 1],
+      ["La Paix des étoiles", "la guerre des étoiles|star wars", 1],
+      ["Mission possible", "mission impossible", 1],
+      // Niveau 2
+      ["Le Mauvais, le Doux et l'Honnête", "le bon, la brute et le truand|le bon la brute et le truand", 2],
+      ["Le Petit-déjeuner de génies", "le dîner de cons|diner de cons", 2],
+      ["Adieu chez les Ch'tis", "bienvenue chez les ch'tis|bienvenue chez les chtis", 2],
+      ["Les Pâles font du ski", "les bronzés font du ski", 2],
+      ["Le Vacarme des loups", "le silence des agneaux", 2],
+      ["La mort est laide", "la vie est belle", 2],
+      // Niveau 3
+      ["Le Valet des anneaux", "le seigneur des anneaux", 3],
+      ["Il sera une fois dans l'Est", "il était une fois dans l'ouest", 3],
+      ["Le Dernier Élément", "le cinquième élément", 3],
+      ["Tout à cacher", "rien à déclarer", 3],
+      ["Les Casaniers de l'arche retrouvée", "les aventuriers de l'arche perdue", 3],
+      ["Le Petit Brun avec une chaussure blanche", "le grand blond avec une chaussure noire", 3],
+      // Niveau 4
+      ["Les Femmes détestent les bruns", "les hommes préfèrent les blondes", 4],
+      ["Sueurs chaudes", "sueurs froides", 4],
+      ["Atterrissage au-dessous d'un nid de coucou", "vol au-dessus d'un nid de coucou", 4],
+      ["Les Adultes de l'enfer", "les enfants du paradis", 4],
+      ["La Petite Réalité", "la grande illusion", 4],
+      // Niveau 5
+      ["L'Amour", "la haine", 5],
+      ["L'Estime", "le mépris", 5],
+      ["La Dette du courage", "le salaire de la peur", 5],
+      ["L'Exception du jeu", "la règle du jeu", 5],
+    ],
+  },
+  envers_livres: {
+    label: "Livres et contes à l'envers",
+    type: "envers",
+    items: [
+      // Niveau 1
+      ["Le Grand Prince", "le petit prince", 1],
+      ["La Laide au bois éveillé", "la belle au bois dormant", 1],
+      ["Les Fleurs du bien", "les fleurs du mal", 1],
+      ["Le Pire des mondes", "le meilleur des mondes", 1],
+      ["Vingt mille lieues sur les terres", "vingt mille lieues sous les mers", 1],
+      // Niveau 2
+      ["Le Grand Chaperon vert", "le petit chaperon rouge", 2],
+      ["Les Heureux", "les misérables", 2],
+      ["La Jeune Femme et la Terre", "le vieil homme et la mer", 2],
+      ["Cent ans de compagnie", "cent ans de solitude", 2],
+      ["Au revoir joie", "bonjour tristesse", 2],
+      ["À la recherche du temps gagné", "à la recherche du temps perdu", 2],
+      // Niveau 3
+      ["Le Malade réel", "le malade imaginaire", 3],
+      ["Le Généreux", "l'avare", 3],
+      ["Les Bas de Hurlevent", "les hauts de hurlevent", 3],
+      ["Voyage au début du jour", "voyage au bout de la nuit", 3],
+      ["Des chats et des femmes", "des souris et des hommes", 3],
+      ["L'Écume des nuits", "l'écume des jours", 3],
+      // Niveau 4
+      ["Le Vert et le Blanc", "le rouge et le noir", 4],
+      ["Humilité et ouverture d'esprit", "orgueil et préjugés", 4],
+      ["Le Vacarme de la terre", "le silence de la mer", 4],
+      ["Les Ruptures inoffensives", "les liaisons dangereuses", 4],
+      ["Les Raisins du calme", "les raisins de la colère", 4],
+      // Niveau 5
+      ["Bonne action et récompense", "crime et châtiment", 5],
+      ["Le Prolétaire goujat", "le bourgeois gentilhomme", 5],
+      ["Le Compatriote", "l'étranger", 5],
+      ["Les Admirables vulgaires", "les précieuses ridicules", 5],
+    ],
+  },
+  envers_chansons: {
+    label: "Chansons à l'envers",
+    type: "envers",
+    items: [
+      // Niveau 1
+      ["Oui, je regrette tout", "non, je ne regrette rien|non je ne regrette rien|je ne regrette rien", 1],
+      ["La Mort en rose", "la vie en rose", 1],
+      ["Les Feuilles vivantes", "les feuilles mortes", 1],
+      ["Amère France", "douce france", 1],
+      ["Mistral perdant", "mistral gagnant", 1],
+      // Niveau 2
+      ["Je te hais… moi aussi", "je t'aime moi non plus|je t'aime... moi non plus", 2],
+      ["Rejoins-moi", "ne me quitte pas", 2],
+      ["Le Nord", "le sud", 2],
+      ["Il est cinq heures, Paris s'endort", "il est cinq heures, paris s'éveille|il est cinq heures paris s'éveille|paris s'éveille", 2],
+      ["Le Lundi à l'ombre", "le lundi au soleil", 2],
+      ["Les Anges de midi", "les démons de minuit", 2],
+      // Niveau 3
+      ["Les Ennemis en dernier", "les copains d'abord", 3],
+      ["Je suis en pleine forme", "je suis malade", 3],
+      ["Quand le silence est mauvais", "quand la musique est bonne", 3],
+      ["Monte la neige", "tombe la neige", 3],
+      ["Grande Marie", "petite marie", 3],
+      ["Sur la terre de Paris", "sous le ciel de paris", 3],
+      // Niveau 4
+      ["Demain déjà", "hier encore", 4],
+      ["Minable", "formidable", 4],
+      ["Cède", "résiste", 4],
+      ["Ces matinées-ci", "ces soirées-là", 4],
+      ["Aucun silence que je déteste", "toute la musique que j'aime", 4],
+      // Niveau 5
+      ["Comme d'exception", "comme d'habitude", 5],
+      ["Solitaire insensible", "foule sentimentale", 5],
+      ["Le Casanier", "l'aventurier", 5],
+      ["Laide-Île-en-Terre", "belle-île-en-mer|belle île en mer", 5],
     ],
   }
 };
