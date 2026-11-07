@@ -58,6 +58,11 @@ legend{font:600 1rem/1.3 var(--disp);margin-bottom:8px;padding:0}
 .items.mots li{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.3fr) auto;align-items:center;gap:10px;background:var(--tile);border:2px solid var(--line);border-radius:8px;padding:8px 10px}
 .items.mots .w{font:600 1.05rem/1.3 var(--disp);overflow-wrap:anywhere}
 .items.mots .mini{min-width:0}
+.items.inds li{display:grid;grid-template-columns:minmax(0,1fr) auto;align-items:center;gap:10px;background:var(--tile);border:2px solid var(--line);border-radius:8px;padding:8px 10px}
+.items.inds .w{font:600 1.05rem/1.3 var(--disp);overflow-wrap:anywhere}
+.items.inds small{display:block;font:400 .92rem/1.4 'DM Sans',sans-serif;opacity:.85;overflow-wrap:anywhere}
+#clues{display:grid;gap:8px;margin:12px 0 0}
+#clues label{font:600 .95rem/1.3 var(--disp)}
 .items.photos{grid-template-columns:repeat(auto-fill,minmax(150px,1fr))}
 .items.photos li{background:var(--tile);border:2px solid var(--line);border-radius:8px;padding:8px;display:grid;gap:6px;position:relative}
 .items.photos img{width:100%;aspect-ratio:1;object-fit:cover;border-radius:4px;background:#050A2C}
@@ -79,7 +84,7 @@ details .row{margin-top:10px}
 
 <section id="home">
   <h1>Mes catégories</h1>
-  <p class="lead">Crée tes propres catégories pour le jeu : des mots à trous ou des photos. Elles apparaissent dans le jeu dès <span class="min"></span> éléments, avec la mention « perso ».</p>
+  <p class="lead">Crée tes propres catégories pour le jeu : des mots à trous, des photos ou des indices. Elles apparaissent dans le jeu dès <span class="min"></span> éléments, avec la mention « perso ».</p>
   <div id="list" class="cards"></div>
   <button type="button" class="big" id="new">＋ Nouvelle catégorie</button>
   <details class="panel" id="parents">
@@ -101,6 +106,7 @@ details .row{margin-top:10px}
       <legend>Quel jeu ?</legend>
       <label class="choice"><input type="radio" name="ctype" value="trous" checked><span class="ci">🔤</span><b>Mot à trous</b><span>Tu écris des mots, le jeu cache des lettres.</span><span class="ex prev" id="extrous"></span></label>
       <label class="choice"><input type="radio" name="ctype" value="photo"><span class="ci">📷</span><b>Photos</b><span>Tu prends des photos, les joueurs disent ce que c’est.</span></label>
+      <label class="choice"><input type="radio" name="ctype" value="indices"><span class="ci">🧩</span><b>Indices</b><span>Tu donnes plusieurs indices, les joueurs devinent la réponse.</span><span class="ex prev" id="exind"></span></label>
     </fieldset>
     <p id="cmsg" class="msg ko" role="alert"></p>
     <button type="submit" class="big">Créer la catégorie</button>
@@ -140,6 +146,16 @@ details .row{margin-top:10px}
     <p id="phmsg" class="msg" role="status"></p>
   </div>
 
+  <div id="addind" class="panel" hidden>
+    <form id="iform" autocomplete="off">
+      <label>La réponse à trouver<input id="ians" maxlength="40" placeholder="Par exemple : Paris" spellcheck="false" enterkeyhint="next"></label>
+      <div id="clues"></div>
+      <div class="row" style="margin-top:10px"><button type="button" class="alt" id="iplus">＋ Un indice de plus</button><button type="submit">Ajouter</button></div>
+    </form>
+    <p class="hint">Entre <span class="imin"></span> et <span class="imax"></span> indices. Moins il y en a, plus c’est difficile. Les joueurs les voient tous en même temps.</p>
+    <p id="imsg" class="msg" role="status"></p>
+  </div>
+
   <h2 id="ihead"></h2>
   <ul id="items" class="items"></ul>
 
@@ -158,8 +174,10 @@ document.querySelectorAll('.min').forEach(e=>e.textContent=P.MIN);
 P.persist();
 const norm=s=>String(s).toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g,'').replace(/\s+/g,' ').trim();
 const el=(tag,cls,txt)=>{const e=document.createElement(tag);if(cls)e.className=cls;if(txt!=null)e.textContent=txt;return e};
-const save=()=>{try{P.save(cats);return true}catch(e){flash($(cur&&cur.type==='photo'?'phmsg':'mmsg'),'ko','Impossible d’enregistrer : plus de place sur cet appareil.');return false}};
-const plural=(n,t)=>n+' '+(t==='photo'?(n>1?'photos':'photo'):(n>1?'mots':'mot'));
+const MSG={trous:'mmsg',photo:'phmsg',indices:'imsg'};
+const save=()=>{try{P.save(cats);return true}catch(e){flash($(MSG[cur&&cur.type]||'mmsg'),'ko','Impossible d’enregistrer : plus de place sur cet appareil.');return false}};
+const plural=(n,t)=>n+' '+(t==='photo'?(n>1?'photos':'photo'):t==='indices'?(n>1?'énigmes':'énigme'):(n>1?'mots':'mot'));
+document.querySelectorAll('.imin').forEach(e=>e.textContent=P.IND_MIN);document.querySelectorAll('.imax').forEach(e=>e.textContent=P.IND_MAX);
 function flash(e,cls,txt){e.className='msg '+cls;e.textContent=txt;clearTimeout(e._t);e._t=setTimeout(()=>{e.textContent=''},3500)}
 function view(id){['home','create','edit'].forEach(x=>$(x).hidden=x!==id);$('back').hidden=id!=='home';scrollTo(0,0)}
 
@@ -177,7 +195,7 @@ function home(){
 }
 $('new').onclick=()=>{$('cname').value='';$('cmsg').textContent='';view('create');exTrous();$('cname').focus()};
 $('ccancel').onclick=home;
-function exTrous(){P.renderMot($('extrous'),'G_RA_E')}
+function exTrous(){P.renderMot($('extrous'),'G_RA_E');P.renderInd($('exind'),'Cou très long\nTaches\nAfrique')}
 $('cform').onsubmit=e=>{
   e.preventDefault();
   const label=$('cname').value.trim(),type=new FormData($('cform')).get('ctype');
@@ -190,11 +208,12 @@ $('cform').onsubmit=e=>{
 function edit(id){
   cats=P.list();cur=cats.find(c=>c.id===id);if(!cur)return home();
   $('ename').value=cur.label;$('etype').textContent=(P.TYPES[cur.type].icone)+' '+P.TYPES[cur.type].nom;
-  $('addmot').hidden=cur.type!=='trous';$('addpho').hidden=cur.type!=='photo';
-  $('mmsg').textContent=$('phmsg').textContent='';$('mprev').hidden=$('mprevl').hidden=true;
+  $('addmot').hidden=cur.type!=='trous';$('addpho').hidden=cur.type!=='photo';$('addind').hidden=cur.type!=='indices';
+  $('mmsg').textContent=$('phmsg').textContent=$('imsg').textContent='';$('mprev').hidden=$('mprevl').hidden=true;
   $('delc').hidden=true;$('del').hidden=false;endQueue();
   view('edit');items();
   if(cur.type==='trous')$('mot').focus();
+  if(cur.type==='indices'){resetInd();$('ians').focus()}
 }
 $('eback').onclick=home;
 $('ename').onchange=()=>{const v=$('ename').value.trim();if(!v){$('ename').value=cur.label;return}cur.label=v;save()};
@@ -202,17 +221,19 @@ function progress(){
   const n=cur.items.length,p=$('prog');
   p.querySelector('i').style.width=Math.min(100,n/GOAL*100)+'%';
   p.querySelector('p').textContent=n<P.MIN?'Encore '+(P.MIN-n)+' avant de pouvoir jouer avec cette catégorie.':n<GOAL?'Elle est prête à jouer ! Avec '+GOAL+' ou plus, c’est encore mieux.':'Super, elle est prête à jouer !';
-  $('ihead').textContent=cur.type==='photo'?'Les photos ('+n+')':'Les mots ('+n+')';
+  $('ihead').textContent=(cur.type==='photo'?'Les photos (':cur.type==='indices'?'Les énigmes (':'Les mots (')+n+')';
 }
 function items(){
-  const ul=$('items');ul.textContent='';ul.className='items '+(cur.type==='photo'?'photos':'mots');
+  const ul=$('items');ul.textContent='';ul.className='items '+(cur.type==='photo'?'photos':cur.type==='indices'?'inds':'mots');
   progress();
-  if(!cur.items.length){ul.appendChild(el('li','empty',cur.type==='photo'?'Pas encore de photo.':'Pas encore de mot.'));return}
+  if(!cur.items.length){ul.appendChild(el('li','empty',cur.type==='photo'?'Pas encore de photo.':cur.type==='indices'?'Pas encore d’énigme.':'Pas encore de mot.'));return}
   // Les plus récents en premier.
   [...cur.items].reverse().forEach(it=>{
     const li=el('li'),x=el('button','x','✕');x.type='button';x.setAttribute('aria-label','Retirer « '+it.a+' »');
     x.onclick=()=>{cur.items=cur.items.filter(y=>y!==it);save();if(it.id)P.delPhoto(it.id).catch(()=>{});items()};
-    if(cur.type==='trous'){
+    if(cur.type==='indices'){
+      const mid=el('div');mid.append(el('span','w',it.a),el('small',null,(it.c||[]).join(' · ')));li.append(mid,x);ul.appendChild(li);
+    }else if(cur.type==='trous'){
       const mini=el('div','mini prev');li.append(el('span','w',it.a),mini,x);ul.appendChild(li);
       P.renderMot(mini,P.masque(it.a,P.autoLevel(it.a)));
     }else{
@@ -242,6 +263,31 @@ $('mform').onsubmit=e=>{
   if(bad.length)m.push('trop court : '+bad.join(', '));
   flash($('mmsg'),added.length?'ok':'ko',m.join(' · '));
   $('mot').value='';$('mprev').hidden=$('mprevl').hidden=true;$('mot').focus();items();
+};
+// Indices : une réponse et de IND_MIN à IND_MAX indices.
+function clueInput(){
+  const box=$('clues'),n=box.children.length+1,lb=el('label',null,'Indice '+n),inp=el('input');
+  inp.maxLength=60;inp.spellcheck=false;inp.setAttribute('enterkeyhint','next');
+  inp.placeholder=['Par exemple : Tour Eiffel','Par exemple : capitale','Par exemple : la Seine','',''][n-1]||'';
+  lb.appendChild(inp);box.appendChild(lb);$('iplus').hidden=n>=P.IND_MAX;return inp;
+}
+function resetInd(){$('clues').textContent='';$('ians').value='';for(let i=0;i<3;i++)clueInput()}
+$('iplus').onclick=()=>clueInput().focus();
+// Entrée passe au champ suivant ; elle n'ajoute l'énigme que depuis le dernier champ.
+$('iform').addEventListener('keydown',e=>{
+  if(e.key!=='Enter'||e.target.tagName!=='INPUT')return;
+  const f=[$('ians'),...$('clues').querySelectorAll('input')],i=f.indexOf(e.target);
+  if(i>=0&&i<f.length-1){e.preventDefault();f[i+1].focus()}
+});
+$('iform').onsubmit=e=>{
+  e.preventDefault();
+  const a=$('ians').value.trim().replace(/\s+/g,' '),c=[...$('clues').querySelectorAll('input')].map(i=>i.value.trim().replace(/\s+/g,' ')).filter(Boolean);
+  if(!a){flash($('imsg'),'ko','Écris la réponse à trouver.');$('ians').focus();return}
+  if(c.length<P.IND_MIN){flash($('imsg'),'ko','Il faut au moins '+P.IND_MIN+' indices.');($('clues').querySelectorAll('input')[c.length]||$('ians')).focus();return}
+  if(cur.items.some(it=>norm(it.a)===norm(a))){flash($('imsg'),'ko','« '+a+' » est déjà dans la liste.');$('ians').focus();return}
+  cur.items.push({a:a.slice(0,40),c});
+  if(!save()){cur.items.pop();return}
+  flash($('imsg'),'ok','« '+a+' » ajouté');resetInd();$('ians').focus();items();
 };
 // Photos : on les nomme une par une.
 $('pfile').onchange=()=>{queue=[...$('pfile').files];queue.total=queue.length;$('pfile').value='';nextPhoto()};

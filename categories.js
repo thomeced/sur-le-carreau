@@ -11,7 +11,10 @@
  *   - "emoji" (par défaut) : les lignes ci-dessus ;
  *   - "trous" (mot à trous) : items: ["vache", "cochon|cochons", ["hippopotame", 3]] ; le jeu cache des
  *     lettres au hasard, niveau calculé d'après la longueur si on ne le donne pas ;
- *   - "photo" : items: [["assets/photos/velo.jpg", "vélo", 1]] (adresse de l'image, réponses, niveau).
+ *   - "photo" : items: [["assets/photos/velo.jpg", "vélo", 1]] (adresse de l'image, réponses, niveau) ;
+ *   - "indices" : items: [[["Tour Eiffel", "Seine", "Capitale"], "Paris", 1]] (de 2 à 5 indices, tous
+ *     visibles dès le début, puis réponses et niveau ; sans niveau : 4 indices ou plus = 1, 3 = 2, 2 = 3).
+ *     Pas d'acteurs ni de personnes vivantes dans les indices.
  * Les catégories créées avec editeur.html restent dans le navigateur (voir perso.js), pas dans ce fichier.
  * Une ligne mal écrite est ignorée (avertissement dans la console du navigateur).
  */
@@ -1006,6 +1009,112 @@ const CATEGORIES = {
       "Diaphragme",
       "Œsophage|oesophage",
       "Thyroïde",
+    ],
+  },
+  ind_films: {
+    label: "Films",
+    type: "indices",
+    items: [
+      // Niveau 1
+      [["Paquebot", "Iceberg", "Naufrage en 1912"], "Titanic", 1],
+      [["Lionceau", "Savane", "Oncle qui trahit son frère"], "Le Roi lion", 1],
+      [["Jeune sorcier", "Cicatrice en éclair", "École de magie"], "Harry Potter|Harry Potter à l'école des sorciers", 1],
+      [["Deux sœurs", "Pouvoirs de glace", "Bonhomme de neige qui parle"], "La Reine des neiges", 1],
+      [["Poisson-clown", "Un père cherche son fils", "Récif de corail"], "Le Monde de Nemo|Nemo", 1],
+      [["Parc d'attractions", "Dinosaures recréés", "Île"], "Jurassic Park", 1],
+      [["Jouets vivants", "Cow-boy", "Ranger de l'espace"], "Toy Story", 1],
+      [["Visiteur venu des étoiles", "Vélo qui s'envole", "Il veut téléphoner chez lui"], "E.T. l'extra-terrestre|E.T.", 1],
+      [["Ogre vert", "Âne qui parle", "Princesse à délivrer"], "Shrek", 1],
+      // Niveau 2
+      [["Rat", "Cuisine", "Restaurant parisien"], "Ratatouille", 2],
+      [["Requin", "Plage", "Chef de la police"], "Les Dents de la mer", 2],
+      [["Voiture qui voyage dans le temps", "1955", "Savant fou"], "Retour vers le futur", 2],
+      [["Chaussures rouges", "Route de briques jaunes", "Épouvantail"], "Le Magicien d'Oz", 2],
+      [["Chevalier du Moyen Âge", "Voyage dans le temps", "Écuyer"], "Les Visiteurs", 2],
+      [["Postier muté", "Nord de la France", "Patois"], "Bienvenue chez les Ch'tis", 2],
+      [["Serveuse", "Montmartre", "Nain de jardin qui voyage"], "Le Fabuleux Destin d'Amélie Poulain|Amélie Poulain|Amélie", 2],
+      [["Planète lointaine", "Géants à la peau bleue", "Arbre sacré"], "Avatar", 2],
+      [["Anneau à détruire", "Hobbits", "Montagne du Destin"], "Le Seigneur des anneaux", 2],
+      // Niveau 3
+      [["Psychiatre cannibale", "Jeune agente du FBI", "Tueur en série"], "Le Silence des agneaux", 3],
+      [["Pensionnat", "Surveillant musicien", "Chorale d'enfants"], "Les Choristes", 3],
+      [["Riche tétraplégique", "Aide à domicile", "Parapente"], "Intouchables", 3],
+      [["Maquettes en allumettes", "Mal de dos", "Contrôleur fiscal"], "Le Dîner de cons", 3],
+      [["Aviateurs anglais", "Paris occupé", "Chef d'orchestre et peintre en bâtiment"], "La Grande Vadrouille", 3],
+      [["Taxi volant", "Quatre pierres sacrées", "Futur"], "Le Cinquième Élément", 3],
+      [["Rêves dans les rêves", "Toupie", "Implanter une idée"], "Inception", 3],
+      [["Pilule rouge ou bleue", "Monde virtuel", "Esquiver les balles au ralenti"], "Matrix", 3],
+      [["Famille mafieuse", "Tête de cheval", "Offre qu'on ne peut refuser"], "Le Parrain", 3],
+    ],
+  },
+  ind_villes: {
+    label: "Villes du monde",
+    type: "indices",
+    items: [
+      // Niveau 1
+      [["Tour Eiffel", "Seine", "Capitale de la France"], "Paris", 1],
+      [["Big Ben", "Tamise", "Bus rouges à étage"], "Londres", 1],
+      [["Statue de la Liberté", "Taxis jaunes", "Central Park"], "New York", 1],
+      [["Colisée", "Vatican", "Fontaine de Trevi"], "Rome", 1],
+      [["Gondoles", "Canaux", "Pont du Rialto"], "Venise", 1],
+      [["Vieux-Port", "Bonne Mère", "Bouillabaisse"], "Marseille", 1],
+      // Niveau 2
+      [["Sagrada Família", "Ramblas", "Catalogne"], "Barcelone", 2],
+      [["Canaux", "Vélos", "Maison d'Anne Frank"], "Amsterdam", 2],
+      [["Place Rouge", "Kremlin", "Cathédrale aux bulbes colorés"], "Moscou", 2],
+      [["Christ rédempteur", "Carnaval", "Plage de Copacabana"], "Rio de Janeiro|Rio", 2],
+      [["Pyramides de Gizeh aux portes de la ville", "Nil", "Capitale de l'Égypte"], "Le Caire", 2],
+      [["Opéra en forme de voiles", "Pont du port", "Australie"], "Sydney", 2],
+      [["Capitale du Japon", "Carrefour de Shibuya", "Mont Fuji à l'horizon"], "Tokyo", 2],
+      [["Porte de Brandebourg", "Mur tombé en 1989", "Capitale de l'Allemagne"], "Berlin", 2],
+      [["Fourvière", "Rhône et Saône", "Bouchons"], "Lyon", 2],
+      [["Vin", "Garonne", "Miroir d'eau"], "Bordeaux", 2],
+      // Niveau 3
+      [["Bosphore", "À cheval sur deux continents", "Ancienne Constantinople"], "Istanbul", 3],
+      [["Musée de l'Ermitage", "Nuits blanches", "Fondée par Pierre le Grand"], "Saint-Pétersbourg", 3],
+      [["Pont Charles", "Horloge astronomique", "Vltava"], "Prague", 3],
+      [["Tramways jaunes", "Tage", "Tour de Belém"], "Lisbonne", 3],
+      [["Ancienne capitale impériale", "Temples par milliers", "Quartier de Gion"], "Kyoto", 3],
+      [["Place Jemaa el-Fna", "Souks", "Ville rouge"], "Marrakech", 3],
+      [["Parlement européen", "Petite France", "Marché de Noël"], "Strasbourg", 3],
+      [["Cité médiévale", "Doubles remparts", "Aude"], "Carcassonne", 3],
+      [["Plus haute tour du monde", "Îles en forme de palmier", "Émirats arabes unis"], "Dubaï|Dubai", 3],
+    ],
+  },
+  ind_pays: {
+    label: "Pays",
+    type: "indices",
+    items: [
+      // Niveau 1
+      [["Forme de botte", "Pizza", "Rome"], "Italie", 1],
+      [["Soleil levant", "Sushis", "Samouraïs"], "Japon", 1],
+      [["Pyramides", "Pharaons", "Nil"], "Égypte", 1],
+      [["Football", "Amazonie", "Carnaval"], "Brésil", 1],
+      [["Kangourous", "Île-continent", "Opéra de Sydney"], "Australie", 1],
+      [["Grande Muraille", "Pandas", "Pékin"], "Chine", 1],
+      [["Feuille d'érable", "Sirop d'érable", "Québec"], "Canada", 1],
+      // Niveau 2
+      [["Pyramides mayas", "Sombrero", "Tacos"], "Mexique", 2],
+      [["Acropole", "Îles", "Jeux olympiques antiques"], "Grèce", 2],
+      [["Taj Mahal", "Gange", "Pays le plus peuplé du monde"], "Inde", 2],
+      [["Tulipes", "Moulins", "Sabots"], "Pays-Bas|Hollande", 2],
+      [["Chocolat", "Quatre langues officielles", "Neutralité"], "Suisse", 2],
+      [["Fjords", "Vikings", "Aurores boréales"], "Norvège", 2],
+      [["Machu Picchu", "Lamas", "Incas"], "Pérou", 2],
+      [["Frites", "Bande dessinée", "Bruxelles"], "Belgique", 2],
+      [["Fado", "Morue", "Grands navigateurs"], "Portugal", 2],
+      [["Kiwi", "Maoris", "Haka"], "Nouvelle-Zélande", 2],
+      [["Baobabs", "Lémuriens", "Grande île de l'océan Indien"], "Madagascar", 2],
+      // Niveau 3
+      [["Steppe", "Yourtes", "Gengis Khan"], "Mongolie", 3],
+      [["Tango", "Pampa", "Patagonie"], "Argentine", 3],
+      [["Baie d'Along", "Rizières en terrasses", "Hô Chi Minh-Ville"], "Viêt Nam|Vietnam", 3],
+      [["Temples d'Angkor", "Mékong", "Khmers"], "Cambodge", 3],
+      [["Pétra", "Mer Morte", "Désert du Wadi Rum"], "Jordanie", 3],
+      [["Salar d'Uyuni", "La Paz", "Lac Titicaca"], "Bolivie", 3],
+      [["Mille lacs", "Saunas", "Laponie"], "Finlande", 3],
+      [["Everest", "Katmandou", "Drapeau qui n'est pas rectangulaire"], "Népal", 3],
+      [["Volcans", "Geysers", "Pas d'armée"], "Islande", 3],
     ],
   }
 };

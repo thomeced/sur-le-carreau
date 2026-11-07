@@ -191,5 +191,13 @@ Chaque chantier est prévu dans sa propre conversation du projet, sur sa propre 
 - Ajustements demandés par Ced : le territoire du détenteur est peint en jaune (`GC.gold`, plus clair s'il est l'adversaire choisi) au lieu d'une mention « ★ Case d'or » sous son nom ; le sélecteur de temps de l'écran de départ est supprimé, chrono fixe de 40 s (`DUEL_SEC`), donc 45 s avec la case d'or.
 - Écarts possibles avec l'émission, à confirmer par Ced : les victoires en défense comptent ; pas d'échange de catégorie à la place du bonus.
 
+## Type « Indices » (novembre 2026)
+- Demande de Ced : un type de catégorie où plusieurs indices sont visibles **dès le début** (pas révélés un à un), pensé pour la culture populaire (un film d'après son intrigue ou ses personnages) et pour les villes ou les pays.
+- **Format** (`categories.js`) : `[["indice", …], "réponse|variante", niveau]`, de 2 à 5 indices (`IND_MIN`, `IND_MAX` dans `perso.js`). Sans niveau : 4 indices ou plus = 1, 3 = 2, 2 = 3 (`autoLevelInd`). Les indices gardent l'ordre de l'auteur.
+- **Jeu et arbitre** : `normItem` range les indices dans `{clues}` ; `S.disp` = indices séparés par des retours à la ligne, envoyé tel quel à l'arbitre ; `paintCard` affiche la liste avec `SLC_PERSO.renderInd` (classe `#card.ind`, liste `.slcind` : le préfixe `.slci` est pris par l'intro). Consigne : « Trouvez ce qui se cache derrière tous ces indices. »
+- **Éditeur** : choix « 🧩 Indices », une réponse et 3 champs d'indice (+ jusqu'à 5), Entrée passe au champ suivant ; refus si moins de 2 indices ou réponse déjà présente. Stockage `{a, c:[…]}`.
+- **Contenu** : 3 catégories, Films (27), Villes du monde (25), Pays (27), 3 indices chacune, niveaux 1 à 3 donnés à la main. Pas d'acteurs ni de personnes vivantes dans les indices.
+- Tests (navigateur automatisé, 1440×900 et 390×844) : duel Films, indice le plus long, vue arbitre, création d'une catégorie de 5 énigmes dans l'éditeur (messages d'erreur, doublon), catégorie perso présente dans le jeu ; aucune erreur JavaScript.
+
 ## Comment reprendre dans un nouveau projet Claude
 Reliez le dépôt GitHub (référence du code) et gardez ce document dans le projet, puis demandez par exemple : « Lis le document de contexte et reprends le jeu : ajoute l'éditeur de catégories. » Le fichier `sur-le-carreau.html` du projet est la version autonome du jeu (catégories incluses) ; la référence reste le dépôt.

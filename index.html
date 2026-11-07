@@ -99,6 +99,7 @@ h1{font-size:clamp(2.2rem,8vw,4rem);line-height:1.1}
 .gpanel{display:grid;gap:10px;justify-items:start}
 .gpanel p{margin:0;font-weight:600}
 #card.mot,#acard.mot{font-size:16px;padding:22px 6px;user-select:none}
+#card.ind,#acard.ind{font-size:16px;padding:14px 6px;user-select:none}
 #card.pho,#acard.pho{font-size:4rem;padding:8px}
 #card.pho img,#acard.pho img{display:block;max-width:100%;max-height:min(46vh,440px);margin:0 auto;border-radius:4px;object-fit:contain}
 #acard.pho img{max-height:30vh}
@@ -182,7 +183,7 @@ a.btnlink:focus-visible{outline:3px solid var(--p1);outline-offset:2px}
     <p id="gowhy" hidden></p>
     <button type="submit" id="gosubmit" aria-describedby="gowhy">Lancer le duel</button>
     <button type="button" class="alt" id="toarb">Je suis l’arbitre</button>
-    <a class="btnlink" href="editeur.html" id="toedit">✏️ Créer mes catégories (mots à trous, photos)</a>
+    <a class="btnlink" href="editeur.html" id="toedit">✏️ Créer mes catégories (mots à trous, photos, indices)</a>
   </form>
 </section>
 
@@ -262,8 +263,8 @@ a.btnlink:focus-visible{outline:3px solid var(--p1);outline-offset:2px}
 <script>
 const DATA={};
 const $=id=>document.getElementById(id);
-/* Types de catégories : « emoji » (par défaut), « trous » (mot à trous) et « photo ». Chaque élément est
-   ramené à [clé unique, "réponse|variante", niveau, {img, thumb} pour une photo]. Pour un mot à trous,
+/* Types de catégories : « emoji » (par défaut), « trous » (mot à trous), « photo » et « indices ». Chaque élément est
+   ramené à [clé unique, "réponse|variante", niveau, {img, thumb} pour une photo, {clues} pour des indices]. Pour un mot à trous,
    ce que voient les joueurs est calculé à chaque tirage (lettres cachées au hasard). */
 const TYPES=(window.SLC_PERSO&&SLC_PERSO.TYPES)||{emoji:{nom:'Images',consigne:'Nommez ce que montre l’image.'}};
 const typeName=t=>t&&t!=='emoji'&&TYPES[t]?TYPES[t].nom:'';
@@ -273,6 +274,14 @@ function normItem(type,it){
     if(typeof w!=='string'||!w.trim())return null;
     const l=Array.isArray(it)&&[1,2,3].includes(it[1])?it[1]:window.SLC_PERSO?SLC_PERSO.autoLevel(w):2;
     return['mot:'+w.split('|')[0].trim().toLowerCase(),w,l];
+  }
+  if(type==='indices'){
+    if(!Array.isArray(it)||typeof it[1]!=='string'||!it[1].trim())return null;
+    const P=window.SLC_PERSO,mx=P?P.IND_MAX:5,mn=P?P.IND_MIN:2;
+    const clues=(Array.isArray(it[0])?it[0]:typeof it[0]==='string'?it[0].split('|'):[]).filter(c=>typeof c==='string').map(c=>c.replace(/\s+/g,' ').trim()).filter(Boolean).slice(0,mx);
+    if(clues.length<mn)return null;
+    const l=[1,2,3].includes(it[2])?it[2]:P?P.autoLevelInd(clues.length):2;
+    return['ind:'+it[1].split('|')[0].trim().toLowerCase(),it[1],l,{clues}];
   }
   if(!Array.isArray(it)||typeof it[0]!=='string'||!it[0]||typeof it[1]!=='string'||!it[1].trim())return null;
   if(type==='photo')return['photo:'+it[0],it[1],[1,2,3].includes(it[2])?it[2]:1,{img:it[0],thumb:typeof it[3]==='string'?it[3]:it[0]}];
@@ -397,13 +406,14 @@ function card(){
   let l=order.find(x=>S.pool[x].length);
   if(!l){fill();l=order.find(x=>S.pool[x].length)}
   S.cur=S.pool[l].pop();
-  S.disp=S.type==='trous'&&window.SLC_PERSO?SLC_PERSO.masque(S.cur[1],S.cur[2]):S.type==='photo'?'':S.cur[0];
+  S.disp=S.type==='trous'&&window.SLC_PERSO?SLC_PERSO.masque(S.cur[1],S.cur[2]):S.type==='photo'?'':S.type==='indices'?S.cur[3].clues.join('\n'):S.cur[0];
   showCard();
 }
-// Carte affichée : emoji (texte), mot à trous (tuiles) ou photo. Sert aussi à la page arbitre.
+// Carte affichée : emoji (texte), mot à trous (tuiles), photo ou indices (liste). Sert aussi à la page arbitre.
 function paintCard(el,type,disp,img){
-  el.className=type==='trous'?'mot':type==='photo'?'pho':'';
+  el.className=type==='trous'?'mot':type==='photo'?'pho':type==='indices'?'ind':'';
   if(type==='trous'&&window.SLC_PERSO)return SLC_PERSO.renderMot(el,disp);
+  if(type==='indices'&&window.SLC_PERSO)return SLC_PERSO.renderInd(el,disp);
   if(type==='photo'){el.textContent='';if(img){const im=new Image();im.src=img;im.alt='Photo à nommer';el.appendChild(im)}else el.textContent='📷';return}
   el.textContent=disp;
 }
