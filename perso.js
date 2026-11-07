@@ -1,9 +1,10 @@
 /* Catégories personnelles de « Sur le carreau » (créées avec editeur.html).
  *
  * Partagé par le jeu (index.html) et l'éditeur (editeur.html) :
- * - les types de jeu (emoji, mot à trous, photos, indices) et la consigne que l'arbitre annonce ;
+ * - les types de jeu (emoji, mot à trous, photos, indices, lettres mélangées, titres à l'envers) et la consigne que l'arbitre annonce ;
  * - les « indices » : plusieurs pistes visibles d'emblée, affichées en liste (renderInd) ;
  * - le « mot à trous » : lettres cachées au hasard (plus le niveau monte, plus il y en a), affichage en tuiles ;
+ * - les « lettres mélangées » (melange) et les « titres à l'envers » (renderEnv), jouables mais pas dans l'éditeur ;
  * - l'enregistrement dans le navigateur : catégories dans localStorage (clé « slc-perso »),
  *   photos dans IndexedDB (base « slc-perso », magasin « photos »). Tout reste sur cet appareil,
  *   sauf à passer par la sauvegarde en fichier (exportData / importData).
@@ -13,7 +14,9 @@
     emoji:{nom:'Images',icone:'🖼️',consigne:'Nommez ce que montre l’image.'},
     trous:{nom:'Mot à trous',icone:'🔤',consigne:'Retrouvez le mot complet : certaines lettres sont cachées.'},
     photo:{nom:'Photos',icone:'📷',consigne:'Nommez ce que montre la photo.'},
-    indices:{nom:'Indices',icone:'🧩',consigne:'Trouvez ce qui se cache derrière tous ces indices.'}
+    indices:{nom:'Indices',icone:'🧩',consigne:'Trouvez ce qui se cache derrière tous ces indices.'},
+    melange:{nom:'Lettres mélangées',icone:'🔀',consigne:'Remettez les lettres dans l’ordre pour retrouver le mot.'},
+    envers:{nom:'Titres à l’envers',icone:'🙃',consigne:'Retrouvez le vrai titre : ses mots ont été remplacés par leur contraire.'}
   };
   const IND_MIN=2,IND_MAX=5; // nombre d'indices par élément
   const MIN=5; // nombre minimal d'éléments pour qu'une catégorie perso apparaisse dans le jeu
@@ -39,6 +42,34 @@
     });
     if(!hid){const all=groups.flat();if(all.length>=2)ch[all[1+Math.floor(Math.random()*(all.length-1))]]='_'}
     return ch.join('');
+  }
+  // Niveau automatique d'un mot mélangé, d'après le nombre de lettres (5 ou moins : 1 … 12 ou plus : 5).
+  const autoLevelMel=w=>{const n=letters(w);return n<=5?1:n<=7?2:n<=9?3:n<=11?4:5};
+  /* Lettres mélangées, mot par mot (espaces, traits d'union et apostrophes restent en place ; les mots de 2 lettres
+     ou moins aussi). Aux niveaux 1 et 2, la première lettre de chaque mot reste à sa place. Chaque mot mélangé est
+     différent du mot de départ, sauf s'il n'a que des lettres identiques à déplacer. */
+  function melange(w,lvl){
+    const ch=[...first(w).toUpperCase()],groups=[];let g=[];
+    ch.forEach((c,i)=>{if(isL(c))g.push(i);else if(g.length){groups.push(g);g=[]}});if(g.length)groups.push(g);
+    const keep=lvl<=2;
+    const shuf=a=>{for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a};
+    const r=ch.slice();
+    groups.forEach(gr=>{
+      const pos=keep?gr.slice(1):gr.slice();if(gr.length<=2||pos.length<2)return;
+      const src=pos.map(i=>ch[i]),was=src.join('');let lt=src;
+      for(let tr=0;tr<30&&lt.join('')===was;tr++)lt=shuf(src.slice()); // chaque mot change, si c'est possible
+      pos.forEach((i,n)=>r[i]=lt[n]);
+    });
+    return r.join('');
+  }
+  // Affiche un titre « à l'envers » (texte), à une taille qui tient dans la largeur de l'élément.
+  function renderEnv(el,disp){
+    el.textContent='';
+    const q=document.createElement('p');q.className='slcenv';q.textContent='« '+String(disp).trim()+' »';
+    const W=el.clientWidth||320,L=Math.max(8,String(disp).length+4);
+    // Vise deux lignes au plus pour les titres longs, sans dépasser 52 px.
+    q.style.fontSize=Math.max(18,Math.min(52,Math.floor(W*.9*2/(L*.58)),Math.floor(W/9)))+'px';
+    el.appendChild(q);
   }
   // Affiche un mot masqué en tuiles, à une taille qui tient dans la largeur de l'élément.
   function renderMot(el,disp){
@@ -79,6 +110,7 @@
       '.slcm-p{display:inline-flex;align-items:center;font-weight:700;color:#F4F6FF}'+
       '.slcind{list-style:none;margin:0 auto;padding:.3em .5em;display:grid;gap:.4em;max-width:30em;text-align:left;line-height:1.25;font-family:Poppins,"DM Sans",system-ui,sans-serif;font-weight:600;color:#F4F6FF}'+
       '.slcind li{position:relative;background:rgba(255,255,255,.1);border:.06em solid rgba(157,184,255,.6);border-radius:.3em;padding:.35em .6em .35em 1.5em;overflow-wrap:anywhere}'+
+      '.slcenv{margin:0 auto;padding:.4em .5em;max-width:24em;text-align:center;line-height:1.2;font-family:Poppins,"DM Sans",system-ui,sans-serif;font-weight:700;color:#F4F6FF;overflow-wrap:anywhere;text-wrap:balance}'+
       '.slcind li::before{content:"";position:absolute;left:.6em;top:.82em;width:.4em;height:.4em;border-radius:50%;background:#FFC53D}';
     (document.head||document.documentElement).appendChild(st);
   })();
@@ -158,5 +190,5 @@
     return n;
   }
 
-  window.SLC_PERSO={TYPES,MIN,IND_MIN,IND_MAX,autoLevel,autoLevelInd,renderInd,masque,renderMot,letters,list,save,newId,putPhoto,getPhoto,delPhoto,allPhotos,prepPhoto,persist,load,exportData,importData};
+  window.SLC_PERSO={TYPES,MIN,IND_MIN,IND_MAX,autoLevel,autoLevelInd,autoLevelMel,melange,renderEnv,renderInd,masque,renderMot,letters,list,save,newId,putPhoto,getPhoto,delPhoto,allPhotos,prepPhoto,persist,load,exportData,importData};
 })();

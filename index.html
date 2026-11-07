@@ -114,6 +114,7 @@ h1{font-size:clamp(2.2rem,8vw,4rem);line-height:1.1}
 .gpanel p{margin:0;font-weight:600}
 #card.mot,#acard.mot{font-size:16px;padding:22px 6px;user-select:none}
 #card.ind,#acard.ind{font-size:16px;padding:14px 6px;user-select:none}
+#card.env,#acard.env{font-size:16px;padding:22px 8px;user-select:none}
 #card.pho,#acard.pho{font-size:4rem;padding:8px}
 #card.pho img,#acard.pho img{display:block;max-width:100%;max-height:min(46vh,440px);margin:0 auto;border-radius:4px;object-fit:contain}
 #acard.pho img{max-height:30vh}
@@ -376,6 +377,12 @@ function normItem(type,it){
     const l=Array.isArray(it)&&LVLS.includes(it[1])?it[1]:window.SLC_PERSO?SLC_PERSO.autoLevel(w):2;
     return['mot:'+w.split('|')[0].trim().toLowerCase(),w,l];
   }
+  if(type==='melange'){
+    const w=typeof it==='string'?it:Array.isArray(it)?it[0]:null;
+    if(typeof w!=='string'||!w.trim())return null;
+    const l=Array.isArray(it)&&LVLS.includes(it[1])?it[1]:window.SLC_PERSO?SLC_PERSO.autoLevelMel(w):2;
+    return['mel:'+w.split('|')[0].trim().toLowerCase(),w,l];
+  }
   if(type==='indices'){
     if(!Array.isArray(it)||typeof it[1]!=='string'||!it[1].trim())return null;
     const P=window.SLC_PERSO,mx=P?P.IND_MAX:5,mn=P?P.IND_MIN:2;
@@ -385,6 +392,7 @@ function normItem(type,it){
     return['ind:'+it[1].split('|')[0].trim().toLowerCase(),it[1],l,{clues}];
   }
   if(!Array.isArray(it)||typeof it[0]!=='string'||!it[0]||typeof it[1]!=='string'||!it[1].trim())return null;
+  if(type==='envers')return['env:'+it[0].trim(),it[1],LVLS.includes(it[2])?it[2]:3,{env:it[0].trim()}];
   if(type==='photo')return['photo:'+it[0],it[1],LVLS.includes(it[2])?it[2]:1,{img:it[0],thumb:typeof it[3]==='string'?it[3]:it[0]}];
   return LVLS.includes(it[2])?[it[0],it[1],it[2]]:null;
 }
@@ -516,13 +524,15 @@ function card(){
   if(!l){fill();l=order.find(x=>S.pool[x].length)}
   S.cur=S.pool[l].pop();
   S.lvl=S.cur[2]; // niveau affiché : celui de l'élément tiré
-  S.disp=S.type==='trous'&&window.SLC_PERSO?SLC_PERSO.masque(S.cur[1],S.cur[2]):S.type==='photo'?'':S.type==='indices'?S.cur[3].clues.join('\n'):S.cur[0];
+  const P=window.SLC_PERSO,t=S.type;
+  S.disp=t==='trous'&&P?P.masque(S.cur[1],S.cur[2]):t==='melange'&&P?P.melange(S.cur[1],S.cur[2]):t==='photo'?'':t==='indices'?S.cur[3].clues.join('\n'):t==='envers'?S.cur[3].env:S.cur[0];
   showCard();
 }
-// Carte affichée : emoji (texte), mot à trous (tuiles), photo ou indices (liste). Sert aussi à la page arbitre.
+// Carte affichée : emoji (texte), mot à trous ou lettres mélangées (tuiles), photo, indices (liste) ou titre à l'envers. Sert aussi à la page arbitre.
 function paintCard(el,type,disp,img){
-  el.className=type==='trous'?'mot':type==='photo'?'pho':type==='indices'?'ind':'';
-  if(type==='trous'&&window.SLC_PERSO)return SLC_PERSO.renderMot(el,disp);
+  el.className=type==='trous'||type==='melange'?'mot':type==='photo'?'pho':type==='indices'?'ind':type==='envers'?'env':'';
+  if((type==='trous'||type==='melange')&&window.SLC_PERSO)return SLC_PERSO.renderMot(el,disp);
+  if(type==='envers'&&window.SLC_PERSO)return SLC_PERSO.renderEnv(el,disp);
   if(type==='indices'&&window.SLC_PERSO)return SLC_PERSO.renderInd(el,disp);
   if(type==='photo'){el.textContent='';if(img){const im=new Image();im.src=img;im.alt='Photo à nommer';el.appendChild(im)}else el.textContent='📷';return}
   el.textContent=disp;
