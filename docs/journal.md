@@ -225,5 +225,9 @@ Chaque chantier est prévu dans sa propre conversation du projet, sur sa propre 
 - Contenu : Animaux, Pays et Cuisine « en vrac » (25 mots chacune, 5 par niveau) ; Films, Livres et contes, Chansons « à l'envers » (79 titres, niveaux 1 à 5).
 - Tests (navigateur automatisé, deux onglets reliés par `BroadcastChannel`, 1440×900 et 390×844) : duels dans les deux types, affichage sur l'écran et la régie, montée jusqu'au niveau 5, groupes dans le choix des catégories ; aucune erreur JavaScript.
 
+## Catégories texte à 40 éléments (novembre 2026)
+- Demande de Ced : on faisait vite le tour des catégories. Toutes les catégories qui ne sont ni en photos ni en emojis passent à 40 éléments : 10 en mot à trous (+81 mots), 3 en indices (+41, avec des niveaux 4 et 5), 3 en lettres mélangées (+45) et 3 en titres à l'envers (+41), soit 208 ajouts, sans doublon ni personne vivante.
+- Vérifié : 40 éléments chargés par catégorie, aucune ligne rejetée, duels joués jusqu'au bout sans erreur.
+
 ## Comment reprendre dans un nouveau projet Claude
 Reliez le dépôt GitHub (référence du code) et gardez ce document dans le projet, puis demandez par exemple : « Lis le document de contexte et reprends le jeu : ajoute l'éditeur de catégories. » Le fichier `sur-le-carreau.html` du projet est la version autonome du jeu (catégories incluses) ; la référence reste le dépôt.
