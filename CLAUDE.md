@@ -16,7 +16,7 @@ Jeu web de salon inspiré de The Floor : duels de catégories sur une grille de 
 ## Fichiers
 - `index.html` : le jeu (HTML, CSS, JS) et la vue arbitre (`#arbitre`).
 - `categories.js` : `const CATEGORIES={clé:{label,type?,items:[…]}}` ; format expliqué en tête du fichier. Validé au chargement (lignes invalides et doublons ignorés avec un avertissement en console).
-- `perso.js` : catégories perso de l'éditeur, `normItem`, masquage du mot à trous.
+- `perso.js` : catégories perso de l'éditeur, `normItem`, masquage du mot à trous, affichage des indices (`renderInd`).
 - `editeur.html` : éditeur de catégories.
 - `intro.js`, `intro.css`, `assets/intro/` : écran de lancement et intro. `tools/generique-intro.py` génère le générique.
 - `sons.js` : sons synthétisés (Web Audio), appelés par `snd(nom)`.
@@ -34,8 +34,9 @@ Jeu web de salon inspiré de The Floor : duels de catégories sur une grille de 
 - **Arbitre** : code à 4 caractères gardé d'un duel à l'autre (`getLink`, `resetLink`, bouton « Nouveau code »). L'arbitre voit les chronos, l'image ou le mot masqué, les réponses acceptées, le type de jeu, la consigne à annoncer et l'usage de la case d'or. Boutons « Bonne réponse » et « Passé ». Messages `st`, `act`, `hi` ; chaque verdict porte l'élément concerné, pour ignorer les doubles clics.
 - **Liaison** `link()` : capacité `room` de claude.ai, sinon PeerJS 1.5.4 (identifiant `slc-<code>`, serveurs STUN et relais TURN publics), sinon `BroadcastChannel`.
 - **Sons** : `beep`, `go`, `good`, `pass`, `end`, `urgent` (tic-tac des 5 dernières secondes), `capture`, `tick`/`tock`, `impact`, `gold` (case d'or gagnée). Bouton 🔊/🔇 (`slc-sons`). Chrono en rouge à 5 s ou moins.
-- **Contenu** : 28 catégories, dont 18 en emojis (441 images) et 10 en mot à trous pour adultes (319 mots). Types : `emoji`, `trous`, `photo`.
-- **Éditeur** (`editeur.html`) : catégories perso en mot à trous ou en photos. Stockage dans `localStorage` (`slc-perso`) et IndexedDB (photos réduites à 900 px, vignettes de 200 px). Jouable dès 5 éléments (`MIN`), 20 conseillés. Sauvegarde et restauration en JSON (« Espace parents »). Mot à trous : lettres masquées mot par mot selon le niveau ; niveau automatique d'après le mot le plus long.
+- **Contenu** : 31 catégories, dont 18 en emojis (441 images), 10 en mot à trous pour adultes (319 mots) et 3 en indices (Films, Villes du monde, Pays : 79 énigmes). Types : `emoji`, `trous`, `photo`, `indices`.
+- **Indices** : 2 à 5 indices visibles dès le début, en liste (`[["indice", …], "réponse", niveau]`, `IND_MIN`, `IND_MAX`) ; sans niveau, 4 indices ou plus = 1, 3 = 2, 2 = 3 (`autoLevelInd`). Pas d'acteurs ni de personnes vivantes dans les indices.
+- **Éditeur** (`editeur.html`) : catégories perso en mot à trous, en photos ou en indices (une réponse et 2 à 5 indices). Stockage dans `localStorage` (`slc-perso`) et IndexedDB (photos réduites à 900 px, vignettes de 200 px). Jouable dès 5 éléments (`MIN`), 20 conseillés. Sauvegarde et restauration en JSON (« Espace parents »). Mot à trous : lettres masquées mot par mot selon le niveau ; niveau automatique d'après le mot le plus long.
 - **Intro** : 4 calques webp et `generique.mp3` (musique originale), boutons « Passer » et son, touche Échap. Durée réglée par `DUR` (`intro.js`) et `--slci-dur` (`intro.css`).
 
 ## Conventions
@@ -53,7 +54,7 @@ Jeu web de salon inspiré de The Floor : duels de catégories sur une grille de 
 - `index.html` est volumineux : le découper en modules facilitera les prochains chantiers.
 
 ## Pistes (non priorisées)
-Mode solo ; multijoueur en ligne avec serveur (Node.js et WebSocket) ; extras arbitre (mauvaise réponse, pause, annulation) ; vraies images libres ; image floue qui se précise ; niveaux réglables à la main ; devinettes et lettres mélangées ; son de victoire de partie ; photos dans le dépôt.
+Mode solo ; multijoueur en ligne avec serveur (Node.js et WebSocket) ; extras arbitre (mauvaise réponse, pause, annulation) ; vraies images libres ; image floue qui se précise ; niveaux réglables à la main ; devinettes et lettres mélangées ; indices révélés un à un ; son de victoire de partie ; photos dans le dépôt.
 
 ## Reprendre
 « Lis l'état actuel du projet, puis [chantier]. » Fin de chantier : mettre à jour ce fichier et sa copie dans le projet claude.ai (remplacer, pas ajouter).
