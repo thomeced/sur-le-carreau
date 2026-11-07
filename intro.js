@@ -10,11 +10,12 @@
  *   bloquent le son sans geste de l'utilisateur. Le choix est retenu (localStorage) et réessayé à la visite suivante.
  * - Pas d'intro sur la vue arbitre (#arbitre).
  * - Écran de lancement : « mode funky » (intro + son) ou « mode sérieux » (sans intro, fond noir épuré, classe slc-serieux
- *   sur <html>). Le dernier choix est retenu (localStorage « slc-mode ») et pré-sélectionné. Liens directs :
- *   ?mode=serieux (saute l'écran de lancement) et ?mode=funky.
+ *   sur <html>). Il ne s'ouvre plus à l'ouverture de la page : le jeu appelle SLC_INTRO.start() une fois le téléphone
+ *   (la régie) connecté. Le dernier choix est retenu (localStorage « slc-mode ») et pré-sélectionné. Liens directs :
+ *   ?mode=serieux (pas d'écran de lancement) et ?mode=funky. Une fois le lancement fait dans l'onglet
+ *   (sessionStorage « slc-lance »), un rechargement ne le redemande pas.
  * - Si une image ne se charge pas, l'intro est sautée.
  * - Fin de l'intro : événement « slc:intro-end » sur document, et window.SLC_INTRO_DONE = true.
- * - Bouton « Je suis l'arbitre » : ouvre la vue arbitre (#arbitre).
  * - Version autonome (artefact claude.ai) : définir avant ce script window.SLC_INTRO_ASSETS
  *   = {decor, host, candLeft, candRight, music} (adresses data:) et window.SLC_INTRO_CSS_INLINE = true.
  */
@@ -29,11 +30,9 @@
   const reduce=window.matchMedia&&matchMedia('(prefers-reduced-motion: reduce)').matches;
   const DUR=reduce?2400:10000;
 
-  // Masquer le jeu tout de suite, avant même que la page ne s'affiche.
-  root.classList.add('slci-on');
+  // Le calque qui masque le jeu n'est posé qu'au lancement de l'intro (l'écran d'accueil reste visible avant).
   const hide=document.createElement('style');
   hide.textContent='html.slci-on body>main{visibility:hidden}.slci:not(.slci-ready)>*{visibility:hidden}.slci{position:fixed;inset:0;z-index:1000;background:#03040E}';
-  document.head.appendChild(hide);
   let cssReady=Promise.resolve();
   if(!window.SLC_INTRO_CSS_INLINE){
     const l=document.createElement('link');l.rel='stylesheet';l.href=base+'intro.css';
@@ -71,6 +70,7 @@
   const load=src=>new Promise((ok,ko)=>{const i=new Image();i.onload=()=>(i.decode?i.decode().catch(()=>{}):Promise.resolve()).then(()=>ok(i));i.onerror=ko;i.src=src});
 
   function build(){
+    root.classList.add('slci-on');document.head.appendChild(hide);
     box=document.createElement('div');box.className='slci';
     box.innerHTML=
       '<div class="slci-sky" aria-hidden="true"></div>'+
@@ -116,13 +116,13 @@
     lb.innerHTML=
       '<div class="slcl-in">'+
         '<h1 class="slcl-title">Sur le carreau</h1>'+
+        '<p class="slcl-ok">Téléphone connecté ✓</p>'+
         '<p class="slcl-lead">Comment voulez-vous lancer le jeu ?</p>'+
         '<button type="button" class="slcl-funky"><b>🎬 Mode funky</b><span>Générique animé et son</span></button>'+
         '<button type="button" class="slcl-serious"><b>Mode sérieux</b><span>Sans intro, fond noir épuré</span></button>'+
-        '<button type="button" class="slcl-arb"><b>🧑‍⚖️ Je suis l’arbitre</b><span>Sur le téléphone qui valide les réponses</span></button>'+
       '</div>';
     document.body.appendChild(lb);
-    const kill=()=>lb.remove();
+    const kill=()=>{lb.remove();lanced()};
     lb.querySelector('.slcl-funky').onclick=()=>{
       setMode('funky');setPref(true);try{localStorage.setItem('slc-sons','1')}catch(e){}
       // Ce clic est le geste qui autorise le son : on « débloque » l'élément audio (utile sur iPhone).
@@ -131,19 +131,29 @@
         if(p&&p.then)p.then(un,()=>{audio.muted=false});else un()}catch(e){}}
       kill();build();
     };
-    // Arbitre : la page se recharge sur la vue arbitre (#arbitre), sans intro.
-    lb.querySelector('.slcl-arb').onclick=()=>{location.hash='#arbitre'};
     lb.querySelector('.slcl-serious').onclick=()=>{setMode('serieux');setPref(false);try{localStorage.setItem('slc-sons','0')}catch(e){}serious();kill();skipAll()};
     (lb.querySelector(last==='serieux'?'.slcl-serious':'.slcl-funky')).focus({preventScroll:true});
   }
-  function begin(){
-    const q=new URLSearchParams(location.search).get('mode');
-    if(q==='serieux'||q==='sérieux'){serious();return skipAll()}   // lien direct : ?mode=serieux
-    if(q==='funky'){return build()}                                  // lien direct : ?mode=funky (le son suit le dernier choix)
-    // Retour depuis l'éditeur de catégories : pas d'écran de lancement ni d'intro, on garde le dernier mode.
-    try{if(sessionStorage.getItem('slc-retour')){sessionStorage.removeItem('slc-retour');if(getMode()==='serieux')serious();return skipAll()}}catch(e){}
-    cssReady.then(launchScreen,skipAll);
+  /* Le lancement n'a plus lieu à l'ouverture : la page affiche d'abord l'écran d'accueil (QR code), et le jeu
+     appelle SLC_INTRO.start() quand le téléphone (la régie) est connecté. PRE = choix déjà fait :
+     ?mode=serieux, ?mode=funky, retour de l'éditeur ou des crédits, ou lancement déjà fait dans cet onglet. */
+  let PRE=null,started=false;
+  const LKEY='slc-lance';
+  function lanced(){try{sessionStorage.setItem(LKEY,'1')}catch(e){}}
+  const q=new URLSearchParams(location.search).get('mode');
+  if(q==='serieux'||q==='sérieux'){PRE='serieux';serious()}
+  else if(q==='funky')PRE='funky';
+  try{
+    if(sessionStorage.getItem('slc-retour')){sessionStorage.removeItem('slc-retour');PRE=PRE||'skip'}
+    if(sessionStorage.getItem(LKEY))PRE=PRE||'skip';
+  }catch(e){}
+  if(PRE==='skip'&&getMode()==='serieux')serious();
+  function start(){
+    if(started)return;started=true;
+    if(PRE==='serieux'||PRE==='skip'){lanced();return skipAll()}
+    if(PRE==='funky'){lanced();return build()}
+    cssReady.then(launchScreen,()=>{lanced();skipAll()});
   }
-  if(document.body)begin();else document.addEventListener('DOMContentLoaded',begin,{once:true});
+  window.SLC_INTRO={start,get started(){return started}};
   addEventListener('hashchange',()=>{if(location.hash.startsWith('#arbitre')){if(box)end();else{const l=document.querySelector('.slcl');if(l)l.remove();skipAll()}}});
 })();

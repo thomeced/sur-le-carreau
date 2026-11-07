@@ -66,7 +66,7 @@
   @keyframes slci-title{0%,30%{opacity:0}45%,100%{opacity:1}}
 }
 
-/* Écran de lancement : choix du mode funky / sérieux, ou vue arbitre */
+/* Écran de lancement : choix du mode funky / sérieux, une fois le téléphone connecté */
 .slcl{position:fixed;inset:0;z-index:1001;display:flex;align-items:center;justify-content:center;padding:24px 16px;overflow:auto;color:#F4F6FF;
   background:radial-gradient(ellipse 60% 45% at 50% 12%,rgba(120,150,255,.28),transparent 70%),#03040E;font-family:'Poppins','DM Sans',system-ui,sans-serif}
 .slcl-in{width:100%;max-width:420px;display:grid;gap:14px;text-align:center}
@@ -78,7 +78,7 @@
 .slcl-funky{border:0;background:#FFC53D;color:#101B4D;box-shadow:0 0 18px rgba(255,197,61,.45)}
 .slcl-serious{background:transparent;color:#F4F6FF;border:2px solid rgba(255,255,255,.35)}
 /* Arbitre : choix à part, sous les deux modes */
-.slcl-arb{margin-top:10px;background:transparent;color:#5CE1FF;border:2px dashed rgba(92,225,255,.55)}
+.slcl-ok{margin:0;color:#3DDC97;font-weight:700}
 .slcl button:focus-visible{outline:3px solid #FFC53D;outline-offset:3px}
 /* Mode sérieux : fond noir uni, sans étoiles, sol ni lueurs */
 html.slc-serieux{--sky:#000}
