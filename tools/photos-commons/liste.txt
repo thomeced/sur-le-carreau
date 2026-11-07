@@ -1,0 +1,394 @@
+# Liste des catégories photo de Sur le carreau.
+# « ## clé | Libellé | propriété Wikidata » ouvre une catégorie (P18 = image, P41 = drapeau).
+# Puis une ligne par élément : « niveau|réponse|variante > Article Wikipédia ». L'article est facultatif (sinon la
+# 1re réponse) ; « > File:Nom.jpg » impose un fichier Commons, « > Q123 » un élément Wikidata.
+## pho_animaux | Animaux | P18
+1|éléphant
+1|lion
+1|girafe
+1|chat
+1|cheval
+2|zèbre > File:Equus quagga burchellii - Etosha, 2014.jpg
+2|kangourou
+2|panda > Panda géant
+2|dauphin > Grand dauphin
+2|crocodile
+3|hippopotame > Hippopotame amphibie
+3|rhinocéros > Rhinocéros blanc
+3|koala
+3|flamant rose > Flamant rose
+3|dromadaire|chameau > Dromadaire
+4|tapir > Tapir terrestre
+4|fourmilier|tamanoir > Grand fourmilier
+4|suricate
+4|tatou > Tatou à neuf bandes
+4|morse > Morse (animal)
+5|okapi
+5|pangolin > File:Pangolin monitoring at working with wildlife.jpg
+5|axolotl
+5|tarsier
+5|ornithorynque
+## pho_fruits | Fruits et légumes | P18
+1|pomme
+1|banane
+1|fraise
+1|carotte
+1|tomate
+2|ananas
+2|cerise
+2|poire
+2|citron
+2|brocoli
+3|aubergine
+3|kiwi > Kiwi (fruit)
+3|artichaut
+3|poireau > File:Leeks on shelf.jpg
+3|framboise
+4|grenade > Grenade (fruit)
+4|fenouil > File:Fennel bulb.jpg
+4|figue
+4|betterave
+4|mangue
+5|kaki > Kaki (fruit)
+5|chou romanesco > Chou romanesco
+5|navet
+5|litchi > File:Lychee fruits and seed.jpg
+5|pitaya|fruit du dragon > Pitaya
+## pho_transports | Transports | P18
+1|voiture|automobile > File:Public domain image - Peugeot iOn electric car in front of wind turbines.JPG
+1|vélo|bicyclette > Bicyclette
+1|avion
+1|bus|autobus > Autobus
+1|train
+2|moto|motocyclette > Motocyclette
+2|hélicoptère
+2|tracteur > Tracteur agricole
+2|camion
+2|voilier
+3|trottinette
+3|tramway
+3|montgolfière
+3|sous-marin > File:US Navy 111212-N-GU530-103 The Royal Canadian Navy long-range patrol submarine HMCS Victoria (SSK 876) arrives at Naval Base Kitsap-Bangor for a po.jpg
+3|péniche
+4|téléphérique
+4|aéroglisseur
+4|side-car
+4|catamaran
+4|chasse-neige
+5|dirigeable > File:Defense.gov News Photo 100708-N-9174G-005 - A U.S. Navy MZ-3A manned airship Advanced Airship Flying Laboratory derived from the commercial A-170 series blimp lands at Lake Front Airport.jpg
+5|funiculaire
+5|pousse-pousse > File:Rickshaw, National Museum of Singapore (133143).jpg
+5|draisienne
+5|trimaran
+## pho_drapeaux | Drapeaux | P41
+1|France
+1|Italie
+1|Japon
+1|Royaume-Uni
+1|États-Unis|USA
+2|Allemagne
+2|Espagne
+2|Canada
+2|Brésil
+2|Belgique
+3|Suisse
+3|Portugal
+3|Chine
+3|Mexique
+3|Grèce
+4|Inde
+4|Argentine
+4|Suède
+4|Corée du Sud
+4|Turquie
+5|Népal
+5|Kenya
+5|Jamaïque
+5|Sri Lanka
+5|Bhoutan
+## pho_sports | Sports et loisirs | P18
+1|ballon de football|ballon de foot > Ballon de football
+1|ballon de basket > Ballon de basket-ball
+1|raquette de tennis|raquette > File:Tennis racket 1959.jpg
+1|patins à roulettes|rollers > Patin à roulettes
+1|balançoire > File:Swing seat.jpg
+2|skateboard|planche à roulettes > File:1990s skateboard in Tornio 20190608 001.jpg
+2|luge > File:Luge sled.jpg
+2|cerf-volant
+2|trampoline > File:The trampoline in the garden - geograph.org.uk - 1831334.jpg
+2|échiquier|échecs > Échiquier
+3|volant de badminton|volant > Volant (badminton)
+3|gants de boxe > File:Pair of boxing gloves.jpg
+3|haltère
+3|ballon de rugby > File:2007 Rugby World Cup balls.jpg
+3|fléchettes > Fléchettes
+4|crosse de hockey > Crosse de hockey sur glace
+4|kayak
+4|planche de surf > File:Surfboards on the Beach - geograph.org.uk - 7477128.jpg
+4|boules de pétanque|pétanque > File:Pétanque balls child-20080713-RM-180115.jpg
+4|club de golf > File:Golf bag and clubs.jpg
+5|boomerang
+5|bilboquet
+5|toupie
+5|diabolo > Diabolo (jonglerie)
+5|osselets > Osselets
+## pho_musique | Instruments de musique | P18
+1|guitare
+1|piano
+1|violon
+1|batterie > Batterie (musique)
+1|trompette
+2|flûte traversière|flûte > File:Western Concert Flute.jpg
+2|tambour > Tambour (instrument)
+2|harpe
+2|accordéon
+2|saxophone
+3|xylophone
+3|clarinette
+3|maracas > File:Maracas.jpg
+3|triangle > Triangle (instrument)
+3|ukulélé
+4|contrebasse
+4|tuba > File:Yamaha Bass tuba YFB-822.tif
+4|banjo
+4|harmonica
+4|cor|cor d'harmonie > Cor d'harmonie
+5|cornemuse > File:Bagpipes and Shawms, York Waits.jpg
+5|sitar
+5|didgeridoo
+5|thérémine > Thérémine
+5|vielle à roue > Vielle à roue
+## pho_outils | Outils et bricolage | P18
+1|marteau > Marteau (outil)
+1|tournevis
+1|scie > File:Pily rozne 01.jpg
+1|clou > File:Double-headed nail.agr.jpg
+1|pinceau
+2|pince > File:Tool-pliers.jpg
+2|échelle > File:Ladder to heaven.png
+2|perceuse > File:Cordless electric (screw) drill.jpg
+2|mètre ruban|mètre > Mètre ruban
+2|brouette
+3|clé à molette > Clé à molette
+3|niveau à bulle|niveau > Niveau à bulle
+3|cadenas
+3|truelle
+3|équerre > Équerre (outil)
+4|étau > File:An engineer's vise.jpg
+4|enclume > File:Anvil, 5 kg in a jewellery workshop.jpg
+4|serre-joint
+4|tenailles|tenaille > File:Tool-zange2 hg.jpg
+4|rabot
+5|vilebrequin > Vilebrequin (outil)
+5|pied-de-biche
+5|serpe
+5|maillet > File:Mallet menuisier.jpg
+5|poinçon > File:Alène aux pinces.jpg
+## pho_nature | Nature et météo | P18
+1|arc-en-ciel
+1|volcan
+1|cascade|chute d'eau > Chute d'eau
+1|éclair|foudre > File:Lightning 14.07.2009 20-42-33.JPG
+1|neige
+2|tornade
+2|désert
+2|glacier
+2|cactus > Cactaceae
+2|champignon
+3|aurore boréale|aurore polaire > Aurore polaire
+3|geyser
+3|grêle
+3|brouillard
+3|iceberg
+4|stalactite
+4|dune
+4|lagune > File:Island lagoon in Bacuit Bay, El Nido, Palawan, Philippines.jpg
+4|fjord
+4|givre > File:Dülmen, Kirchspiel, Börnste -- 2016 -- 5648.jpg
+5|atoll > File:Starr 990630-0938 Spit Island (Midway Atoll), aerial view 1999.jpg
+5|mangrove
+5|cirrus
+5|delta > File:Aerial photograph of the area around the Chikugo River sandbar delta on Ono Island.jpg
+5|toundra
+## pho_vetements | Vêtements et accessoires | P18
+1|chapeau
+1|chaussette
+1|lunettes
+1|écharpe > Écharpe (vêtement)
+1|parapluie
+2|casquette > File:Baseball cap.jpg
+2|cravate
+2|gants|gant > Gant
+2|bottes|botte > Botte (chaussure)
+2|ceinture > Ceinture (vêtement)
+3|nœud papillon > Nœud papillon
+3|bonnet > File:Beanie hat by Polo Ralph Lauren.jpg
+3|sandales|sandale > Sandale
+3|montre > Montre (horlogerie)
+3|salopette
+4|bretelles > File:Braces (AM 1979.59-2).jpg
+4|béret
+4|mocassins|mocassin > File:Southeastern region moccasins, c. 1830 - Bata Shoe Museum - DSC00633.JPG
+4|kimono > File:Kimono and Trouser suit, Victoria and Albert Museum, Dundee.jpg
+4|sabots|sabot > Sabot (chaussure)
+5|haut-de-forme|chapeau haut-de-forme > Haut-de-forme
+5|espadrilles|espadrille > Espadrille
+5|poncho
+5|éventail
+5|monocle
+## pho_plats | Plats et gourmandises | P18
+1|pizza
+1|frites > Frites
+1|hamburger
+1|crêpe > Crêpe (cuisine)
+1|croissant > Croissant (viennoiserie)
+2|spaghettis|pâtes > Spaghetti
+2|sushi
+2|baguette > Baguette (pain)
+2|omelette
+2|glace|crème glacée > Crème glacée
+3|paella
+3|couscous
+3|quiche > Quiche lorraine
+3|croque-monsieur
+3|taco|tacos > Taco
+4|ratatouille
+4|raclette
+4|bouillabaisse
+4|cassoulet
+4|choucroute
+5|tajine > Tajine (plat)
+5|gaspacho
+5|aligot
+5|pot-au-feu
+5|bœuf bourguignon > Bœuf bourguignon
+## pho_monuments | Lieux et monuments | P18
+1|tour Eiffel > Tour Eiffel
+1|pyramides de Gizeh|pyramides > Pyramides de Gizeh
+1|statue de la Liberté > Statue de la Liberté
+1|Colisée
+1|tour de Pise > Tour de Pise
+2|Big Ben
+2|Arc de triomphe > Arc de triomphe de l'Étoile
+2|Taj Mahal
+2|Grande Muraille|Grande Muraille de Chine > Grande Muraille
+2|Mont-Saint-Michel
+3|Sagrada Família > Sagrada Família
+3|Acropole > Acropole d'Athènes
+3|Machu Picchu
+3|Notre-Dame de Paris|Notre-Dame > Cathédrale Notre-Dame de Paris
+3|château de Versailles|Versailles > Château de Versailles
+4|Stonehenge
+4|Alhambra > Alhambra (Grenade)
+4|Pétra
+4|Angkor Vat
+4|château de Neuschwanstein|Neuschwanstein > Château de Neuschwanstein
+5|château de Chambord|Chambord > Château de Chambord
+5|moaï|moaïs > Moaï
+5|Chichén Itzá
+5|pont du Gard > Pont du Gard
+5|cathédrale Saint-Basile|Saint-Basile > Cathédrale Saint-Basile-le-Bienheureux
+## pho_espace | Espace et sciences | P18
+1|Lune
+1|Soleil
+1|Terre
+1|fusée > Fusée (astronautique)
+1|télescope > File:Refracting telescope of the Strasbourg observatory 4.png
+2|Saturne > Saturne (planète)
+2|microscope
+2|aimant
+2|satellite > Satellite artificiel
+2|Mars > Mars (planète)
+3|Jupiter > Jupiter (planète)
+3|comète
+3|éclipse|éclipse solaire > Éclipse solaire
+3|loupe
+3|Voie lactée
+4|nébuleuse
+4|station spatiale|ISS > Station spatiale internationale
+4|tube à essai|éprouvette > Tube à essai
+4|boussole
+4|météorite > Météorite
+5|Neptune > Neptune (planète)
+5|cratère > Cratère d'impact
+5|galaxie d'Andromède|Andromède > Galaxie d'Andromède
+5|astrolabe > File:Persian astrolabe.jpg
+5|ADN > File:DNA Visual Representation of Double-Helix.png
+## pho_insectes | Insectes | P18
+1|abeille > Abeille domestique
+1|papillon > File:Papilio machaon Mitterbach 01.jpg
+1|coccinelle > Coccinelle à sept points
+1|fourmi > File:A Formica rufa sideview.jpg
+1|mouche > File:Musca domestica September 2007-1.jpg
+2|libellule > Odonata
+2|moustique
+2|sauterelle
+2|guêpe > Guêpe commune
+2|chenille
+3|mante religieuse > Mante religieuse
+3|luciole|ver luisant > Lampyre
+3|bourdon > File:Bombus ruderarius - Taraxacum officinale - Keila.jpg
+3|puce > Siphonaptera
+3|scarabée > File:Sand scarab beetle pericoptus truncata.jpg
+4|cigale
+4|perce-oreille > Forficule
+4|puceron
+4|termite
+4|hanneton > Hanneton commun
+5|lucane|cerf-volant > Lucane cerf-volant
+5|doryphore
+5|cétoine > Cétoine dorée
+5|phasme > Phasmatodea
+5|éphémère > Ephemeroptera
+## pho_histoire | Portraits historiques | P18
+1|Napoléon|Napoléon Ier > Napoléon Ier
+1|Jeanne d'Arc > File:John Everett Millais - Joan of Arc.jpg
+1|Louis XIV
+1|Albert Einstein|Einstein
+1|Léonard de Vinci > File:Leonardo da Vinci - presumed self-portrait - lossless.png
+2|Marie Curie
+2|Charles de Gaulle|de Gaulle
+2|Abraham Lincoln|Lincoln
+2|Victor Hugo
+2|Cléopâtre > Cléopâtre VII
+3|Jules César|César
+3|Mozart > Wolfgang Amadeus Mozart
+3|Charles Darwin|Darwin
+3|Gandhi > Mohandas Karamchand Gandhi
+3|Marie-Antoinette > Marie-Antoinette d'Autriche
+4|Louis Pasteur|Pasteur
+4|Molière
+4|Christophe Colomb
+4|Henri IV > Henri IV (roi de France)
+4|Élisabeth Ire > Élisabeth Ire (reine d'Angleterre)
+5|Charlemagne > File:Charlemagne-by-Durer.jpg
+5|Vercingétorix
+5|Galilée > Galilée (savant)
+5|Catherine de Médicis
+5|Toussaint Louverture
+## pho_techno | Objets technologiques | P18
+1|réfrigérateur|frigo > File:US Domestic Refrigerator - Frigidaire.jpg
+1|ordinateur portable > Ordinateur portable
+1|aspirateur
+1|télévision|téléviseur > Téléviseur
+1|lave-linge|machine à laver > Lave-linge
+2|clavier|clavier d'ordinateur > Clavier d'ordinateur
+2|souris > Souris (informatique)
+2|micro-ondes|four à micro-ondes > Four à micro-ondes
+2|grille-pain > File:Toaster with molten plastic casing 2.jpg
+2|sèche-cheveux
+3|imprimante > File:Canon S520 ink jet printer.jpg
+3|bouilloire > Bouilloire
+3|clé USB
+3|casque audio|casque > Casque audio
+3|lave-vaisselle
+4|disque dur
+4|cafetière > File:Hamilton Beach home coffee maker.jpg
+4|mixeur|blender > Mixeur
+4|fer à repasser
+4|haut-parleur|enceinte > Haut-parleur
+5|carte mère > File:Motherboard VIA486 with CPU.jpg
+5|barrette de mémoire|mémoire vive|barrette de RAM > Mémoire vive
+5|disquette
+5|routeur > File:Wi-fi router.jpg
+5|hotte|hotte aspirante > File:California Kitchen Range Hood.jpg
