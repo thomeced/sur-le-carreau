@@ -4,6 +4,7 @@
 > Le code du dépôt fait foi. L'historique détaillé est dans `docs/journal.md` (ne le lire qu'en cas de besoin).
 > Une copie de ce fichier se trouve dans le projet claude.ai « The Floor Hess » (`contexte-projet-sur-le-carreau.md`) : garder les deux identiques.
 > `reference/analyse-the-floor.md` (projet claude.ai) sert de source d'idées, pas de cahier des charges.
+> Méthode BMAD (depuis le 23 novembre 2026) : `docs/brief.md`, `docs/prd.md`, `docs/ux.md`, `docs/architecture.md` (copies dans le projet claude.ai, dossier `bmad/`) ; backlog et stories dans `docs/stories/` (`README.md` = ordre et statuts).
 
 ## Objectif
 Jeu web de salon inspiré de The Floor : duels de catégories sur une grille de territoires. Les joueurs répondent à l'oral et un arbitre valide sur un second appareil. Nom et identité propres : rien de l'émission (nom, logo, polices, musiques, visuels). Ced veut aussi que sa fille puisse créer des catégories.
@@ -72,4 +73,4 @@ Jeu web de salon inspiré de The Floor : duels de catégories sur une grille de 
 Choix en grille sur le téléphone (écran purement passif) ; catégories perso créées sur le téléphone ; Mode solo ; multijoueur en ligne avec serveur (Node.js et WebSocket) ; extras arbitre (mauvaise réponse, pause, annulation) ; image floue qui se précise ; niveaux réglables à la main ; devinettes ; lettres mélangées et titres à l'envers dans l'éditeur ; indices révélés un à un ; son de victoire de partie ; vignettes légères pour l'arbitre ; code plus long caché dans le QR code.
 
 ## Reprendre
-« Lis l'état actuel du projet, puis [chantier]. » Fin de chantier : mettre à jour ce fichier et sa copie dans le projet claude.ai (remplacer, pas ajouter).
+« Lis l'état actuel du projet, puis la story X.Y » (`docs/stories/`) : rôle Dev, puis QA ; passer le statut de la story à jour dans la story et dans `docs/stories/README.md`. Fin de chantier : mettre à jour ce fichier et sa copie dans le projet claude.ai (remplacer, pas ajouter).
