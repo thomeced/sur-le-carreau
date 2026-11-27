@@ -27,18 +27,19 @@ HTML, CSS et JavaScript sans framework ; scripts classiques qui partagent l'espa
 Découpage **à comportement identique** du bloc `<style>` et du bloc `<script>` d'`index.html`, en suivant les sections déjà repérées dans le code :
 
 ```
-index.html            balisage seulement + ordre de chargement
-style.css             le <style> actuel
-js/base.js            constantes (DUEL_SEC, LVL_*, GOLD_*), utilitaires ($, …), DATA, normItem, validation
-js/liaison.js         link(), LTOPICS, PeerJS / BroadcastChannel / room
-js/duel.js            état S, tirage des éléments, chronos, good/pass, rendu du duel, push vers la régie
-js/grille.js          état G, règles de la grille, case d'or, retour sur le sol (logique)
-js/plateau.js         plateau SVG, vague de capture, tirage animé (gdraw)
-js/choix-categories.js PICK, pdraw, pfill, pickRender…
-js/accueil.js         accueil, QR code, #pair, HOMEST, lancement
-js/regie.js           régie du téléphone (#arbitre), arbView, sendCfg, arbitrage
-js/main.js            démarrage (ce qui s'exécute aujourd'hui en fin de script)
+index.html             balisage seulement + ordre de chargement
+style.css              le <style> d'origine
+js/base.js             DATA, TYPES, normItem, validation (addCats), utilitaires ($, norm, isOk, shuffle, show), LVL_*, DUEL_SEC, isArb, ARB_CODE
+js/liaison.js          link(), LTOPICS, PeerJS / BroadcastChannel / room, linkMsg
+js/duel.js             niveaux (lvl), tirage des éléments (card), paintCard, chronos, good/skip, rendu du duel, push vers la régie
+js/accueil.js          liaison côté écran (onmsg, getLink), connexion de la régie (#pair), accueil, QR code, HOMEST, lancement, applyCfg
+js/grille.js           état G, case d'or (GOLD_*, goldEarns), voisinage (gadj, gfoes, gtargets), noms des joueurs
+js/choix-categories.js PICK, pdraw, pfill, pickRender…, startGrid
+js/plateau.js          plateau SVG, vague de capture, « Retourner sur le sol » (gdraw), gridRender, startGridDuel, gridAfterDuel, boutons du duel
+js/regie.js            régie du téléphone (#arbitre), arbView, sendCfg, arbitrage
+js/main.js             démarrage (ce qui s'exécutait en fin de script)
 ```
+Ordre de chargement : celui de la liste ci-dessus, qui est l'ordre du code d'origine. Chaque fichier est un morceau contigu de l'ancien script (story 0.2) : c'est pourquoi la logique de la grille est répartie entre `grille.js`, `choix-categories.js` (`startGrid`) et `plateau.js` (`gridRender`, `gridAfterDuel`). Un rangement plus fin se fera, si besoin, dans une story dédiée.
 Fichiers existants inchangés : `categories.js`, `photos.js`, `perso.js`, `sons.js`, `intro.js`, `qrcode.js`, `editeur.html`.
 Nouveaux fichiers des epics suivants : `js/aide.js` (E1 : cartes, bandeau, guide de l'arbitre), `js/types.js` (E3 : QCM, Gros plan, Devinette), `js/plateau-lite.js` (E2 : vague case par case).
 

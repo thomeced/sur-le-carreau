@@ -233,5 +233,10 @@ Chaque chantier est prévu dans sa propre conversation du projet, sur sa propre 
 - BMAD, epic E0. Dossier `tests/` : `serveur.js` (serveur local, Chromium, collecte des erreurs), `fumee.js` (grille 2×2 jouée jusqu'au vainqueur), `regie.js` (duel configuré et arbitré depuis la régie), `README.md`. Aucun changement du code du jeu.
 - Écarts à la story : chronos accélérés par l'horloge simulée de Playwright (`DUEL_SEC` est une constante) ; régie ouverte aussi dans le test de fumée (sans elle, « Démarrer le duel » est bloqué) ; requêtes externes neutralisées (réseau filtré de Claude, PeerJS).
 
+## Story 0.2 : découpage d'`index.html` (novembre 2026)
+- `<style>` → `style.css` ; script principal → 9 fichiers dans `js/`, chacun un morceau contigu de l'ancien script, chargés dans l'ordre d'origine. Aucun renommage ni correction : concaténation identique au code d'origine (vérifiée par script), dépendances au chargement vérifiées par analyse statique (acorn).
+- Écart à l'architecture : ordre et contenu des fichiers dictés par l'ordre du code (liaison côté écran dans `accueil.js`, rendu de la grille dans `plateau.js`, `startGrid` dans `choix-categories.js`) ; architecture §3 mise à jour.
+- Tests de 0.1 OK ; captures avant/après identiques (hors QR code et animation CSS).
+
 ## Comment reprendre dans un nouveau projet Claude
 Reliez le dépôt GitHub (référence du code) et gardez ce document dans le projet, puis demandez par exemple : « Lis le document de contexte et reprends le jeu : ajoute l'éditeur de catégories. » Le fichier `sur-le-carreau.html` du projet est la version autonome du jeu (catégories incluses) ; la référence reste le dépôt.
