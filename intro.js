@@ -2,7 +2,8 @@
  *
  * Installation : une seule ligne dans le <head> de index.html, après la feuille de style du jeu :
  *   balise script avec src="intro.js" (sans defer ni async, pour masquer le jeu dès l'ouverture)
- * Le script charge intro.css et les images de assets/intro/ (décor, animateur, candidats gauche et droite).
+ * Le script charge intro.css et les images de assets/intro/ (plateau, animateur, candidats gauche et droite, logo).
+ * Visuels originaux générés par IA, fournis par Ced (novembre 2026) : plus rien de l'émission.
  * Il ne touche pas à la logique du jeu : il pose un calque par-dessus la page, puis le retire.
  *
  * - Bouton « Passer l'intro » (et touche Échap).
@@ -26,6 +27,7 @@
   const A=window.SLC_INTRO_ASSETS||{
     decor:base+'assets/intro/decor.webp',host:base+'assets/intro/host.webp',
     candLeft:base+'assets/intro/cand-left.webp',candRight:base+'assets/intro/cand-right.webp',
+    logo:base+'assets/intro/logo.webp',
     music:base+'assets/intro/generique.mp3'};
   const reduce=window.matchMedia&&matchMedia('(prefers-reduced-motion: reduce)').matches;
   const DUR=reduce?2400:10000;
@@ -75,14 +77,15 @@
     box.innerHTML=
       '<div class="slci-sky" aria-hidden="true"></div>'+
       '<div class="slci-scene" aria-hidden="true">'+
-        '<div class="slci-plane slci-p-decor"><div class="slci-decor-box"><img alt="" src="'+A.decor+'"><div class="slci-screen">Sur le<br>carreau</div></div></div>'+
+        // Le plateau porte déjà le logo sur son écran ; sans logo fourni (ancienne version autonome), le nom en texte.
+        '<div class="slci-plane slci-p-decor"><div class="slci-decor-box"><img alt="" src="'+A.decor+'">'+(A.logo?'':'<div class="slci-screen">Sur le<br>carreau</div>')+'</div></div>'+
         '<div class="slci-plane slci-p-floor slci-floor"></div>'+
         '<div class="slci-plane slci-p-host"><img class="slci-host" alt="" src="'+A.host+'"></div>'+
         '<div class="slci-plane slci-p-cl"><img class="slci-cl" alt="" src="'+A.candLeft+'"></div>'+
         '<div class="slci-plane slci-p-cr"><img class="slci-cr" alt="" src="'+A.candRight+'"></div>'+
       '</div>'+
       '<div class="slci-vign" aria-hidden="true"></div>'+
-      '<p class="slci-title" aria-hidden="true">Sur le carreau</p>'+
+      '<p class="slci-title'+(A.logo?' slci-logo':'')+'" aria-hidden="true">'+(A.logo?'<img alt="" src="'+A.logo+'">':'Sur le carreau')+'</p>'+
       '<div class="slci-black" aria-hidden="true"></div>'+
       '<div class="slci-ctrl">'+(A.music?'<button type="button" class="slci-snd" aria-pressed="false">🔇 Son</button>':'')+'<button type="button" class="slci-skip">Passer l’intro</button></div>';
     document.body.appendChild(box);
@@ -90,7 +93,7 @@
     sndBtn=box.querySelector('.slci-snd');if(sndBtn){sndBtn.onclick=toggleSnd;showSnd(false);if(!audio){audio=new Audio(A.music);audio.preload='auto'}}
     addEventListener('keydown',onKey);
     const fail=setTimeout(end,6000); // réseau trop lent : on n'attend pas plus
-    Promise.all([cssReady,load(A.decor),load(A.host),load(A.candLeft),load(A.candRight)]).then(()=>{
+    Promise.all([cssReady,load(A.decor),load(A.host),load(A.candLeft),load(A.candRight)].concat(A.logo?[load(A.logo)]:[])).then(()=>{
       clearTimeout(fail);if(done)return;
       box.classList.add('slci-ready');
       requestAnimationFrame(()=>requestAnimationFrame(()=>{
