@@ -140,6 +140,8 @@ function gcapture(A){
   if(reduce||!A.cells.length)return fin();
   const sh=V0.E.find(e=>(e.a===A.from[0]&&e.b===A.from[1])||(e.a===A.from[1]&&e.b===A.from[0]));
   const ox=sh?(sh.c[0][0]+sh.c[3][0])/2:V0.cells[A.cells[0]].cx,oy=sh?(sh.c[0][1]+sh.c[3][1])/2:V0.cells[A.cells[0]].cy;
+  // Mode allégé (TV) : vague case par case, sans clip-path ni flou (js/plateau-lite.js).
+  if(LITE)return gcaptureLite(A,V0,ox,oy,G.players[A.to].gold?GC.gold:GC.me,fin);
   // Rayon final : assez grand pour que même le creux le plus profond du front couvre toutes les cases.
   let R=0;A.cells.forEach(i=>{const c=V0.cells[i];for(const dx of[-.5,.5])for(const dy of[-.5,.5])R=Math.max(R,Math.hypot(c.cx+dx*V0.sx-ox,c.cy+dy*V0.sy-oy))});R=R/.67+4;
   const rr=grng(G.seed^(A.cells.length*7919+A.to)),ph=[0,0,0,0].map(()=>rr()*Math.PI*2);
