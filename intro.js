@@ -2,7 +2,9 @@
  *
  * Installation : une seule ligne dans le <head> de index.html, après la feuille de style du jeu :
  *   balise script avec src="intro.js" (sans defer ni async, pour masquer le jeu dès l'ouverture)
- * Le script charge intro.css et les images de assets/intro/ (plateau, animateur, candidats gauche et droite, logo).
+ * Le script charge intro.css et les images de assets/intro/ (plateau, animateur, 12 candidats, logo).
+ * Mise en scène : décor immobile ; la caméra avance de 10 m dans un couloir de candidats et s'arrête devant l'animateur,
+ * en pied, sous le logo.
  * Visuels originaux générés par IA, fournis par Ced (novembre 2026) : plus rien de l'émission.
  * Il ne touche pas à la logique du jeu : il pose un calque par-dessus la page, puis le retire.
  *
@@ -18,7 +20,7 @@
  * - Si une image ne se charge pas, l'intro est sautée.
  * - Fin de l'intro : événement « slc:intro-end » sur document, et window.SLC_INTRO_DONE = true.
  * - Version autonome (artefact claude.ai) : définir avant ce script window.SLC_INTRO_ASSETS
- *   = {decor, host, candLeft, candRight, music} (adresses data:) et window.SLC_INTRO_CSS_INLINE = true.
+ *   = {decor, host, cands: [12 images], logo, music} (adresses data:) et window.SLC_INTRO_CSS_INLINE = true.
  */
 (function(){
   if(location.hash.startsWith('#arbitre')){window.SLC_INTRO_DONE=true;return}
@@ -26,11 +28,11 @@
   const base=(me&&me.src?me.src.replace(/[^/]*$/,''):'');
   const A=window.SLC_INTRO_ASSETS||{
     decor:base+'assets/intro/decor.webp',host:base+'assets/intro/host.webp',
-    candLeft:base+'assets/intro/cand-left.webp',candRight:base+'assets/intro/cand-right.webp',
+    cands:[1,2,3,4,5,6,7,8,9,10,11,12].map(k=>base+'assets/intro/cand-'+(k<10?'0':'')+k+'.webp'),
     logo:base+'assets/intro/logo.webp',
     music:base+'assets/intro/generique.mp3'};
   const reduce=window.matchMedia&&matchMedia('(prefers-reduced-motion: reduce)').matches;
-  const DUR=reduce?2400:10000;
+  const DUR=reduce?2400:15000;
 
   // Le calque qui masque le jeu n'est posé qu'au lancement de l'intro (l'écran d'accueil reste visible avant).
   const hide=document.createElement('style');
@@ -71,21 +73,61 @@
   function onKey(e){if(e.key==='Escape')end()}
   const load=src=>new Promise((ok,ko)=>{const i=new Image();i.onload=()=>(i.decode?i.decode().catch(()=>{}):Promise.resolve()).then(()=>ok(i));i.onerror=ko;i.src=src});
 
+  /* Caméra dans le couloir : le plateau, l'animateur et les candidats sont immobiles, posés sur un sol quadrillé ;
+     seule la caméra avance (de 3 m), en ligne droite, à hauteur d'yeux. Tout est projeté en perspective avec les
+     mêmes règles (sol compris), d'où l'impression d'un vrai travelling. Unités : mètres. Œil à 1,6 m ; focale
+     f = 0,9 × hauteur de l'écran ; horizon à 53 % de la hauteur. Candidats serrés par deux de part et d'autre
+     d'une allée étroite, de 1,8 à 4,7 m : les quatre premiers groupes sortent du champ, les deux derniers encadrent l'animateur) ; animateur à 6,8 m,
+     fond du plateau à 8,4 m (8,4 m × 4,7 m) ; la caméra s'arrête à 3,8 m de l'animateur : il est en pied,
+     sous le logo de l'écran. */
+  const OEIL=1.6,FOND=8.4,FOND_H=4.7,HOST_Z=6.8,CAM1=3,HORIZON=.53;
+  const CANDS=[ // [X, Z, taille] : groupes de deux, de part et d'autre de l'allée, du plus proche au plus lointain
+    [-.6,1.8,1.82],[-1.1,2.0,1.8],[.6,2.3,1.72],[1.1,2.5,1.85],[-.6,2.7,1.78],[-1.1,2.9,1.7],
+    [.6,3.1,1.84],[1.1,3.3,1.76],[-.85,4.5,1.7],[-1.4,4.7,1.8],[.85,4.5,1.75],[1.4,4.7,1.82]];
+  function couloir(){
+    const imgs=[...box.querySelectorAll('.slci-o')],sol=box.querySelector('.slci-sol path'),fond=box.querySelector('.slci-sol rect');
+    // [élément, X (centre), Z, hauteur (m)] ; tous posés sur le sol
+    const objs=[[imgs[0],0,FOND,FOND_H],[imgs[1],0,HOST_Z,1.78]].concat(CANDS.map((c,k)=>[imgs[k+2],c[0],c[1],c[2]]));
+    objs.forEach(o=>o.push(o[0].naturalHeight/o[0].naturalWidth*100)); // hauteur affichée pour 100 px de large
+    const ease=p=>p<.5?4*p*p*p:1-Math.pow(-2*p+2,3)/2;
+    const D0=1000,D1=10500; // l'avancée, lente, commence après le fondu et finit quand le logo arrive (10 s), tenu jusqu'à 15 s
+    const frame=now=>{
+      if(done||!box)return;
+      const p=reduce?0:Math.max(0,Math.min(1,(now-t0-D0)/(D1-D0))),cam=CAM1*ease(p);
+      const H=innerHeight,W=innerWidth,f=.9*H,y0=HORIZON*H,cx=W/2;
+      const px=(X,Z)=>cx+X*f/(Z-cam),py=Z=>y0+OEIL*f/(Z-cam);
+      // Sol : lignes dans l'axe (tous les mètres) et en travers (tous les mètres), du pied de la caméra au fond.
+      const zn=cam+.35;let d='';
+      for(let X=-8;X<=8;X++)d+='M'+px(X,zn).toFixed(1)+' '+py(zn).toFixed(1)+'L'+px(X,FOND).toFixed(1)+' '+py(FOND).toFixed(1);
+      for(let Z=Math.ceil(zn);Z<=FOND;Z++)d+='M'+px(-8,Z).toFixed(1)+' '+py(Z).toFixed(1)+'L'+px(8,Z).toFixed(1)+' '+py(Z).toFixed(1);
+      sol.setAttribute('d',d);
+      fond.setAttribute('y',py(FOND).toFixed(1));fond.setAttribute('height',Math.max(0,H-py(FOND)).toFixed(1));
+      for(const [el,X,Z,h,hpx] of objs){
+        const dz=Z-cam;
+        if(dz<.3){el.style.opacity=0;continue} // déjà sorti du champ par le côté
+        const s=f/dz,k=h*s/hpx,x=px(X,Z)-50*k,y=py(Z)-h*s;
+        el.style.transform='translate3d('+x.toFixed(1)+'px,'+y.toFixed(1)+'px,0) scale('+k.toFixed(4)+')';
+        el.style.opacity='1';
+        el.style.zIndex=Math.round(1000-Z*10);
+      }
+      if(!reduce&&p<1)requestAnimationFrame(frame);
+    };
+    requestAnimationFrame(frame);
+    addEventListener('resize',()=>requestAnimationFrame(frame)); // écran redimensionné : on recalcule la scène
+  }
   function build(){
     root.classList.add('slci-on');document.head.appendChild(hide);
     box=document.createElement('div');box.className='slci';
     box.innerHTML=
       '<div class="slci-sky" aria-hidden="true"></div>'+
-      '<div class="slci-scene" aria-hidden="true">'+
-        // Le plateau porte déjà le logo sur son écran ; sans logo fourni (ancienne version autonome), le nom en texte.
-        '<div class="slci-plane slci-p-decor"><div class="slci-decor-box"><img alt="" src="'+A.decor+'">'+(A.logo?'':'<div class="slci-screen">Sur le<br>carreau</div>')+'</div></div>'+
-        '<div class="slci-plane slci-p-floor slci-floor"></div>'+
-        '<div class="slci-plane slci-p-host"><img class="slci-host" alt="" src="'+A.host+'"></div>'+
-        '<div class="slci-plane slci-p-cl"><img class="slci-cl" alt="" src="'+A.candLeft+'"></div>'+
-        '<div class="slci-plane slci-p-cr"><img class="slci-cr" alt="" src="'+A.candRight+'"></div>'+
+      '<div class="slci-stage" aria-hidden="true">'+
+        '<svg class="slci-sol" width="100%" height="100%"><defs><linearGradient id="slci-g" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#0A1F7A"/><stop offset="1" stop-color="#1740C8"/></linearGradient></defs>'+
+          '<rect x="0" width="100%" fill="url(#slci-g)"/><path fill="none" stroke="rgba(255,255,255,.45)" stroke-width="2"/></svg>'+
+        '<img class="slci-o" alt="" src="'+A.decor+'"><img class="slci-o" alt="" src="'+A.host+'">'+
+        A.cands.map(c=>'<img class="slci-o" alt="" src="'+c+'">').join('')+
       '</div>'+
       '<div class="slci-vign" aria-hidden="true"></div>'+
-      '<p class="slci-title'+(A.logo?' slci-logo':'')+'" aria-hidden="true">'+(A.logo?'<img alt="" src="'+A.logo+'">':'Sur le carreau')+'</p>'+
+      '<p class="slci-title slci-logo" aria-hidden="true"><img alt="" src="'+A.logo+'"></p>'+
       '<div class="slci-black" aria-hidden="true"></div>'+
       '<div class="slci-ctrl">'+(A.music?'<button type="button" class="slci-snd" aria-pressed="false">🔇 Son</button>':'')+'<button type="button" class="slci-skip">Passer l’intro</button></div>';
     document.body.appendChild(box);
@@ -93,11 +135,11 @@
     sndBtn=box.querySelector('.slci-snd');if(sndBtn){sndBtn.onclick=toggleSnd;showSnd(false);if(!audio){audio=new Audio(A.music);audio.preload='auto'}}
     addEventListener('keydown',onKey);
     const fail=setTimeout(end,6000); // réseau trop lent : on n'attend pas plus
-    Promise.all([cssReady,load(A.decor),load(A.host),load(A.candLeft),load(A.candRight)].concat(A.logo?[load(A.logo)]:[])).then(()=>{
+    Promise.all([cssReady,load(A.decor),load(A.host),load(A.logo)].concat(A.cands.map(load))).then(()=>{
       clearTimeout(fail);if(done)return;
       box.classList.add('slci-ready');
       requestAnimationFrame(()=>requestAnimationFrame(()=>{
-        box.classList.add('slci-run');t0=performance.now();
+        box.classList.add('slci-run');t0=performance.now();couloir();
         if(getPref())soundOn();
         box.querySelector('.slci-skip').focus({preventScroll:true});
         timer=setTimeout(end,DUR);
