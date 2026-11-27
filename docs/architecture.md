@@ -81,7 +81,7 @@ Rien d'autre de nouveau : pas de mémoire des éléments déjà vus (écartée p
 ### 5.1 Mode allégé de la TV (E2)
 - `const LITE = !CSS.supports('color', 'color-mix(in srgb, red, blue)') || /[?&]lite=1/.test(location.search)` (le paramètre sert aux tests et au dépannage).
 - En mode allégé : `gcapture` délègue à `js/plateau-lite.js`. Chaque case capturée passe à la couleur du gagnant par une transition CSS sur `fill`, avec un délai proportionnel à sa distance (en cases) au bord du duel : environ 90 ms par case, pour une durée totale proche de la vague actuelle. Ni `clip-path`, ni `#gglow`, ni contours recalculés.
-- Toujours (allégé ou non) : chaque `color-mix()` du CSS est précédé d'une déclaration de secours en couleur pleine ; `backdrop-filter` reçoit un fond opaque de secours.
+- Toujours (allégé ou non) : chaque `color-mix()` du CSS est précédé d'une déclaration de secours en couleur pleine ; `backdrop-filter` reçoit un fond opaque de secours. (Story 2.1 : le seul `color-mix()`, qui contenait `var()`, a été remplacé par des couleurs précalculées ; un secours placé avant une valeur avec `var()` ne sert pas. `tests/lite.js` vérifie qu'aucun `color-mix()` n'arrive sans secours.)
 - `?debug=1` affiche dans un coin le navigateur détecté (user agent) et l'état de `LITE`, pour que Ced vérifie la TV d'un coup d'œil.
 
 ### 5.2 Gros plan (E3)

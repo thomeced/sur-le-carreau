@@ -17,3 +17,12 @@ if(!isArb){
   getLink();pairRender();
 }
 addEventListener('hashchange',()=>location.reload());
+/* ?debug=1 : navigateur détecté et mode allégé, en petit dans un coin, pour vérifier la TV d'un coup d'œil (test réel). */
+if(/[?&]debug=1(&|$)/.test(location.search)){
+  const ua=navigator.userAgent,chr=(ua.match(/Chrom(?:e|ium)\/(\d+)/)||[])[1],v=(document.querySelector('meta[name="slc-version"]')||{}).content;
+  const cm=!!(window.CSS&&CSS.supports&&CSS.supports('color','color-mix(in srgb, red, blue)'));
+  const d=document.createElement('div');d.id='slcdebug';d.className='slcdebug';
+  d.textContent='Version '+v+' · '+(chr?'Chromium '+chr:'moteur non Chromium')+' · color-mix : '+(cm?'oui':'non')+
+    ' · mode allégé : '+(LITE?'oui':'non')+(LITE&&cm?' (forcé par ?lite=1)':'')+' · '+innerWidth+'×'+innerHeight+' · '+ua;
+  document.body.append(d);
+}
