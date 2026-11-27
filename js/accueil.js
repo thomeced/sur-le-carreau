@@ -186,7 +186,7 @@ function startDuel(o){
   if(S){clearInterval(S.h);clearInterval(S.cd)}
   aideCartesStop();
   const bo=o.bonus||[0,0];
-  S={names:o.names,t:[o.T+bo[0],o.T+bo[1]],goldUse:o.goldUse||[],gold:o.gold||'',turn:Math.random()<.5?0:1,sc:[0,0],src:o.src,cat:o.cat,type:TYPES[o.type]?o.type:'emoji',disp:'',imgK:null,imgN:0,pid:o.pid||null,pool:null,lvl:1,last:performance.now(),lock:false,over:false,started:false,counting:false,count:0,oral:o.oral,n:0};
+  S={names:o.names,t:[o.T+bo[0],o.T+bo[1]],goldUse:o.goldUse||[],gold:o.gold||'',turn:Math.random()<.5?0:1,sc:[0,0],src:o.src,cat:o.cat,type:TYPES[o.type]?o.type:'emoji',disp:'',imgK:null,imgN:0,pid:o.pid||null,pool:null,lvl:1,last:performance.now(),lock:false,over:false,started:false,counting:false,count:0,oral:o.oral,n:0,joues:0};
   fill();card();render();show('game');$('msg').textContent='';$('dcat').textContent='Catégorie : '+o.cat+(typeName(S.type)?' · '+typeName(S.type):'');$('dgold').textContent=S.gold;
   $('f2').hidden=$('pass').hidden=o.oral;$('wait').hidden=!o.oral;$('wback').hidden=!S.pid;
   if(!o.oral)return launch();

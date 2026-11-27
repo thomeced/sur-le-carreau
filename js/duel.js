@@ -1,5 +1,5 @@
 // Sur le carreau : le duel (niveaux, tirage des éléments, cartes, chronos, bonne réponse et « Passé », envoi à la régie).
-const lvl=()=>Math.min(LVL_MAX,1+Math.floor((S.sc[0]+S.sc[1])/LVL_STEP));
+const lvl=()=>niveauPour(S.joues); // S.joues : éléments déjà joués dans ce duel (S.n compte les ticks du chrono)
 function fill(){PRE.vu.clear();S.pool=LVLS.map(()=>[]).concat([[]]);for(const it of S.src)S.pool[it[2]].push(it);S.pool.forEach(shuffle)}
 function card(){
   const L=lvl(),order=[L,L-1,L+1,L-2,L+2,L-3,L+3,L-4,L+4].filter(l=>l>=1&&l<=LVL_MAX);
@@ -88,10 +88,10 @@ function launch(){
   S.cd=setInterval(()=>{S.count--;if(S.count>0)return step();clearInterval(S.cd);S.counting=false;S.count=0;begin()},1000);
 }
 function begin(){snd('go');S.started=true;showCard();S.last=performance.now();S.h=setInterval(tick,100);$('wait').hidden=true;push();$('ans').focus()}
-function good(){snd('good');S.sc[S.turn]++;S.turn^=1;card();flash('ok','Bonne réponse');render();push()}
+function good(){snd('good');S.sc[S.turn]++;S.joues++;S.turn^=1;card();flash('ok','Bonne réponse');render();push()}
 function skip(){
   if(!S.started||S.lock||S.over)return;
-  S.lock=true;S.t[S.turn]-=3000;
+  S.lock=true;S.joues++;S.t[S.turn]-=3000;
   if(S.t[S.turn]<=0){S.t[S.turn]=0;render();return finish()}
   snd('pass');clearTimeout(flashT);$('msg').className='';$('msg').textContent='C\'était : '+S.cur[1].split('|')[0]+' (−3 s)';
   render();push();

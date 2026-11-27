@@ -67,8 +67,8 @@ Nouveaux fichiers des epics suivants : `js/aide.js` (E1 : cartes, bandeau, guide
 - Tirage (`pdraw`) : on tire d'abord une catégorie par domaine différent, au hasard ; on ne reprend un domaine que lorsqu'ils sont tous utilisés. Une variante Gros plan compte dans le domaine de sa catégorie d'origine.
 
 ### 4.3 Progressivité (EF23)
-- `LVL_CURVE = [3, 6, 10, 14]` : seuils du nombre d'éléments déjà joués dans le duel. Niveau = 1 + nombre de seuils atteints (0 à 3 éléments joués → 1 ; 15 et plus → 5).
-- Nouveau compteur `S.n` (éléments joués : bonnes réponses, « Passé », « Mauvaise réponse », des deux joueurs), remis à 0 à chaque duel. `lvl()` lit `S.n` au lieu de `S.sc[0] + S.sc[1]`. `LVL_STEP` disparaît.
+- `LVL_CURVE = [3, 6, 10, 14]` : seuils du nombre d'éléments déjà joués dans le duel. `niveauPour(n)` = 1 + nombre de seuils atteints (`n >= seuil`) : 0 à 2 éléments joués → 1 ; 3 à 5 → 2 ; 6 à 9 → 3 ; 10 à 13 → 4 ; 14 et plus → 5 (soit les éléments 1 à 3 au niveau 1… et le 15e au niveau 5, comme dans le PRD).
+- Nouveau compteur `S.joues` (éléments joués : bonnes réponses, « Passé », « Mauvaise réponse », des deux joueurs), remis à 0 à chaque duel. `lvl()` renvoie `niveauPour(S.joues)` au lieu de lire `S.sc[0] + S.sc[1]`. `LVL_STEP` disparaît. (`S.n` existait déjà : c'est le compteur de ticks du chrono.)
 - Recherche du niveau le plus proche et recyclage d'un niveau épuisé : inchangés.
 
 ### 4.4 Stockage local (nouveau)
@@ -95,7 +95,7 @@ Rien d'autre de nouveau : pas de mémoire des éléments déjà vus (écartée p
 - Une ligne de plus toutes les 3 s (`DEV_PAS = 3000`), minuterie arrêtée quand le chrono du joueur s'arrête ou que l'élément change ; lignes à venir en pointillés. À la réponse, toutes les lignes s'affichent.
 
 ### 5.4 Messages entre l'écran et la régie
-- `act` : nouveau verdict `bad` (« Mauvaise réponse », QCM seulement). L'écran le traite comme « Passé » (réponse révélée, −3 s), et compte l'élément dans `S.n`. Comme aujourd'hui, chaque verdict porte l'élément concerné, pour ignorer les doubles clics.
+- `act` : nouveau verdict `bad` (« Mauvaise réponse », QCM seulement). L'écran le traite comme « Passé » (réponse révélée, −3 s), et compte l'élément dans `S.joues`. Comme aujourd'hui, chaque verdict porte l'élément concerné, pour ignorer les doubles clics.
 - `st` : ajoute `extra` selon le type (`choix` pour le QCM, `lignes` pour la devinette) et `qcm: true` pour que la régie affiche le bouton rouge.
 - Pas de nouveau sujet de message. Le bandeau d'aide (EF5) et les cartes (EF1) sont calculés sur l'écran du jeu seul ; le guide (EF3) vit sur le téléphone seul.
 
@@ -145,7 +145,7 @@ Tests manuels : `docs/test-reel.md` (EF10), checklist pour Ced sur deux vrais ap
 | EF17 | aucun changement de `editeur.html` |
 | EF18 à EF20, EF22 | `categories.js`, `liste.txt`, `photos-js.py`, `tests/contenu.js`, §6 |
 | EF21 | `DOMAINES`, `DOM_CAT`, `pdraw`, §4.2 |
-| EF23 | `LVL_CURVE`, `S.n`, §4.3 |
+| EF23 | `LVL_CURVE`, `niveauPour`, `S.joues`, §4.3 |
 | ENF1, ENF2 | §1, §5.1, §5.2 ; préchargement des 3 éléments suivants de la catégorie en jeu |
 | ENF3 | §2, §7 |
 | ENF4 | §8 (standards), mouvement réduit en §5.2, §5.3 |
