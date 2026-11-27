@@ -26,8 +26,8 @@ Statuts : Brouillon · Prête · En cours · En revue · Terminée
 | Story | Titre | Exigences | Statut |
 |---|---|---|---|
 | [2.1](2.1-lite-secours.md) | Couleurs de secours, détection `LITE`, `?debug=1` | EF8 | Terminée |
-| [2.2](2.2-vague-lite.md) | Vague de capture case par case (`js/plateau-lite.js`) | EF7 | En revue |
-| 2.3 | Préchargement des 3 photos suivantes (absent aujourd'hui) | ENF2 | Brouillon |
+| [2.2](2.2-vague-lite.md) | Vague de capture case par case (`js/plateau-lite.js`) | EF7 | Terminée |
+| [2.3](2.3-prechargement-photos.md) | Préchargement des 3 photos suivantes | ENF2 | En revue |
 | 2.4 | Nouveau calque de l'intro (esquisses à choisir par Ced) | EF9 | Brouillon |
 | [2.5](2.5-test-reel.md) | Checklist de test réel `docs/test-reel.md` (test fait par Ced) | EF10 | Ordinateur + téléphone en wifi : OK (27/11) ; TV Samsung et réseau mobile à faire |
 
