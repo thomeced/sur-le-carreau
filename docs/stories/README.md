@@ -11,8 +11,8 @@ Statuts : Brouillon · Prête · En cours · En revue · Terminée
 | Story | Titre | Exigences | Dépend de | Statut |
 |---|---|---|---|---|
 | [0.1](0.1-tests-fumee.md) | Tests de fumée et de régie (Playwright) | archi §8 | — | Terminée |
-| [0.2](0.2-decoupage-index.md) | Découpage d'`index.html` en fichiers | archi §3 | 0.1 | En revue |
-| [0.3](0.3-version-cache.md) | Version des fichiers (cache de la TV) | archi §2 | 0.2 | Prête |
+| [0.2](0.2-decoupage-index.md) | Découpage d'`index.html` en fichiers | archi §3 | 0.1 | Terminée |
+| [0.3](0.3-version-cache.md) | Version des fichiers (cache de la TV) | archi §2 | 0.2 | En revue |
 
 ## E1 Prise en main
 | Story | Titre | Exigences | Dépend de | Statut |

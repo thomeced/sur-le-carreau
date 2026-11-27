@@ -35,7 +35,7 @@
   hide.textContent='html.slci-on body>main{visibility:hidden}.slci:not(.slci-ready)>*{visibility:hidden}.slci{position:fixed;inset:0;z-index:1000;background:#03040E}';
   let cssReady=Promise.resolve();
   if(!window.SLC_INTRO_CSS_INLINE){
-    const l=document.createElement('link');l.rel='stylesheet';l.href=base+'intro.css';
+    const l=document.createElement('link');l.rel='stylesheet';l.href=base+'intro.css'+((me&&me.src.match(/\?v=[^#]*/))||[''])[0]; // même version qu'intro.js (cache de la TV)
     cssReady=new Promise((ok,ko)=>{l.onload=ok;l.onerror=ko});
     document.head.appendChild(l);
   }

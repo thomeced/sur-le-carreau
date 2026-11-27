@@ -39,6 +39,7 @@ async function demarrer({largeur=1440,hauteur=900}={}){
   const serveur=spawn('python3',['-m','http.server',String(port),'--bind','127.0.0.1'],{cwd:RACINE,stdio:'ignore'});
   const url='http://127.0.0.1:'+port+'/';
   const erreurs=[];
+  const requetes=[]; // adresses demandées au serveur local (pour vérifier la version des fichiers)
   let navigateur=null;
   const fermer=async()=>{
     try{if(navigateur)await navigateur.close()}catch(e){}
@@ -53,6 +54,7 @@ async function demarrer({largeur=1440,hauteur=900}={}){
      vide. PeerJS n'étant pas chargé, la liaison passe par BroadcastChannel entre onglets, comme prévu pour les tests ;
      et un réseau absent ou filtré ne produit pas d'erreur de console. */
   await contexte.route(u=>!u.href.startsWith(url),r=>r.fulfill({status:200,body:''}));
+  contexte.on('request',r=>{if(r.url().startsWith(url))requetes.push(r.url().slice(url.length))});
   const page=async(nom)=>{
     const p=await contexte.newPage();
     p.on('pageerror',e=>erreurs.push('['+nom+'] erreur JavaScript : '+(e.stack||e.message)));
@@ -62,7 +64,7 @@ async function demarrer({largeur=1440,hauteur=900}={}){
   const verifier=()=>{
     if(erreurs.length)throw new Error(erreurs.length+' erreur(s) dans les pages :\n'+erreurs.join('\n'));
   };
-  return {url,navigateur,contexte,page,erreurs,verifier,fermer};
+  return {url,navigateur,contexte,page,erreurs,requetes,verifier,fermer};
 }
 
 /* Lance un test : affiche « OK » ou l'erreur, ferme tout et règle le code de sortie.

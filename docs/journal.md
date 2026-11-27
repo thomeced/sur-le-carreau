@@ -238,5 +238,9 @@ Chaque chantier est prévu dans sa propre conversation du projet, sur sa propre 
 - Écart à l'architecture : ordre et contenu des fichiers dictés par l'ordre du code (liaison côté écran dans `accueil.js`, rendu de la grille dans `plateau.js`, `startGrid` dans `choix-categories.js`) ; architecture §3 mise à jour.
 - Tests de 0.1 OK ; captures avant/après identiques (hors QR code et animation CSS).
 
+## Story 0.3 : version des fichiers (novembre 2026)
+- Version définie dans `<meta name="slc-version">` d'`index.html`, recopiée par `tools/version.py` en `?v=` sur chaque CSS et JS local d'`index.html`, `editeur.html` et `credits.html`, et dans le pied de l'accueil (coin bas droit ; sous les liens sur écran étroit). `intro.css` reprend la version d'`intro.js`. Choix d'une version en dur plutôt que `document.write`.
+- `tests/fumee.js` vérifie la version de chaque fichier demandé. Première version : `2026-11-27a`.
+
 ## Comment reprendre dans un nouveau projet Claude
 Reliez le dépôt GitHub (référence du code) et gardez ce document dans le projet, puis demandez par exemple : « Lis le document de contexte et reprends le jeu : ajoute l'éditeur de catégories. » Le fichier `sur-le-carreau.html` du projet est la version autonome du jeu (catégories incluses) ; la référence reste le dépôt.

@@ -168,6 +168,9 @@ a.btnlink:focus-visible{outline:3px solid var(--p1);outline-offset:2px}
 .hlinks a,.hlinks button.lnk{color:var(--ink);opacity:.7;background:none;border:0;box-shadow:none;padding:6px 2px;font:600 .9rem/1.3 var(--disp);text-decoration:underline;text-underline-offset:3px}
 .hlinks a:hover,.hlinks button.lnk:hover{opacity:1}
 .hlinks a:focus-visible{outline:3px solid var(--p1);outline-offset:2px}
+/* Version des fichiers, en petit dans le coin de l'accueil (toujours visible, sans défiler) : pour vérifier ce que la TV a chargé. */
+.hver{position:fixed;right:12px;bottom:8px;margin:0;font-size:.75rem;opacity:.5;pointer-events:none}
+@media(max-width:600px){.hver{position:static;margin:12px 0 0;text-align:center}}
 .hwait{animation:hwait 1.6s ease-in-out infinite alternate}
 @keyframes hwait{to{opacity:.55}}
 @media(prefers-reduced-motion:reduce){.hwait{animation:none}}
