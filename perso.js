@@ -1,7 +1,8 @@
 /* Catégories personnelles de « Sur le carreau » (créées avec editeur.html).
  *
  * Partagé par le jeu (index.html) et l'éditeur (editeur.html) :
- * - les types de jeu (emoji, mot à trous, photos, indices, lettres mélangées, titres à l'envers) et la consigne que l'arbitre annonce ;
+ * - les types de jeu (emoji, mot à trous, photos, indices, lettres mélangées, titres à l'envers) et la consigne que l'arbitre annonce
+ *   à voix haute (« Annoncez : Mot à trous, retrouvez le mot complet. ») : phrase courte, « vous » ;
  * - les « indices » : plusieurs pistes visibles d'emblée, affichées en liste (renderInd) ;
  * - le « mot à trous » : lettres cachées au hasard (plus le niveau monte, plus il y en a), affichage en tuiles ;
  * - les « lettres mélangées » (melange) et les « titres à l'envers » (renderEnv), jouables mais pas dans l'éditeur ;
@@ -12,11 +13,11 @@
 (function(){
   const TYPES={
     emoji:{nom:'Images',icone:'🖼️',consigne:'Nommez ce que montre l’image.'},
-    trous:{nom:'Mot à trous',icone:'🔤',consigne:'Retrouvez le mot complet : certaines lettres sont cachées.'},
+    trous:{nom:'Mot à trous',icone:'🔤',consigne:'Retrouvez le mot complet.'},
     photo:{nom:'Photos',icone:'📷',consigne:'Nommez ce que montre la photo.'},
-    indices:{nom:'Indices',icone:'🧩',consigne:'Trouvez ce qui se cache derrière tous ces indices.'},
-    melange:{nom:'Lettres mélangées',icone:'🔀',consigne:'Remettez les lettres dans l’ordre pour retrouver le mot.'},
-    envers:{nom:'Titres à l’envers',icone:'🙃',consigne:'Retrouvez le vrai titre : ses mots ont été remplacés par leur contraire.'}
+    indices:{nom:'Indices',icone:'🧩',consigne:'Trouvez la réponse qui relie tous les indices.'},
+    melange:{nom:'Lettres mélangées',icone:'🔀',consigne:'Remettez les lettres dans l’ordre.'},
+    envers:{nom:'Titres à l’envers',icone:'🙃',consigne:'Retrouvez le vrai titre, écrit avec des mots contraires.'}
   };
   const IND_MIN=2,IND_MAX=5; // nombre d'indices par élément
   const MIN=5; // nombre minimal d'éléments pour qu'une catégorie perso apparaisse dans le jeu

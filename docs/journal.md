@@ -254,5 +254,9 @@ Chaque chantier est prévu dans sa propre conversation du projet, sur sa propre 
 - `#rguide` (surcouche plein écran de la régie, 3 pages de `AIDE_TXT.guide`, « Passer », « Suivant » / « C'est parti », glissement), `guideArbitre(force)` appelé dans `arbJoin` ; `slc-guide-vu` posé à la fermeture ; bouton rond `#rhelp`. « Mauvaise réponse » attendra le QCM (3.2).
 - Les tests posent `slc-guide-vu` d'avance (option `guide: true` sinon) ; `tests/regie.js` complété. Version `2026-11-27d`.
 
+## Story 1.4 : consigne à annoncer (novembre 2026)
+- Régie : encadré `#atype` en tête (« Annoncez : » + nom du type + consigne, 24 px gras avant le départ ; une ligne pendant le duel), `arbConsigne`. Champ `icone` dans `st`. Consignes de `TYPES` raccourcies pour être dites à voix haute. Fin de l'epic E1.
+- `tests/regie.js` complété. Version `2026-11-27e`.
+
 ## Comment reprendre dans un nouveau projet Claude
 Reliez le dépôt GitHub (référence du code) et gardez ce document dans le projet, puis demandez par exemple : « Lis le document de contexte et reprends le jeu : ajoute l'éditeur de catégories. » Le fichier `sur-le-carreau.html` du projet est la version autonome du jeu (catégories incluses) ; la référence reste le dépôt.
