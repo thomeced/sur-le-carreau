@@ -13,8 +13,23 @@ const pkeys=(t,keys)=>(keys||Object.keys(DATA)).filter(k=>DATA[k].type===t).sort
 const plabel=k=>DATA[k].label+(DATA[k].perso?' (perso)':'');
 const pnote=t=>{PNOTE=t};
 const pplural=(n,w)=>n+' '+w+(n>1?'s':'');
-function pdraw(){PICK=shuffle(Object.keys(DATA)).slice(0,pneed())}
-function pfill(){const rest=shuffle(Object.keys(DATA).filter(k=>!PICK.includes(k))),n=Math.max(0,Math.min(rest.length,pneed()-PICK.length));PICK.push(...rest.slice(0,n));return n}
+/* Tirage équilibré (story 4.1, EF21) : n catégories prises hors de `deja`, en commençant toujours par le domaine
+   le moins représenté (catégories déjà choisies comprises) ; égalités et catégorie dans le domaine : au hasard.
+   Revient à prendre une catégorie par domaine différent avant de reprendre un domaine. */
+function ptirer(n,deja){
+  const cpt={},dispo={};
+  for(const k of deja){const d=domaineDe(k);cpt[d]=(cpt[d]||0)+1}
+  for(const k of shuffle(Object.keys(DATA).filter(k=>!deja.includes(k)))){const d=domaineDe(k);(dispo[d]=dispo[d]||[]).push(k)}
+  const res=[];
+  while(res.length<n){
+    const doms=Object.keys(dispo).filter(d=>dispo[d].length);if(!doms.length)break;
+    const min=Math.min(...doms.map(d=>cpt[d]||0)),d=shuffle(doms.filter(x=>(cpt[x]||0)===min))[0];
+    res.push(dispo[d].pop());cpt[d]=(cpt[d]||0)+1;
+  }
+  return res;
+}
+function pdraw(){PICK=ptirer(pneed(),[])}
+function pfill(){const add=ptirer(Math.max(0,pneed()-PICK.length),PICK);PICK.push(...add);return add.length}
 function ptrim(){const n=Math.max(0,PICK.length-pneed());for(let i=0;i<n;i++)PICK.splice(Math.floor(Math.random()*PICK.length),1);return n}
 // Après un (re)chargement des catégories : on garde le choix du joueur, ou on refait le tirage s'il n'y a pas touché
 // (ainsi les catégories perso, chargées un peu après, entrent dans le tirage de départ).

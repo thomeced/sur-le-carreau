@@ -64,7 +64,7 @@ Nouveaux fichiers des epics suivants : `js/aide.js` (E1 : cartes, bandeau, guide
 ### 4.2 Domaines (EF21)
 - Liste fixe `DOMAINES` dans `categories.js` : `geo`, `histoire`, `cinema`, `musique`, `sport`, `sciences`, `animaux`, `cuisine`, `arts`, `langue`, `quotidien`.
 - Une table unique `DOM_CAT = {clé: domaine}` dans `categories.js` couvre toutes les catégories, y compris celles de `photos.js` (qui reste généré et n'a pas à changer). Une catégorie sans domaine est rangée dans `autre`, comme les catégories perso.
-- Tirage (`pdraw`) : on tire d'abord une catégorie par domaine différent, au hasard ; on ne reprend un domaine que lorsqu'ils sont tous utilisés. Une variante Gros plan compte dans le domaine de sa catégorie d'origine.
+- Tirage : `ptirer(n, deja)` (`js/choix-categories.js`, story 4.1) prend toujours dans le domaine le moins représenté (catégories déjà choisies comprises), au hasard en cas d'égalité : une catégorie par domaine différent avant de reprendre un domaine. `pdraw` et `pfill` l'utilisent. `domaineDe(clé)` (`js/base.js`) renvoie `autre` pour une catégorie sans domaine. Une variante Gros plan (reportée) compterait dans le domaine de sa catégorie d'origine.
 
 ### 4.3 Progressivité (EF23)
 - `LVL_CURVE = [3, 6, 10, 14]` : seuils du nombre d'éléments déjà joués dans le duel. `niveauPour(n)` = 1 + nombre de seuils atteints (`n >= seuil`) : 0 à 2 éléments joués → 1 ; 3 à 5 → 2 ; 6 à 9 → 3 ; 10 à 13 → 4 ; 14 et plus → 5 (soit les éléments 1 à 3 au niveau 1… et le 15e au niveau 5, comme dans le PRD).

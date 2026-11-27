@@ -63,6 +63,8 @@ addCats(typeof CATEGORIES_PHOTOS==='undefined'?null:CATEGORIES_PHOTOS); // photo
 const norm=s=>s.toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g,'').replace(/[^a-z0-9 ]/g,' ').replace(/\b(le|la|les|l|un|une|des|du|de|d)\b/g,' ').replace(/\s+/g,' ').trim();
 function lev(a,b){const m=[...Array(b.length+1).keys()];for(let i=1;i<=a.length;i++){let p=m[0];m[0]=i;for(let j=1;j<=b.length;j++){const t=m[j];m[j]=Math.min(m[j]+1,m[j-1]+1,p+(a[i-1]===b[j-1]?0:1));p=t}}return m[b.length]}
 function isOk(v,list){v=norm(v);if(!v)return false;return list.some(r=>{r=norm(r);if(v===r)return true;const t=r.length>=9?2:r.length>=5?1:0;return t>0&&lev(v,r)<=t})}
+// Domaine d'une catégorie (story 4.1) : DOM_CAT de categories.js, sinon « autre » (catégories perso comprises).
+const domaineDe=k=>{const d=typeof DOM_CAT!=='undefined'&&Object.prototype.hasOwnProperty.call(DOM_CAT,k)?DOM_CAT[k]:null;return d&&typeof DOMAINES!=='undefined'&&DOMAINES[d]?d:'autre'};
 const hasCat=k=>typeof k==='string'&&Object.prototype.hasOwnProperty.call(DATA,k);
 function shuffle(a){for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a}
 function show(id){['home','setup','game','grid','end','arb'].forEach(x=>$(x).hidden=x!==id)}

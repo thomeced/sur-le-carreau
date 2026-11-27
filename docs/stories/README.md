@@ -52,7 +52,7 @@ Epic terminé avec la story 3.1.
 ## E4 Contenu
 | Story | Titre | Exigences | Statut |
 |---|---|---|---|
-| 4.1 | Domaines (`DOMAINES`, `DOM_CAT`), tirage équilibré, `tests/contenu.js` | EF21 | Brouillon |
+| [4.1](4.1-domaines.md) | Domaines (`DOMAINES`, `DOM_CAT`), tirage équilibré, `tests/contenu.js` | EF21 | Terminée |
 | 4.2 | Mot à trous : 10 catégories de 40 à 60 éléments | EF18 | Brouillon |
 | 4.3 | Indices, lettres mélangées, titres à l'envers : 9 catégories de 40 à 60 | EF18 | Brouillon |
 | 4.4 | 4 nouvelles catégories QCM | EF18, EF20 | Reportée avec la 3.2 |
@@ -60,6 +60,8 @@ Epic terminé avec la story 3.1.
 | 4.6 | Emojis : 5 catégories à 40 éléments | EF19 | Brouillon |
 | 4.7 | Photos : `liste.txt` à 40 par catégorie (préparation par Claude ; les 2 catégories Gros plan sont reportées avec la 3.5) | EF19 | Brouillon |
 | 4.8 | Photos : téléchargement et relecture (Ced, sur son Mac), intégration et crédits | EF19, EF22 | Brouillon |
+
+Constat de la story 4.1 (`node tests/contenu.js`) : les 10 catégories mot à trous et les 5 catégories emoji n'ont **aucun élément aux niveaux 4 et 5** (niveaux calculés d'après la longueur pour les mots à trous) ; les indices en ont 2 ou 3. Les stories 4.2, 4.3 et 4.6 devront en ajouter, sans quoi la progressivité de la story 3.1 plafonne au niveau 3 dans ces catégories. Le domaine « Langue et mots » n'a aucune catégorie.
 
 ## Ordre de passage
 0.1 → 0.2 → 0.3 → 1.1 → 1.2 → 1.3 → 1.4 → E2 → E3 (3.1 seule) → E4.
