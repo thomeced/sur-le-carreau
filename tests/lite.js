@@ -7,9 +7,12 @@
      color-mix() est précédé, dans la même règle, de la même propriété sans color-mix() ;
    - navigateur récent sans paramètre : pas de mode allégé, pas de cadre ?debug ;
    - ?lite=1&debug=1 : mode allégé, panneaux sans flou et à fond opaque, cadre de débogage (version, moteur, mode) ;
-   - navigateur sans color-mix() (simulé) : mode allégé détecté tout seul, sans paramètre. */
+   - navigateur sans color-mix() (simulé) : mode allégé détecté tout seul, sans paramètre ;
+   - vague de capture en mode allégé (story 2.2), sur une grille 2×2 : pas de clip-path ni de dessin hors des cases,
+     seules les cases capturées changent de couleur, avec un délai qui grandit avec la distance, et toutes finissent
+     à la couleur du gagnant ; pas de flou SVG sur le plateau. */
 const fs=require('fs'),path=require('path');
-const {lancer,RACINE}=require('./serveur.js');
+const {lancer,RACINE,ouvrirEcranEtRegie,pause,etape}=require('./serveur.js');
 const attendu=(ok,msg)=>{if(!ok)throw new Error(msg)};
 
 // Contrôle statique des feuilles de style.
@@ -57,4 +60,42 @@ lancer('lite',async env=>{
   await p3.goto(env.url+'index.html?mode=serieux&debug=1');
   e=await etat(p3);
   attendu(e.lite&&e.classe&&e.debug.includes('color-mix : non')&&e.debug.includes('mode allégé : oui')&&!e.debug.includes('forcé'),'Navigateur sans color-mix : '+JSON.stringify(e));
+
+  etape('vague case par case (?lite=1)');
+  const {jeu}=await ouvrirEcranEtRegie(env,{params:'&lite=1'});
+  await jeu.click('#hlocal');
+  await jeu.selectOption('#gmode','grid');await jeu.selectOption('#gsize','2');await jeu.click('#pdraw');
+  await jeu.click('#gosubmit');
+  await jeu.waitForSelector('#grid:not([hidden])');
+  const flou=await jeu.evaluate(()=>[...document.querySelectorAll('#gboard [filter]')].map(n=>getComputedStyle(n).filter).filter(f=>f!=='none').length);
+  attendu(flou===0,'Flou SVG encore actif sur le plateau en mode allégé ('+flou+' éléments)');
+  await jeu.locator('#gboard path.gz.t').first().dispatchEvent('click');
+  await jeu.getByRole('button',{name:'Lancer le duel'}).click();
+  await jeu.waitForSelector('#game:not([hidden])');
+  for(let k=0;k<20&&await jeu.isDisabled('#go');k++){await jeu.clock.runFor(1000);await pause(30)}
+  await jeu.click('#go');
+  for(let k=0;k<60&&await jeu.isHidden('#end');k++){await jeu.clock.runFor(2000);await pause(20)}
+  // Espion : cases capturées et couleur du gagnant ; couleurs de toutes les cases juste avant la vague.
+  await jeu.evaluate(()=>{const o=gcaptureLite;gcaptureLite=function(A,V0,ox,oy,col){
+    window.__vague={cases:A.cells.slice(),col,avant:V0.zones.map(z=>z.getAttribute('fill')),
+      delais:A.cells.map(i=>parseInt(V0.zones[i].style.transition.split(' ').pop())||0)};
+    const r=o.apply(this,arguments);
+    window.__vague.delais=A.cells.map(i=>{const t=V0.zones[i].style.transition.match(/(\d+)ms$/);return t?+t[1]:-1});
+    window.__vague.dist=A.cells.map(i=>Math.hypot((V0.cells[i].cx-ox)/V0.sx,(V0.cells[i].cy-oy)/V0.sy));
+    window.__vague.pendant=V0.zones.map(z=>z.getAttribute('fill'));
+    window.__vague.dessin=V0.gan.childNodes.length+(document.getElementById('gcap')?1:0);
+    return r}});
+  await jeu.click('#again');
+  await jeu.waitForSelector('#grid:not([hidden])');
+  const v=await jeu.evaluate(()=>window.__vague);
+  attendu(v&&v.cases.length>0,'La vague allégée n’a pas été jouée');
+  attendu(v.dessin===0,'La vague allégée a dessiné hors des cases (clip-path ou calque de vague)');
+  const autres=v.avant.map((f,i)=>v.cases.includes(i)?null:[i,f,v.pendant[i]]).filter(x=>x&&x[1]!==x[2]);
+  attendu(!autres.length,'Des cases non capturées ont changé de couleur : '+JSON.stringify(autres));
+  attendu(v.cases.every(i=>v.pendant[i]===v.col),'Les cases capturées ne passent pas à la couleur du gagnant');
+  const ordre=v.cases.map((_,k)=>[v.dist[k],v.delais[k]]).sort((a,b)=>a[0]-b[0]);
+  attendu(ordre.every((x,k)=>x[1]>=0&&(!k||x[1]>=ordre[k-1][1])),'Délais non croissants avec la distance : '+JSON.stringify(ordre));
+  await jeu.clock.runFor(3000);await pause(50);
+  const finale=await jeu.evaluate(()=>({anim:gAnimT,trans:GV.zones.filter(z=>z.style.transition).length}));
+  attendu(finale.anim===null&&finale.trans===0,'Vague allégée pas terminée proprement : '+JSON.stringify(finale));
 });

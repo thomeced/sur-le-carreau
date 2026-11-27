@@ -262,5 +262,9 @@ Chaque chantier est prévu dans sa propre conversation du projet, sur sa propre 
 - 27/11 : Ced a testé ordinateur + téléphone sur le même wifi : OK (version 2026-11-27e). TV Samsung et réseau mobile restent à faire (`docs/test-reel.md`).
 - Story 2.1 : `LITE` (sans `color-mix()` ou `?lite=1`) et classe `lite` ; le seul `color-mix()` (halo `.side.on`, avec `var()`) remplacé par des couleurs précalculées ; `.panel` opaque sans flou ; cadre `?debug=1`. Nouveau `tests/lite.js`. Version `2026-11-27f`.
 
+## Story 2.2 : vague de capture case par case (novembre 2026)
+- `js/plateau-lite.js` (`gcaptureLite`), appelée par `gcapture` quand `LITE` : transition CSS de `fill` par case, 90 ms de délai par case de distance au bord du duel, attente par `requestAnimationFrame` ; pas de `clip-path`, de calque ni de flou. `html.lite #gboard *{filter:none}`.
+- `tests/lite.js` complété (espion sur `gcaptureLite`). Version `2026-11-27g`. À confirmer sur la TV.
+
 ## Comment reprendre dans un nouveau projet Claude
 Reliez le dépôt GitHub (référence du code) et gardez ce document dans le projet, puis demandez par exemple : « Lis le document de contexte et reprends le jeu : ajoute l'éditeur de catégories. » Le fichier `sur-le-carreau.html` du projet est la version autonome du jeu (catégories incluses) ; la référence reste le dépôt.

@@ -54,7 +54,7 @@ Si tu n'as pas le temps de tout faire : ces 6 points disent déjà l'essentiel.
 | A3.6 | Les photos s'affichent sur la TV sans attente visible | | |
 | A3.7 | Les chronos de la TV et du téléphone restent d'accord (à 1 s près) | | |
 | A3.8 | Verdicts : délai entre le toucher et la TV : … (instantané / moins d'1 s / plus) | | |
-| A3.9 | Vague de capture à la fin du duel : **déborde-t-elle encore des cases ?** (problème connu, corrigé par la story 2.2) ; fluide ou saccadée ? | | |
+| A3.9 | Vague de capture à la fin du duel (sur la TV, case par case depuis la story 2.2) : **plus de débordement hors des cases ?** fluide ou saccadée ? durée suffisante ? | | |
 | A3.10 | « Retourner sur le sol » : tirage au sort animé, fluide | | |
 | A3.11 | Partie jusqu'au bout : « … a conquis tout le sol ! », puis retour à la configuration sur le téléphone | | |
 
