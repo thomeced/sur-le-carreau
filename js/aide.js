@@ -1,6 +1,6 @@
 // Sur le carreau : aide à la prise en main : textes (AIDE_TXT, une seule source) et cartes « Comment jouer » de la préparation.
 /* Chargé juste avant main.js : les textes reprennent les constantes du jeu (DUEL_SEC, GOLD_STREAK, GOLD_SEC).
-   Les textes du bandeau du plateau et du guide de l'arbitre viendront ici aussi (stories 1.2 et 1.3). */
+   Les textes du guide de l'arbitre viendront ici aussi (story 1.3). */
 const AIDE_TXT={
   // Cartes « Comment jouer » (spec UX §3.1). grille : seulement en mode grille de territoires.
   cartes:[
@@ -9,7 +9,16 @@ const AIDE_TXT={
     {pic:'passe',titre:'Passé',texte:'Bloqué ? Dites « Passé » : la réponse s’affiche, et vous perdez 3 s.'},
     {pic:'territoire',titre:'Le territoire',texte:'Le gagnant prend toutes les cases du perdant, puis attaque un voisin ou retourne sur le sol.',grille:true},
     {pic:'or',titre:'La case d’or',texte:GOLD_STREAK+' duels gagnés d’affilée : +'+GOLD_SEC+' s à utiliser plus tard.',grille:true}
-  ]
+  ],
+  // Bandeau du plateau (spec UX §3.2). {n} : nom(s) du joueur, affiché en gras.
+  bandeau:{
+    choix:'{n} choisit qui attaquer (case surlignée).',
+    or:'{n} peut utiliser sa case d’or : +'+GOLD_SEC+' s.',
+    or2:'{n} peuvent utiliser leur case d’or : +'+GOLD_SEC+' s.',
+    victoire:'{n} gagne le duel : défier un voisin ou retourner sur le sol ?',
+    tirage:'Retour sur le sol : un nouvel attaquant est tiré au sort…',
+    fin:'{n} a conquis tout le sol !'
+  }
 };
 
 /* Pictogrammes des cartes : SVG simples (viewBox 0 0 160 100), couleurs de la charte : violet du joueur en cours,
@@ -34,7 +43,7 @@ const AIDE_PIC={
 /* Carrousel des cartes, dans le panneau « Partie en préparation » de l'accueil (#hprep).
    aideCartes(mode) le démarre ou le laisse tourner (appelé à chaque rafraîchissement de l'accueil, donc sans
    effet s'il tourne déjà dans ce mode) ; aideCartesStop() l'arrête et ne laisse aucune minuterie. */
-const AIDE={mode:null,i:0,t:0,f:0};
+const AIDE={mode:null,i:0,t:0,f:0,gagne:null};
 let AIDE_MODE='grid'; // mode choisi sur la régie pendant la configuration (message hi), grille à défaut
 const aideReduit=()=>!!(window.matchMedia&&matchMedia('(prefers-reduced-motion: reduce)').matches);
 const aideListe=mode=>AIDE_TXT.cartes.filter(c=>mode==='grid'||!c.grille);
@@ -73,4 +82,34 @@ function aideCartesStop(){
 function aideModeRegie(m){
   if(m!=='grid'&&m!=='duel'||m===AIDE_MODE)return;
   AIDE_MODE=m;if(AIDE.mode)aideCartes(m);
+}
+
+/* Bandeau d'aide du plateau (#gaide, un seul nœud aria-live) : une phrase par étape de la grille.
+   aideBandeau(t) n'agit que si la phrase change (gridRender est appelé souvent) ; fondu court, aucun en mouvement réduit. */
+const BANDEAU={t:null,f:0};
+// Vainqueur du dernier duel, pour la phrase « gagne le duel » (gardée tant qu'il n'a pas choisi la suite).
+function aideVictoire(w){AIDE.gagne={g:G,w}}
+function aideTexteGrille(){
+  const B=AIDE_TXT.bandeau,nom=i=>G.players[i].name;
+  if(G.over)return[B.fin,nom(G.ch)];
+  if(G.draw)return[B.tirage,''];
+  if(G.sel!=null){
+    if(AIDE.gagne)AIDE.gagne=null;
+    const or=[G.ch,G.sel].filter(q=>G.players[q].gold).map(nom);
+    if(or.length)return[or.length>1?B.or2:B.or,or.join(' et ')];
+    return[B.choix,nom(G.ch)];
+  }
+  if(AIDE.gagne&&AIDE.gagne.g===G&&AIDE.gagne.w===G.ch)return[B.victoire,nom(G.ch)];
+  return[B.choix,nom(G.ch)];
+}
+function aideBandeau([modele,n]){
+  const k=modele+'|'+n;if(k===BANDEAU.t)return;BANDEAU.t=k;
+  const el=$('gaide'),peindre=()=>{
+    el.textContent='';
+    modele.split('{n}').forEach((part,i)=>{if(i){const b=document.createElement('strong');b.textContent=n;el.append(b)}if(part)el.append(part)});
+    el.classList.remove('out');
+  };
+  clearTimeout(BANDEAU.f);
+  if(aideReduit()||!el.textContent)return peindre();
+  el.classList.add('out');BANDEAU.f=setTimeout(peindre,180);
 }

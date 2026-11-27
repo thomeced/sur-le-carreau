@@ -248,6 +248,7 @@ function gridRender(){
     const b=sol();if(b)p.append(b);
   }
   $('gstat').textContent=alive+' joueur'+(alive>1?'s':'')+' en lice';
+  aideBandeau(aideTexteGrille()); // bandeau d'aide (js/aide.js)
 }
 function startGridDuel(){
   // On attaque un joueur : le duel se joue dans sa catégorie d'origine (celle de sa case de départ).
@@ -272,6 +273,7 @@ function gridAfterDuel(){
   G.over=G.players.filter(p=>p.alive).length===1;
   W.streak=(W.streak||0)+1;G.note='';
   if(W.streak>=GOLD_STREAK){W.streak=0;if(earn){W.gold=true;G.note='★ '+W.name+' gagne la case d’or : '+GOLD_STREAK+' victoires d’affilée, +'+GOLD_SEC+' s à utiliser au début d’un prochain duel.'}}
+  aideVictoire(w);
   show('grid');gridRender();
   if(earn){const g0=G;setTimeout(()=>{if(G===g0)snd('gold')},900)}
 }
