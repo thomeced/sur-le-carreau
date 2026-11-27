@@ -289,5 +289,8 @@ Chaque chantier est prévu dans sa propre conversation du projet, sur sa propre 
 - Les 10 catégories mot à trous passent de 40 à 60 éléments (200 nouveaux), 12 par niveau, avec un niveau explicite (avant : calculé d'après la longueur, 1 à 3 seulement, donc la progressivité plafonnait au niveau 3).
 - `masque` : taux de lettres cachées pour les niveaux 4 et 5 (70 et 78 % ; avant, ils retombaient au taux du niveau 2). `renderMot` coupe après les traits d'union les mots de plus de 12 caractères (« Alpes-de-Haute-Provence » débordait sur un téléphone). `tests/contenu.js` vérifie le masquage par niveau. Version `2026-11-27o`.
 
+## Story 4.3 : indices, lettres mélangées, titres à l'envers à 60 éléments (novembre 2026)
+- 9 catégories passent de 40 à 60 éléments (180 nouveaux), 12 par niveau ; les indices n'avaient que 2 ou 3 éléments aux niveaux 4 et 5 (5 éléments existants changent de niveau pour équilibrer). Aucun changement de code. 19 catégories sur 39 à l'objectif d'E4. Version `2026-11-27p`.
+
 ## Comment reprendre dans un nouveau projet Claude
 Reliez le dépôt GitHub (référence du code) et gardez ce document dans le projet, puis demandez par exemple : « Lis le document de contexte et reprends le jeu : ajoute l'éditeur de catégories. » Le fichier `sur-le-carreau.html` du projet est la version autonome du jeu (catégories incluses) ; la référence reste le dépôt.
