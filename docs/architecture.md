@@ -37,11 +37,12 @@ js/grille.js           état G, case d'or (GOLD_*, goldEarns), voisinage (gadj, 
 js/choix-categories.js PICK, pdraw, pfill, pickRender…, startGrid
 js/plateau.js          plateau SVG, vague de capture, « Retourner sur le sol » (gdraw), gridRender, startGridDuel, gridAfterDuel, boutons du duel
 js/regie.js            régie du téléphone (#arbitre), arbView, sendCfg, arbitrage
+js/aide.js             AIDE_TXT, cartes « Comment jouer » (story 1.1) ; bandeau et guide à venir (1.2, 1.3)
 js/main.js             démarrage (ce qui s'exécutait en fin de script)
 ```
 Ordre de chargement : celui de la liste ci-dessus, qui est l'ordre du code d'origine. Chaque fichier est un morceau contigu de l'ancien script (story 0.2) : c'est pourquoi la logique de la grille est répartie entre `grille.js`, `choix-categories.js` (`startGrid`) et `plateau.js` (`gridRender`, `gridAfterDuel`). Un rangement plus fin se fera, si besoin, dans une story dédiée.
 Fichiers existants inchangés : `categories.js`, `photos.js`, `perso.js`, `sons.js`, `intro.js`, `qrcode.js`, `editeur.html`.
-Nouveaux fichiers des epics suivants : `js/aide.js` (E1 : cartes, bandeau, guide de l'arbitre), `js/types.js` (E3 : QCM, Gros plan, Devinette), `js/plateau-lite.js` (E2 : vague case par case).
+Nouveaux fichiers des epics suivants : `js/aide.js` (E1 : cartes, bandeau, guide de l'arbitre ; chargé avant `main.js`), `js/types.js` (E3 : QCM, Gros plan, Devinette), `js/plateau-lite.js` (E2 : vague case par case).
 
 **Règle de la story 0** : aucun renommage, aucune correction au passage ; un fichier par section ; le diff doit pouvoir se relire comme un déplacement. Validée par les tests de non-régression (§8) avant et après.
 

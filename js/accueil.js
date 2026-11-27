@@ -3,6 +3,7 @@ let LINKP=null,LINK=null,LCODE='',lastHi=0,LSTAT=null;
 const onmsg=(topic,d)=>{
   if(topic==='hi'){
     const was=arbOn();lastHi=Date.now();if(S)S.imgK=null;
+    aideModeRegie(d.mode);
     homeArb();pairTick();
     if(!was)gsSend(true);
     push();
@@ -127,6 +128,8 @@ function homeRender(){
   if(ps.textContent!==pt)ps.textContent=pt;ps.classList.toggle('on',on);
   $('hph2').textContent=HOMEST==='launch'?'Lancement…':'Partie en préparation sur le téléphone…';
   setSteps($('hsteps'),prep&&on?1:0);
+  // Cartes « Comment jouer » (js/aide.js) : seulement pendant la préparation sur le téléphone, régie connectée.
+  if(!$('home').hidden&&HOMEST==='prep'&&on)aideCartes(AIDE_MODE);else if(AIDE.mode)aideCartesStop();
 }
 // Étape de l'écran du jeu, envoyée à la régie : home, launch, prep, local (configuration sur l'écran), play, over.
 function gphase(){
@@ -181,6 +184,7 @@ function attach(me){
 }
 function startDuel(o){
   if(S){clearInterval(S.h);clearInterval(S.cd)}
+  aideCartesStop();
   const bo=o.bonus||[0,0];
   S={names:o.names,t:[o.T+bo[0],o.T+bo[1]],goldUse:o.goldUse||[],gold:o.gold||'',turn:Math.random()<.5?0:1,sc:[0,0],src:o.src,cat:o.cat,type:TYPES[o.type]?o.type:'emoji',disp:'',imgK:null,imgN:0,pid:o.pid||null,pool:null,lvl:1,last:performance.now(),lock:false,over:false,started:false,counting:false,count:0,oral:o.oral,n:0};
   fill();card();render();show('game');$('msg').textContent='';$('dcat').textContent='Catégorie : '+o.cat+(typeName(S.type)?' · '+typeName(S.type):'');$('dgold').textContent=S.gold;

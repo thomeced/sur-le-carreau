@@ -82,7 +82,8 @@ function arbJoin(c){
   try{if(location.hash!=='#arbitre='+c)history.replaceState(null,'','#arbitre='+c)}catch(e){}
   arbView();$('alk').textContent=$('rwlk').textContent='Liaison entre appareils : connexion…';
   link(c,'arb',ronmsg,(m,st)=>{$('alk').textContent=$('rwlk').textContent=linkMsg(m,st)}).then(l=>{
-    L=l;const hi=()=>L.send('hi',{});hi();setInterval(hi,3000);setInterval(arbRender,100);setInterval(arbView,1000);
+    // Le message de présence porte le mode choisi : l'écran du jeu adapte ses cartes « Comment jouer ».
+    L=l;const hi=()=>L.send('hi',{mode:$('gmode').value});hi();$('gmode').addEventListener('change',hi);setInterval(hi,3000);setInterval(arbRender,100);setInterval(arbView,1000);
     document.addEventListener('visibilitychange',()=>{if(!document.hidden)hi()});
   });
 }
