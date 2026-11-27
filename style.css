@@ -11,6 +11,10 @@ main{max-width:980px;margin:0 auto;padding:20px 16px 32px}
 h1{font:400 clamp(2.6rem,9vw,4.6rem)/1 var(--disp);margin:8px 0 12px;letter-spacing:.02em;text-shadow:0 0 28px rgba(110,150,255,.7)}
 p.lead{max-width:56ch;margin:0 0 24px}
 .panel{background:var(--tile);border:2px solid var(--line);border-radius:6px;padding:20px;backdrop-filter:blur(4px)}
+/* Sans flou d'arrière-plan (non pris en charge, ou mode allégé de la TV où il coûte cher) : fond opaque, la couleur de
+   --tile posée sur le ciel, pour que le texte reste lisible sur les étoiles et le sol. */
+@supports not ((backdrop-filter:blur(4px)) or (-webkit-backdrop-filter:blur(4px))){.panel{background:#04071F}}
+html.lite .panel{backdrop-filter:none;background:#04071F}
 form.setup{display:grid;gap:14px;max-width:520px}
 label{display:grid;gap:4px;font-weight:600}
 input,select,button{font:inherit;color:inherit}
@@ -21,9 +25,11 @@ button{cursor:pointer;border:0;border-radius:4px;padding:12px 18px;font-weight:7
 button.alt{background:transparent;border:2px solid var(--line);color:var(--ink);box-shadow:none}
 .arena{display:grid;grid-template-columns:1fr 1fr;grid-template-areas:"a b" "c c";gap:12px}
 @media(min-width:760px){.arena{grid-template-columns:1fr minmax(0,1.7fr) 1fr;grid-template-areas:"a c b"}}
-#s0{grid-area:a;--c:var(--p1)}#s1{grid-area:b;--c:var(--p2)}.center{grid-area:c}
+#s0{grid-area:a;--c:var(--p1);--c30:rgba(255,197,61,.3);--c55:rgba(255,197,61,.55)}#s1{grid-area:b;--c:var(--p2);--c30:rgba(92,225,255,.3);--c55:rgba(92,225,255,.55)}.center{grid-area:c}
 .side{background:var(--tile);border:2px solid var(--line);border-radius:6px;padding:14px;text-align:center;align-self:start;transition:border-color .2s,box-shadow .2s}
-.side.on{border-color:var(--c);box-shadow:0 0 0 4px color-mix(in srgb,var(--c) 30%,transparent),0 0 32px color-mix(in srgb,var(--c) 55%,transparent)}
+/* Halo du joueur qui a la main : couleurs à 30 % et 55 % précalculées (--c30, --c55) plutôt que color-mix(),
+   absent du navigateur des TV Samsung (avec var() dedans, une déclaration de secours ne servirait à rien). */
+.side.on{border-color:var(--c);box-shadow:0 0 0 4px var(--c30),0 0 32px var(--c55)}
 .nm{display:inline-block;max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;background:var(--c);color:#101B4D;font-weight:700;border-radius:4px;padding:2px 12px}
 .tm{font:400 clamp(2.8rem,9vw,4.6rem)/1.1 var(--disp);font-variant-numeric:tabular-nums;margin-top:6px}
 .side:not(.on) .tm{opacity:.55}
@@ -71,7 +77,7 @@ h1{font-size:clamp(2.2rem,8vw,4rem);line-height:1.1}
 .nm{font-size:1rem}
 #aans{font-size:1.15rem}
 .big{font-size:1.25rem}
-#a0{--c:var(--p1)}#a1{--c:var(--p2)}
+#a0{--c:var(--p1);--c30:rgba(255,197,61,.3);--c55:rgba(255,197,61,.55)}#a1{--c:var(--p2);--c30:rgba(92,225,255,.3);--c55:rgba(92,225,255,.55)}
 #arb{max-width:520px;margin:0 auto}
 .fields{display:grid;gap:14px}
 .gnames{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:10px}
@@ -226,3 +232,5 @@ html.slc-guide body{overflow:hidden}
 html.slc-arb #setup{padding-top:0}
 @media(max-width:420px){.steps{gap:4px 6px;font-size:.8rem}.steps li{padding:3px 8px}}
 html.slc-arb main{padding-top:12px}
+/* ?debug=1 (js/main.js) : navigateur et mode allégé, en petit en bas à gauche. */
+.slcdebug{position:fixed;left:6px;bottom:6px;z-index:99;max-width:min(70vw,900px);padding:4px 8px;font:12px/1.35 ui-monospace,monospace;background:#000;color:#9f9;border:1px solid #393;border-radius:3px;pointer-events:none;overflow-wrap:anywhere}

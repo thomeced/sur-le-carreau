@@ -82,6 +82,7 @@ Si tu n'as pas le temps de tout faire : ces 6 points disent déjà l'essentiel.
 ## Résultats
 | Date | Version | Appareils (TV, téléphone, réseau) | Bilan |
 |---|---|---|---|
+| 27/11/2026 | 2026-11-27e | Ordinateur (écran du jeu) + téléphone (régie), même wifi | OK selon Ced (détail par ligne non rempli). TV Samsung et réseau mobile pas encore testés. |
 | | | | |
 
 Pour me remonter les résultats : coller ce fichier rempli (ou seulement les lignes ❌) dans une conversation, avec les photos. Les problèmes deviendront des stories ; ce tableau garde la trace de chaque session de test.

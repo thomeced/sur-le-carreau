@@ -20,16 +20,16 @@ Statuts : Brouillon · Prête · En cours · En revue · Terminée
 | [1.1](1.1-cartes-comment-jouer.md) | Cartes « Comment jouer » pendant la préparation | EF1, EF2 | 0.2 | Terminée |
 | [1.2](1.2-bandeau-aide.md) | Bandeau d'aide sur le plateau | EF5 | 1.1 | Terminée |
 | [1.3](1.3-guide-arbitre.md) | Guide de l'arbitre et bouton « ? » | EF3, EF4 | 1.1 | Terminée |
-| [1.4](1.4-consigne-annoncer.md) | Consigne à annoncer mise en avant | EF6 | 0.2 | En revue |
+| [1.4](1.4-consigne-annoncer.md) | Consigne à annoncer mise en avant | EF6 | 0.2 | Terminée |
 
 ## E2 TV et identité
 | Story | Titre | Exigences | Statut |
 |---|---|---|---|
-| 2.1 | Couleurs de secours, détection `LITE`, `?debug=1` | EF8 | Brouillon |
+| [2.1](2.1-lite-secours.md) | Couleurs de secours, détection `LITE`, `?debug=1` | EF8 | En revue |
 | 2.2 | Vague de capture case par case (`js/plateau-lite.js`) | EF7 | Brouillon |
 | 2.3 | Préchargement des 3 photos suivantes (absent aujourd'hui) | ENF2 | Brouillon |
 | 2.4 | Nouveau calque de l'intro (esquisses à choisir par Ced) | EF9 | Brouillon |
-| [2.5](2.5-test-reel.md) | Checklist de test réel `docs/test-reel.md` (test fait par Ced) | EF10 | Checklist livrée, test à faire |
+| [2.5](2.5-test-reel.md) | Checklist de test réel `docs/test-reel.md` (test fait par Ced) | EF10 | Ordinateur + téléphone en wifi : OK (27/11) ; TV Samsung et réseau mobile à faire |
 
 ## E3 Nouveaux types et progressivité
 | Story | Titre | Exigences | Statut |

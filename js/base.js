@@ -1,6 +1,11 @@
 // Sur le carreau : données (DATA, types, normItem, validation), utilitaires ($, norm, shuffle, show), constantes du duel, état de la régie.
 const DATA={};
 const $=id=>document.getElementById(id);
+/* Mode allégé (TV Samsung : Chromium 94 de Tizen) : navigateur sans color-mix() (arrivé en Chromium 111), ou ?lite=1
+   dans l'adresse (tests, dépannage). Il signale un navigateur ancien ou lent : flou des panneaux coupé (classe lite),
+   et vague de capture simplifiée (story 2.2). */
+const LITE=!(window.CSS&&CSS.supports&&CSS.supports('color','color-mix(in srgb, red, blue)'))||/[?&]lite=1(&|$)/.test(location.search);
+if(LITE)document.documentElement.classList.add('lite');
 /* Types de catégories : « emoji » (par défaut), « trous » (mot à trous), « photo » et « indices ». Chaque élément est
    ramené à [clé unique, "réponse|variante", niveau, {img, thumb} pour une photo, {clues} pour des indices]. Pour un mot à trous,
    ce que voient les joueurs est calculé à chaque tirage (lettres cachées au hasard). */

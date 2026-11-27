@@ -258,5 +258,9 @@ Chaque chantier est prévu dans sa propre conversation du projet, sur sa propre 
 - Régie : encadré `#atype` en tête (« Annoncez : » + nom du type + consigne, 24 px gras avant le départ ; une ligne pendant le duel), `arbConsigne`. Champ `icone` dans `st`. Consignes de `TYPES` raccourcies pour être dites à voix haute. Fin de l'epic E1.
 - `tests/regie.js` complété. Version `2026-11-27e`.
 
+## Premier test réel et story 2.1 (novembre 2026)
+- 27/11 : Ced a testé ordinateur + téléphone sur le même wifi : OK (version 2026-11-27e). TV Samsung et réseau mobile restent à faire (`docs/test-reel.md`).
+- Story 2.1 : `LITE` (sans `color-mix()` ou `?lite=1`) et classe `lite` ; le seul `color-mix()` (halo `.side.on`, avec `var()`) remplacé par des couleurs précalculées ; `.panel` opaque sans flou ; cadre `?debug=1`. Nouveau `tests/lite.js`. Version `2026-11-27f`.
+
 ## Comment reprendre dans un nouveau projet Claude
 Reliez le dépôt GitHub (référence du code) et gardez ce document dans le projet, puis demandez par exemple : « Lis le document de contexte et reprends le jeu : ajoute l'éditeur de catégories. » Le fichier `sur-le-carreau.html` du projet est la version autonome du jeu (catégories incluses) ; la référence reste le dépôt.
