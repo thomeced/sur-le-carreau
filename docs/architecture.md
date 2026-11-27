@@ -95,7 +95,7 @@ Rien d'autre de nouveau : pas de mémoire des éléments déjà vus (écartée p
 - Une ligne de plus toutes les 3 s (`DEV_PAS = 3000`), minuterie arrêtée quand le chrono du joueur s'arrête ou que l'élément change ; lignes à venir en pointillés. À la réponse, toutes les lignes s'affichent.
 
 ### 5.4 Messages entre l'écran et la régie
-- `act` : nouveau verdict `bad` (« Mauvaise réponse », QCM seulement). L'écran le traite comme « Passé » (réponse révélée, −3 s), et compte l'élément dans `S.n`. Comme aujourd'hui, chaque verdict porte l'élément concerné, pour ignorer les doubles clics.
+- `act` : nouveau verdict `bad` (« Mauvaise réponse », QCM seulement). L'écran le traite comme « Passé » (réponse révélée, −3 s), et compte l'élément dans `S.joues`. Comme aujourd'hui, chaque verdict porte l'élément concerné, pour ignorer les doubles clics.
 - `st` : ajoute `extra` selon le type (`choix` pour le QCM, `lignes` pour la devinette) et `qcm: true` pour que la régie affiche le bouton rouge.
 - Pas de nouveau sujet de message. Le bandeau d'aide (EF5) et les cartes (EF1) sont calculés sur l'écran du jeu seul ; le guide (EF3) vit sur le téléphone seul.
 
@@ -145,7 +145,7 @@ Tests manuels : `docs/test-reel.md` (EF10), checklist pour Ced sur deux vrais ap
 | EF17 | aucun changement de `editeur.html` |
 | EF18 à EF20, EF22 | `categories.js`, `liste.txt`, `photos-js.py`, `tests/contenu.js`, §6 |
 | EF21 | `DOMAINES`, `DOM_CAT`, `pdraw`, §4.2 |
-| EF23 | `LVL_CURVE`, `S.n`, §4.3 |
+| EF23 | `LVL_CURVE`, `niveauPour`, `S.joues`, §4.3 |
 | ENF1, ENF2 | §1, §5.1, §5.2 ; préchargement des 3 éléments suivants de la catégorie en jeu |
 | ENF3 | §2, §7 |
 | ENF4 | §8 (standards), mouvement réduit en §5.2, §5.3 |
