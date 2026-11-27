@@ -269,5 +269,9 @@ Chaque chantier est prévu dans sa propre conversation du projet, sur sa propre 
 ## Story 2.3 : préchargement des photos (novembre 2026)
 - `precharger()` (`js/duel.js`), à la fin de `card()` : photo tirée, 3 suivantes de `S.pool[L]`, 2 de `S.pool[L+1]` ; `PRE.vu` vidé par `fill()`, 12 images gardées en mémoire. Nouveau `tests/photos.js`. Version `2026-11-27h`.
 
+## Story 2.4 : nouveaux visuels de l'intro (novembre 2026)
+- 6 pistes dessinées proposées (silhouettes, pions, cases-prénoms, mascottes carreaux, néons, personnages dessinés) ; Ced a préféré des visuels photographiques générés par IA, qu'il a fournis (animateur, 12 candidats, plateau, logo). Remarques faites : clichés (2 candidats régénérés), résolution (relevée), ressemblance de l'animateur avec l'ancien (gardé, choix de Ced).
+- Calques WebP recomposés (deux groupes de 6), logo en titre de fin en haut, animateur descendu, texte de l'écran retiré. Nouveau `tests/intro.js`. Version `2026-11-27i`.
+
 ## Comment reprendre dans un nouveau projet Claude
 Reliez le dépôt GitHub (référence du code) et gardez ce document dans le projet, puis demandez par exemple : « Lis le document de contexte et reprends le jeu : ajoute l'éditeur de catégories. » Le fichier `sur-le-carreau.html` du projet est la version autonome du jeu (catégories incluses) ; la référence reste le dépôt.
