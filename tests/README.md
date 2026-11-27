@@ -11,6 +11,7 @@ node tests/fumee.js
 node tests/regie.js
 node tests/aide.js
 node tests/lite.js
+node tests/photos.js
 ```
 
 Chaque test sert lui-même le dépôt (`python3 -m http.server` sur un port libre), affiche `OK …` ou `ÉCHEC …` avec la raison, et rend un code de sortie 0 ou 1. `VERBEUX=1 node tests/regie.js` affiche les étapes, pour voir où un test bloque.
@@ -25,6 +26,7 @@ Chaque test sert lui-même le dépôt (`python3 -m http.server` sur un port libr
 | `regie.js` | Écran et régie (390×844) dans deux onglets. Guide de l'arbitre : affiché à la 1re connexion (3 pages, « Suivant », glissement, miniatures, « C'est parti », boutons ≥ 44 px), plus après un rechargement, rouvert par « ? » pendant un duel et fermé par « Passer » (annoncé). Puis la régie configure un duel simple et le lance ; la consigne à annoncer s'affiche en 24 px gras avant « Démarrer le duel », puis sur une ligne pendant le duel ; « Bonne réponse » donne 1 point et passe la main sans toucher aux chronos ; « Passé » affiche la réponse et retire exactement 3 s au joueur qui a la main ; la régie affiche les mêmes chronos que l'écran. | ~5 s |
 | `aide.js` | Aide à la prise en main en 1920×1080. Cartes « Comment jouer » : apparition pendant la préparation (5 en grille), titre ≥ 56 px et phrase ≥ 40 px, panneau à 60 % de la largeur, 2e carte après 6 s, 3 cartes quand la régie passe en duel simple, disparition au lancement sans minuterie restante, redémarrage après « Arrêter la partie » avec une seule minuterie, mouvement réduit (9 s, sans fondu). Bandeau du plateau (grille 2×2) : un seul nœud `aria-live`, ≥ 32 px, les 5 phrases, absent du duel simple. | ~10 s |
 | `lite.js` | Mode allégé (TV) : aucun `color-mix()` sans couleur de secours (ni avec `var()`) dans `style.css` et `intro.css` ; page normale sans mode allégé ; `?lite=1&debug=1` : classe `lite`, panneaux sans flou à fond opaque, cadre de débogage ; navigateur sans `color-mix()` simulé : mode allégé détecté seul. Vague case par case (`?lite=1`, grille 2×2) : aucun flou sur le plateau, rien de dessiné hors des cases, cases non capturées inchangées, cases capturées à la couleur du gagnant, délais croissants avec la distance, fin propre. | ~5 s |
+| `photos.js` | Préchargement : duel simple dans une catégorie photo ; rien avant le lancement ; photo tirée et 3 suivantes demandées avant le départ ; chaque photo affichée après un verdict avait été demandée avant ; rien hors de la catégorie. | ~2 s |
 | `serveur.js` | Pas un test : utilitaire commun (serveur local, navigateur, collecte des erreurs, ouverture de l'écran et de la régie reliée). | |
 
 Les deux tests **échouent à la moindre erreur JavaScript ou `console.error`**, dans l'écran comme dans la régie.

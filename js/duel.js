@@ -1,6 +1,6 @@
 // Sur le carreau : le duel (niveaux, tirage des éléments, cartes, chronos, bonne réponse et « Passé », envoi à la régie).
 const lvl=()=>Math.min(LVL_MAX,1+Math.floor((S.sc[0]+S.sc[1])/LVL_STEP));
-function fill(){S.pool=LVLS.map(()=>[]).concat([[]]);for(const it of S.src)S.pool[it[2]].push(it);S.pool.forEach(shuffle)}
+function fill(){PRE.vu.clear();S.pool=LVLS.map(()=>[]).concat([[]]);for(const it of S.src)S.pool[it[2]].push(it);S.pool.forEach(shuffle)}
 function card(){
   const L=lvl(),order=[L,L-1,L+1,L-2,L+2,L-3,L+3,L-4,L+4].filter(l=>l>=1&&l<=LVL_MAX);
   if(!S.pool[L].length)S.pool[L]=shuffle(S.src.filter(x=>x[2]===L&&x!==S.cur));
@@ -11,6 +11,20 @@ function card(){
   const P=window.SLC_PERSO,t=S.type;
   S.disp=t==='trous'&&P?P.masque(S.cur[1],S.cur[2]):t==='melange'&&P?P.melange(S.cur[1],S.cur[2]):t==='photo'?'':t==='indices'?S.cur[3].clues.join('\n'):t==='envers'?S.cur[3].env:S.cur[0];
   showCard();
+  precharger();
+}
+/* Préchargement des photos (ENF2, TV) : la photo tirée (affichée au départ du duel) et les 3 suivantes. Les réserves
+   S.pool sont déjà mélangées et card() prend le dernier élément : les suivantes sont donc connues d'avance. On prend
+   aussi les 2 prochaines du niveau au-dessus, au cas où le niveau monterait. Seule la catégorie en jeu est chargée. */
+const PRE={vu:new Set(),im:[]};
+function precharger(){
+  if(S.type!=='photo')return;
+  const L=lvl(),up=Math.min(LVL_MAX,L+1),next=[S.cur].concat(S.pool[L].slice(-3).reverse(),up!==L?S.pool[up].slice(-2).reverse():[]);
+  for(const it of next){
+    const src=it&&it[3]&&it[3].img;if(!src||PRE.vu.has(src))continue;
+    PRE.vu.add(src);const im=new Image();im.src=src;PRE.im.push(im); // garder une référence : le navigateur ne l'abandonne pas
+    if(PRE.im.length>12)PRE.im.shift();
+  }
 }
 // Carte affichée : emoji (texte), mot à trous ou lettres mélangées (tuiles), photo, indices (liste) ou titre à l'envers. Sert aussi à la page arbitre.
 function paintCard(el,type,disp,img){

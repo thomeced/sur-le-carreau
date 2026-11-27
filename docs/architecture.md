@@ -152,7 +152,7 @@ Tests manuels : `docs/test-reel.md` (EF10), checklist pour Ced sur deux vrais ap
 | ENF5, ENF7, ENF8 | §4.1 (validation), §6 |
 | ENF6 | `style.css` : tailles de la spec UX en `clamp()` |
 
-Écart signalé : aucun. Point d'attention : le préchargement (ENF2) est à vérifier dans le code actuel lors de la story 0 ; s'il manque, il fera l'objet d'une story dans E2.
+Écart signalé : aucun. Point d'attention : le préchargement (ENF2) manquait (constaté en story 0.2) ; ajouté en story 2.3 (`precharger` dans `js/duel.js`).
 
 ## 10. Risques techniques
 - La story 0 touche tout le code : risque de régression. Parade : diff de simple déplacement, test de fumée avant et après, aucune autre modification dans la même PR.
