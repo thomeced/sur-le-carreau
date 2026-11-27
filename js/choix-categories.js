@@ -140,6 +140,7 @@ if(window.SLC_PERSO&&!isArb)SLC_PERSO.load().then(p=>{if(Object.keys(p).length){
 // o = {size, names, keys} : depuis l'écran de départ (gridFromForm) ou depuis la régie (cfg).
 function startGrid(o){
   if(S){clearInterval(S.h);clearInterval(S.cd)}
+  aideCartesStop();
   const size=o.size,n=size*size,names=o.names;
   const keys=shuffle(o.keys.slice());
   G={size,n,players:names.map(name=>({name,alive:true,streak:0,gold:false})),cells:names.map((_,i)=>({cat:keys[i%keys.length],owner:i})),

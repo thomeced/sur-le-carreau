@@ -5,12 +5,12 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Sur le carreau</title>
 <!-- Version des fichiers (cache de la TV) : définie ici seulement, recopiée partout par python3 tools/version.py. -->
-<meta name="slc-version" content="2026-11-27a">
+<meta name="slc-version" content="2026-11-27b">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Poppins:wght@500;600;700&family=DM+Sans:wght@400;600;700&display=swap">
-<link rel="stylesheet" href="style.css?v=2026-11-27a">
-<script src="intro.js?v=2026-11-27a"></script>
-<script src="sons.js?v=2026-11-27a"></script>
-<script src="qrcode.js?v=2026-11-27a"></script>
+<link rel="stylesheet" href="style.css?v=2026-11-27b">
+<script src="intro.js?v=2026-11-27b"></script>
+<script src="sons.js?v=2026-11-27b"></script>
+<script src="qrcode.js?v=2026-11-27b"></script>
 </head>
 <body>
 <main>
@@ -29,9 +29,18 @@
   <div id="hprep" class="panel hpanel" hidden>
     <h2 class="hwait" id="hph2">Partie en préparation sur le téléphone…</h2>
     <p id="hpst" role="status" aria-live="polite"></p>
+    <!-- Cartes « Comment jouer » pendant la préparation (js/aide.js) : défilent seules, une à la fois. -->
+    <div id="hcards" class="hcards" role="group" aria-roledescription="carrousel" hidden>
+      <div id="hcard" class="hcard">
+        <div id="hcpic" class="hcpic"></div>
+        <h3 id="hct" class="hct"></h3>
+        <p id="hcp" class="hcp"></p>
+      </div>
+      <ol id="hcdots" class="hcdots" aria-hidden="true"></ol>
+    </div>
   </div>
   <p class="hlinks"><button type="button" class="lnk" id="hlocal">Configurer sur cet écran</button><a href="editeur.html" id="hedit">Créer mes catégories</a><a href="#arbitre">Ouvrir la régie sur cet appareil</a></p>
-  <p id="hver" class="hver">Version 2026-11-27a</p>
+  <p id="hver" class="hver">Version 2026-11-27b</p>
 </section>
 
 <section id="setup" hidden>
@@ -174,17 +183,18 @@
 </section>
 </main>
 
-<script src="categories.js?v=2026-11-27a"></script>
-<script src="photos.js?v=2026-11-27a"></script>
-<script src="perso.js?v=2026-11-27a"></script>
-<script src="js/base.js?v=2026-11-27a"></script>
-<script src="js/liaison.js?v=2026-11-27a"></script>
-<script src="js/duel.js?v=2026-11-27a"></script>
-<script src="js/accueil.js?v=2026-11-27a"></script>
-<script src="js/grille.js?v=2026-11-27a"></script>
-<script src="js/choix-categories.js?v=2026-11-27a"></script>
-<script src="js/plateau.js?v=2026-11-27a"></script>
-<script src="js/regie.js?v=2026-11-27a"></script>
-<script src="js/main.js?v=2026-11-27a"></script>
+<script src="categories.js?v=2026-11-27b"></script>
+<script src="photos.js?v=2026-11-27b"></script>
+<script src="perso.js?v=2026-11-27b"></script>
+<script src="js/base.js?v=2026-11-27b"></script>
+<script src="js/liaison.js?v=2026-11-27b"></script>
+<script src="js/duel.js?v=2026-11-27b"></script>
+<script src="js/accueil.js?v=2026-11-27b"></script>
+<script src="js/grille.js?v=2026-11-27b"></script>
+<script src="js/choix-categories.js?v=2026-11-27b"></script>
+<script src="js/plateau.js?v=2026-11-27b"></script>
+<script src="js/regie.js?v=2026-11-27b"></script>
+<script src="js/aide.js?v=2026-11-27b"></script>
+<script src="js/main.js?v=2026-11-27b"></script>
 </body>
 </html>

@@ -68,14 +68,14 @@ async function demarrer({largeur=1440,hauteur=900}={}){
 }
 
 /* Lance un test : affiche « OK » ou l'erreur, ferme tout et règle le code de sortie.
-   Le délai global évite qu'un test bloqué tourne sans fin. */
-function lancer(nom,fn,{delai=180000}={}){
+   Le délai global évite qu'un test bloqué tourne sans fin. largeur et hauteur : taille des onglets (1440×900 par défaut). */
+function lancer(nom,fn,{delai=180000,largeur,hauteur}={}){
   let env=null;
   const minuterie=setTimeout(()=>{console.error('ÉCHEC '+nom+' : délai dépassé ('+delai/1000+' s)');if(env)env.fermer();process.exit(1)},delai);
   (async()=>{
     const t0=Date.now();
     try{
-      env=await demarrer();
+      env=await demarrer({largeur,hauteur});
       await fn(env);
       env.verifier();
       console.log('OK '+nom+' ('+((Date.now()-t0)/1000).toFixed(1)+' s)');

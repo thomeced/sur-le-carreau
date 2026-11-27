@@ -242,5 +242,9 @@ Chaque chantier est prévu dans sa propre conversation du projet, sur sa propre 
 - Version définie dans `<meta name="slc-version">` d'`index.html`, recopiée par `tools/version.py` en `?v=` sur chaque CSS et JS local d'`index.html`, `editeur.html` et `credits.html`, et dans le pied de l'accueil (coin bas droit ; sous les liens sur écran étroit). `intro.css` reprend la version d'`intro.js`. Choix d'une version en dur plutôt que `document.write`.
 - `tests/fumee.js` vérifie la version de chaque fichier demandé. Première version : `2026-11-27a`.
 
+## Story 1.1 : cartes « Comment jouer » (novembre 2026)
+- BMAD, epic E1. `js/aide.js` (`AIDE_TXT`, pictogrammes SVG, carrousel) dans le panneau de préparation, élargi à 60 % ; 5 cartes en grille, 3 en duel simple ; 6 s avec fondu, 9 s sans en mouvement réduit ; arrêt au lancement. Mode de la régie transmis dans `hi`.
+- `tests/aide.js` (1920×1080). Version `2026-11-27b`.
+
 ## Comment reprendre dans un nouveau projet Claude
 Reliez le dépôt GitHub (référence du code) et gardez ce document dans le projet, puis demandez par exemple : « Lis le document de contexte et reprends le jeu : ajoute l'éditeur de catégories. » Le fichier `sur-le-carreau.html` du projet est la version autonome du jeu (catégories incluses) ; la référence reste le dépôt.

@@ -1,0 +1,76 @@
+// Sur le carreau : aide à la prise en main : textes (AIDE_TXT, une seule source) et cartes « Comment jouer » de la préparation.
+/* Chargé juste avant main.js : les textes reprennent les constantes du jeu (DUEL_SEC, GOLD_STREAK, GOLD_SEC).
+   Les textes du bandeau du plateau et du guide de l'arbitre viendront ici aussi (stories 1.2 et 1.3). */
+const AIDE_TXT={
+  // Cartes « Comment jouer » (spec UX §3.1). grille : seulement en mode grille de territoires.
+  cartes:[
+    {pic:'duel',titre:'Le duel',texte:'Deux joueurs, une catégorie. On répond à voix haute.'},
+    {pic:'chronos',titre:'Les chronos',texte:'Chacun a '+DUEL_SEC+' s. Seul le chrono de celui qui a la main tourne. Bonne réponse : la main passe.'},
+    {pic:'passe',titre:'Passé',texte:'Bloqué ? Dites « Passé » : la réponse s’affiche, et vous perdez 3 s.'},
+    {pic:'territoire',titre:'Le territoire',texte:'Le gagnant prend toutes les cases du perdant, puis attaque un voisin ou retourne sur le sol.',grille:true},
+    {pic:'or',titre:'La case d’or',texte:GOLD_STREAK+' duels gagnés d’affilée : +'+GOLD_SEC+' s à utiliser plus tard.',grille:true}
+  ]
+};
+
+/* Pictogrammes des cartes : SVG simples (viewBox 0 0 160 100), couleurs de la charte : violet du joueur en cours,
+   bleus du plateau, jaune de la case d'or. Décoratifs : le titre et la phrase portent l'information. */
+const AIDE_PIC={
+  duel:'<circle cx="45" cy="34" r="14" fill="#7A3FD8"/><path d="M21 82a24 24 0 0 1 48 0z" fill="#7A3FD8"/>'+
+    '<circle cx="115" cy="34" r="14" fill="#3D78EA"/><path d="M91 82a24 24 0 0 1 48 0z" fill="#3D78EA"/>'+
+    '<path d="M64 8h32a6 6 0 0 1 6 6v14a6 6 0 0 1-6 6H84l-8 8v-8H64a6 6 0 0 1-6-6V14a6 6 0 0 1 6-6z" fill="#F4F6FF"/>'+
+    '<circle cx="70" cy="21" r="3" fill="#03040E"/><circle cx="80" cy="21" r="3" fill="#03040E"/><circle cx="90" cy="21" r="3" fill="#03040E"/>',
+  chronos:'<circle cx="45" cy="54" r="34" fill="none" stroke="#FFC53D" stroke-width="7"/><path d="M45 54V30M45 54l14 10" stroke="#FFC53D" stroke-width="6" stroke-linecap="round"/>'+
+    '<circle cx="115" cy="54" r="34" fill="none" stroke="#F4F6FF" stroke-opacity=".35" stroke-width="7"/><path d="M115 54V30" stroke="#F4F6FF" stroke-opacity=".35" stroke-width="6" stroke-linecap="round"/>'+
+    '<rect x="37" y="8" width="16" height="8" rx="2" fill="#FFC53D"/><rect x="107" y="8" width="16" height="8" rx="2" fill="#F4F6FF" fill-opacity=".35"/>',
+  passe:'<path d="M18 22l34 28-34 28zM56 22l34 28-34 28z" fill="#F4F6FF"/><rect x="94" y="22" width="9" height="56" rx="2" fill="#F4F6FF"/>'+
+    '<text x="134" y="60" text-anchor="middle" font-size="26" font-weight="700" fill="#FF6B6B" font-family="Poppins,DM Sans,sans-serif">−3 s</text>',
+  territoire:(()=>{let s='';const own=[1,1,0,1,1,0,2,2,0];for(let i=0;i<9;i++){const x=24+(i%3)*32,y=4+Math.floor(i/3)*32;
+    s+='<rect x="'+x+'" y="'+y+'" width="30" height="30" rx="3" fill="'+['#1B3DB0','#7A3FD8','#6A9CFF'][own[i]]+'"/>'}
+    return s+'<path d="M137 52h18m0 0l-8-8m8 8l-8 8" stroke="#F4F6FF" stroke-width="5" stroke-linecap="round" stroke-linejoin="round" fill="none"/>'})(),
+  or:'<rect x="44" y="14" width="72" height="72" rx="6" fill="#D9A21B"/>'+
+    '<path d="M80 26l9.4 19 21 3-15.2 14.8 3.6 20.9L80 74l-18.8 9.9 3.6-20.9L49.6 48l21-3z" fill="#F2C44E" stroke="#FFF2C4" stroke-width="3" stroke-linejoin="round"/>'
+};
+
+/* Carrousel des cartes, dans le panneau « Partie en préparation » de l'accueil (#hprep).
+   aideCartes(mode) le démarre ou le laisse tourner (appelé à chaque rafraîchissement de l'accueil, donc sans
+   effet s'il tourne déjà dans ce mode) ; aideCartesStop() l'arrête et ne laisse aucune minuterie. */
+const AIDE={mode:null,i:0,t:0,f:0};
+let AIDE_MODE='grid'; // mode choisi sur la régie pendant la configuration (message hi), grille à défaut
+const aideReduit=()=>!!(window.matchMedia&&matchMedia('(prefers-reduced-motion: reduce)').matches);
+const aideListe=mode=>AIDE_TXT.cartes.filter(c=>mode==='grid'||!c.grille);
+function aideCartePeindre(){
+  const L=aideListe(AIDE.mode),c=L[AIDE.i];
+  $('hcpic').innerHTML='<svg viewBox="0 0 160 100" aria-hidden="true" focusable="false">'+AIDE_PIC[c.pic]+'</svg>';
+  $('hct').textContent=c.titre;$('hcp').textContent=c.texte;
+  $('hcards').setAttribute('aria-label','Comment jouer : carte '+(AIDE.i+1)+' sur '+L.length);
+  const dots=$('hcdots');
+  if(dots.children.length!==L.length)dots.innerHTML=L.map(()=>'<li></li>').join('');
+  [...dots.children].forEach((d,k)=>d.className=k===AIDE.i?'on':'');
+}
+function aidePlanifier(){
+  clearTimeout(AIDE.t);
+  AIDE.t=setTimeout(()=>{
+    const n=aideListe(AIDE.mode).length;
+    if(aideReduit()){AIDE.i=(AIDE.i+1)%n;aideCartePeindre();return aidePlanifier()}
+    // Fondu enchaîné : la carte s'efface, change, puis réapparaît.
+    $('hcard').classList.add('out');
+    AIDE.f=setTimeout(()=>{AIDE.i=(AIDE.i+1)%n;aideCartePeindre();$('hcard').classList.remove('out');aidePlanifier()},450);
+  },aideReduit()?9000:6000);
+}
+function aideCartes(mode){
+  if(mode!=='duel')mode='grid';
+  if(AIDE.mode===mode)return;
+  aideCartesStop();
+  AIDE.mode=mode;AIDE.i=0;
+  $('hprep').classList.add('cartes');$('hcards').hidden=false;$('hcard').classList.remove('out');
+  aideCartePeindre();aidePlanifier();
+}
+function aideCartesStop(){
+  clearTimeout(AIDE.t);clearTimeout(AIDE.f);AIDE.t=AIDE.f=0;AIDE.mode=null;
+  $('hprep').classList.remove('cartes');$('hcards').hidden=true;
+}
+// Mode choisi sur la régie (reçu avec son message de présence) : les cartes s'adaptent tout de suite.
+function aideModeRegie(m){
+  if(m!=='grid'&&m!=='duel'||m===AIDE_MODE)return;
+  AIDE_MODE=m;if(AIDE.mode)aideCartes(m);
+}
