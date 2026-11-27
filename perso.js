@@ -29,10 +29,11 @@
   // Niveau automatique d'un élément à indices : plus il y a d'indices, plus c'est facile (4 ou plus : 1, 3 : 2, 2 : 3).
   const autoLevelInd=n=>n>=4?1:n===3?2:3;
   /* Cache une partie des lettres, mot par mot : environ 1/3 au niveau 1 (jamais la première lettre d'un mot),
-     1/2 au niveau 2, près de 2/3 au niveau 3. Chaque mot garde au moins une lettre visible, les petits mots
+     1/2 au niveau 2, près de 2/3 au niveau 3, 70 % au niveau 4 et 78 % au niveau 5 (story 4.2 : avant, les niveaux
+     4 et 5 retombaient au taux du niveau 2). Chaque mot garde au moins une lettre visible, les petits mots
      (2 lettres ou moins : « de », « d' ») restent entiers ; au moins une lettre cachée en tout. « _ » = lettre cachée. */
   function masque(w,lvl){
-    const ch=[...first(w).toUpperCase()],r=[0,.34,.5,.62][lvl]||.5,groups=[];let g=[];
+    const ch=[...first(w).toUpperCase()],r=[0,.34,.5,.62,.7,.78][lvl]||.5,groups=[];let g=[];
     ch.forEach((c,i)=>{if(isL(c))g.push(i);else if(g.length){groups.push(g);g=[]}});if(g.length)groups.push(g);
     const shuf=a=>{for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a};
     let hid=0;
@@ -76,7 +77,9 @@
   function renderMot(el,disp){
     el.textContent='';
     const box=document.createElement('div');box.className='slcm';
-    const words=String(disp).split(/\s+/).filter(Boolean),L=Math.max(1,...words.map(w=>[...w].length));
+    // Un mot composé de plus de 12 caractères peut passer à la ligne après ses traits d'union (story 4.2 :
+    // « Alpes-de-Haute-Provence » débordait sur un téléphone).
+    const words=String(disp).split(/\s+/).filter(Boolean).flatMap(w=>[...w].length>12&&w.includes('-')?w.replace(/-/g,'-\u0001').split('\u0001').filter(Boolean):[w]),L=Math.max(1,...words.map(w=>[...w].length));
     const W=el.clientWidth||320;
     box.style.fontSize=Math.max(14,Math.min(46,Math.floor(W*.88/(L*1.22))))+'px';
     words.forEach(w=>{

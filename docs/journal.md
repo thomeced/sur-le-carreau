@@ -285,5 +285,9 @@ Chaque chantier est prévu dans sa propre conversation du projet, sur sa propre 
 - `DOMAINES` et `DOM_CAT` en bas de `categories.js` (39 catégories, `photos.js` compris) ; `domaineDe` (`js/base.js`) ; `ptirer(n, deja)` (`js/choix-categories.js`) : domaine le moins représenté d'abord, utilisé par `pdraw` et `pfill`. Avant, une grille 4×4 tirée au hasard recevait souvent 4 ou 5 catégories de géographie.
 - Nouveau `tests/contenu.js` : domaines, éléments ignorés, tirage équilibré, quantités face aux objectifs d'E4 (`--strict`). Constat : mots à trous et emojis sans élément aux niveaux 4 et 5. Version `2026-11-27n`.
 
+## Story 4.2 : mots à trous à 60 éléments (novembre 2026)
+- Les 10 catégories mot à trous passent de 40 à 60 éléments (200 nouveaux), 12 par niveau, avec un niveau explicite (avant : calculé d'après la longueur, 1 à 3 seulement, donc la progressivité plafonnait au niveau 3).
+- `masque` : taux de lettres cachées pour les niveaux 4 et 5 (70 et 78 % ; avant, ils retombaient au taux du niveau 2). `renderMot` coupe après les traits d'union les mots de plus de 12 caractères (« Alpes-de-Haute-Provence » débordait sur un téléphone). `tests/contenu.js` vérifie le masquage par niveau. Version `2026-11-27o`.
+
 ## Comment reprendre dans un nouveau projet Claude
 Reliez le dépôt GitHub (référence du code) et gardez ce document dans le projet, puis demandez par exemple : « Lis le document de contexte et reprends le jeu : ajoute l'éditeur de catégories. » Le fichier `sur-le-carreau.html` du projet est la version autonome du jeu (catégories incluses) ; la référence reste le dépôt.

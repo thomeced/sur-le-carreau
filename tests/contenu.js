@@ -1,4 +1,4 @@
-/* Test du contenu et du tirage équilibré (story 4.1, EF18 à EF21).
+/* Test du contenu et du tirage équilibré (stories 4.1 et 4.2, EF18 à EF21).
    Lancer depuis la racine du dépôt :   node tests/contenu.js            (objectifs de quantité affichés)
                                          node tests/contenu.js --strict   (objectifs de quantité exigés)
    (Playwright vient de l'environnement ; rien à installer dans le dépôt. Voir tests/README.md.)
@@ -9,6 +9,7 @@
      aucune catégorie inexistante ;
    - quantités face aux objectifs d'E4 : types texte 60 éléments (12 par niveau), photos et emojis 40 (8 par niveau) ;
      affichées seulement, sauf avec --strict ;
+   - masquage du mot à trous : part de lettres cachées croissante du niveau 1 au niveau 5 (story 4.2) ;
    - tirage équilibré (ptirer, pdraw, pfill) : en 2×2, 3×3 et 4×4, sur 300 tirages chacun, chaque domaine apparaît
      autant de fois que les autres, à une près. */
 const {lancer,etape}=require('./serveur.js');
@@ -77,4 +78,23 @@ lancer('contenu',async env=>{
   attendu(!tir.nb,tir.nb+' tirage(s) déséquilibré(s), par exemple :\n'+tir.ecarts.join('\n'));
   attendu(tir.ajout===tir.besoin-3,'pfill a ajouté '+tir.ajout+' catégories au lieu de '+(tir.besoin-3));
   console.log('Tirage : '+tir.D+' domaines, 1 800 tirages équilibrés (2×2, 3×3, 4×4, et compléments)');
+
+  etape('masquage du mot à trous selon le niveau');
+  // Story 4.2 : la part de lettres cachées monte avec le niveau, de 1 à 5, et chaque mot garde une lettre visible.
+  const msq=await jeu.evaluate(()=>{
+    const mots=['Ouagadougou','Charleville-Mézières','Toulouse','Brillat-Savarin','Quetzalcoatl'],moy=[];let tousCaches=[];
+    for(const l of LVLS){
+      let cach=0,tot=0;
+      for(const w of mots)for(let i=0;i<200;i++){
+        const m=SLC_PERSO.masque(w,l);
+        for(const mot of m.split(/[\s'’-]+/))if(mot.length>2&&/^_+$/.test(mot))tousCaches.push(w+' niveau '+l+' : '+m);
+        cach+=[...m].filter(c=>c==='_').length;tot+=[...m].filter(c=>/\p{L}|_/u.test(c)).length;
+      }
+      moy.push(Math.round(100*cach/tot));
+    }
+    return {moy,tousCaches:tousCaches.slice(0,3)};
+  });
+  attendu(msq.moy.every((x,i)=>!i||x>msq.moy[i-1]),'Lettres cachées par niveau (%) : '+msq.moy.join(', ')+' : devraient monter de 1 à 5');
+  attendu(!msq.tousCaches.length,'Mot entièrement caché : '+msq.tousCaches.join(' ; '));
+  console.log('Masquage du mot à trous, lettres cachées par niveau : '+msq.moy.join(' %, ')+' %');
 });
