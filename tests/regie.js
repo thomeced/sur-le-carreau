@@ -6,6 +6,9 @@
    La régie configure un duel simple (noms, catégorie), le lance puis appuie sur « Démarrer le duel ».
    Elle envoie « Bonne réponse » : le joueur qui avait la main marque 1 point et la main passe.
    Puis « Passé » : la réponse s'affiche sur l'écran et le chrono du joueur perd 3 s.
+   Guide de l'arbitre (story 1.3, régie en 390×844) : affiché à la 1re connexion (3 pages, « Suivant », glissement,
+   « C'est parti », boutons d'au moins 44 px), plus affiché après un rechargement ; bouton « ? » pendant le duel :
+   le guide s'ouvre par-dessus, « Passer » le ferme (annoncé), et les verdicts restent possibles aussitôt.
    L'horloge simulée (commune aux deux onglets) est mise en pause pendant les vérifications, pour comparer les chronos
    à la seconde près.
    Le test échoue à la moindre erreur JavaScript ou console.error, dans l'un ou l'autre onglet. */
@@ -18,8 +21,47 @@ const etat=page=>page.evaluate(()=>{
     main:document.getElementById('s0').classList.contains('on')?0:1,msg:t('msg')};
 });
 
+const attendu=(ok,msg)=>{if(!ok)throw new Error(msg)};
+// État du guide de l'arbitre sur la régie.
+const guide=page=>page.evaluate(()=>({ouvert:!document.getElementById('rguide').hidden,titre:document.getElementById('rgt').textContent,
+  focus:document.activeElement&&document.activeElement.id,suivant:document.getElementById('rgnext').textContent,
+  mini:[...document.querySelectorAll('#rgmini:not([hidden]) .big')].map(b=>b.textContent)}));
+// Glissement horizontal sur le guide (événements tactiles construits à la main).
+const glisser=(page,dx)=>page.evaluate(dx=>{const g=document.getElementById('rguide');
+  const t=(x)=>new Touch({identifier:1,target:g,clientX:x,clientY:400});
+  g.dispatchEvent(new TouchEvent('touchstart',{changedTouches:[t(200)],bubbles:true}));
+  g.dispatchEvent(new TouchEvent('touchend',{changedTouches:[t(200+dx)],bubbles:true}))},dx);
+
 lancer('regie',async env=>{
-  const {jeu,regie}=await ouvrirEcranEtRegie(env);
+  const {jeu,regie}=await ouvrirEcranEtRegie(env,{guide:true});
+  await regie.setViewportSize({width:390,height:844});
+
+  etape('guide : première connexion');
+  await regie.waitForSelector('#rguide:not([hidden])');
+  let g=await guide(regie);
+  attendu(g.titre==='Vous êtes l’arbitre'&&g.focus==='rgt'&&g.suivant==='Suivant','Page 1 du guide : '+JSON.stringify(g));
+  const tailles=await regie.evaluate(()=>['rgskip','rgnext','rhelp'].map(id=>{const r=document.getElementById(id).getBoundingClientRect();return id+':'+Math.round(r.width)+'×'+Math.round(r.height)}));
+  attendu(tailles.every(s=>s.split(':')[1].split('×').every(v=>+v>=44)),'Boutons du guide trop petits : '+tailles.join(', '));
+  await regie.click('#rgnext');
+  g=await guide(regie);
+  attendu(g.titre==='Configurez'&&g.focus==='rgt','Page 2 après « Suivant » : '+JSON.stringify(g));
+  await glisser(regie,-120);
+  g=await guide(regie);
+  attendu(g.titre==='Jugez'&&g.suivant==='C’est parti','Page 3 après un glissement : '+JSON.stringify(g));
+  attendu(g.mini.join('|')==='Bonne réponse|Passé (−3 s)','Boutons en miniature : '+g.mini.join(', '));
+  await glisser(regie,120);
+  attendu((await guide(regie)).titre==='Configurez','Glissement vers la droite : retour à la page 2');
+  await glisser(regie,-120);
+  await regie.click('#rgnext'); // « C'est parti »
+  g=await guide(regie);
+  attendu(!g.ouvert&&g.focus==='rhelp','Guide pas fermé par « C’est parti » : '+JSON.stringify(g));
+  attendu(await regie.evaluate(()=>localStorage.getItem('slc-guide-vu'))==='1','slc-guide-vu pas enregistré');
+
+  etape('guide : plus affiché après un rechargement');
+  await regie.reload();
+  await regie.waitForFunction(()=>/relié ✓/.test(document.getElementById('rscreen').textContent),null,{timeout:20000});
+  await pause(300);
+  attendu(!(await guide(regie)).ouvert,'Le guide revient après un rechargement');
 
   etape('configuration par la régie');
   // L'écran attend la configuration ; la régie affiche le formulaire.
@@ -58,6 +100,15 @@ lancer('regie',async env=>{
   if(e1.scores[e0.main]!==1||e1.scores[e0.main^1]!==0)throw new Error('Score après « Bonne réponse » : '+e1.scores.join(', '));
   if(e1.main!==(e0.main^1))throw new Error('La main n’est pas passée après « Bonne réponse »');
   if(e1.chronos.join()!==e0.chronos.join())throw new Error('Chronos modifiés par « Bonne réponse » : '+e0.chronos+' → '+e1.chronos);
+
+  etape('bouton « ? » pendant le duel');
+  await regie.click('#rhelp');
+  g=await guide(regie);
+  attendu(g.ouvert&&g.titre==='Vous êtes l’arbitre'&&g.focus==='rgt','Guide ouvert par « ? » : '+JSON.stringify(g));
+  await regie.click('#rgskip');
+  g=await guide(regie);
+  attendu(!g.ouvert&&g.focus==='rhelp','Guide pas fermé par « Passer » : '+JSON.stringify(g));
+  attendu(await regie.textContent('#rgst')==='Guide fermé.','Fermeture non annoncée');
 
   etape('Passé');
   // « Passé » : réponse révélée, −3 s pour le joueur qui a la main, qui la garde.

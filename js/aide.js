@@ -1,6 +1,5 @@
 // Sur le carreau : aide à la prise en main : textes (AIDE_TXT, une seule source) et cartes « Comment jouer » de la préparation.
-/* Chargé juste avant main.js : les textes reprennent les constantes du jeu (DUEL_SEC, GOLD_STREAK, GOLD_SEC).
-   Les textes du guide de l'arbitre viendront ici aussi (story 1.3). */
+/* Chargé juste avant main.js : les textes reprennent les constantes du jeu (DUEL_SEC, GOLD_STREAK, GOLD_SEC). */
 const AIDE_TXT={
   // Cartes « Comment jouer » (spec UX §3.1). grille : seulement en mode grille de territoires.
   cartes:[
@@ -9,6 +8,13 @@ const AIDE_TXT={
     {pic:'passe',titre:'Passé',texte:'Bloqué ? Dites « Passé » : la réponse s’affiche, et vous perdez 3 s.'},
     {pic:'territoire',titre:'Le territoire',texte:'Le gagnant prend toutes les cases du perdant, puis attaque un voisin ou retourne sur le sol.',grille:true},
     {pic:'or',titre:'La case d’or',texte:GOLD_STREAK+' duels gagnés d’affilée : +'+GOLD_SEC+' s à utiliser plus tard.',grille:true}
+  ],
+  // Guide de l'arbitre, sur le téléphone (spec UX §3.7). mini : boutons réels en miniature.
+  // « Mauvaise réponse (QCM seulement) » s'ajoutera à la page « Jugez » avec le QCM (story 3.2).
+  guide:[
+    {titre:'Vous êtes l’arbitre',texte:'Les joueurs répondent à voix haute ; c’est vous qui décidez.'},
+    {titre:'Configurez',texte:'Choisissez le mode, les joueurs et les catégories, puis lancez la partie.'},
+    {titre:'Jugez',texte:'Pendant un duel, touchez le bouton qui correspond à la réponse du joueur :',mini:true}
   ],
   // Bandeau du plateau (spec UX §3.2). {n} : nom(s) du joueur, affiché en gras.
   bandeau:{
@@ -113,3 +119,43 @@ function aideBandeau([modele,n]){
   if(aideReduit()||!el.textContent)return peindre();
   el.classList.add('out');BANDEAU.f=setTimeout(peindre,180);
 }
+
+/* Guide de l'arbitre (#rguide, téléphone) : 3 pages par-dessus la régie, qui continue de tourner dessous
+   (arbRender ne touche pas au guide). guideArbitre(false) : seulement si ce téléphone ne l'a jamais vu ou passé
+   (localStorage slc-guide-vu) ; guideArbitre(true) : bouton « ? ». */
+const GUIDE={i:0,ouvert:false,retour:null};
+function guideVu(){try{return localStorage.getItem('slc-guide-vu')==='1'}catch(e){return false}}
+function guidePage(i){
+  const P=AIDE_TXT.guide,n=P.length;GUIDE.i=Math.max(0,Math.min(n-1,i));
+  const p=P[GUIDE.i];
+  $('rgt').textContent=p.titre;$('rgp').textContent=p.texte;$('rgmini').hidden=!p.mini;
+  $('rguide').setAttribute('aria-label','Guide de l’arbitre, page '+(GUIDE.i+1)+' sur '+n);
+  [...$('rgdots').children].forEach((d,k)=>d.className=k===GUIDE.i?'on':'');
+  $('rgprev').hidden=GUIDE.i===0;
+  $('rgnext').textContent=GUIDE.i===n-1?'C’est parti':'Suivant';
+  $('rgt').focus();
+}
+function guideArbitre(force){
+  if(GUIDE.ouvert||(!force&&guideVu()))return;
+  GUIDE.ouvert=true;GUIDE.retour=force?$('rhelp'):null;$('rgst').textContent='';
+  $('rguide').hidden=false;document.documentElement.classList.add('slc-guide');
+  guidePage(0);
+}
+function guideFermer(msg){
+  if(!GUIDE.ouvert)return;
+  GUIDE.ouvert=false;try{localStorage.setItem('slc-guide-vu','1')}catch(e){}
+  $('rguide').hidden=true;document.documentElement.classList.remove('slc-guide');
+  $('rgst').textContent=msg;
+  const r=GUIDE.retour&&!GUIDE.retour.hidden?GUIDE.retour:$('rhelp');r.focus();
+}
+$('rhelp').onclick=()=>guideArbitre(true);
+$('rgskip').onclick=()=>guideFermer('Guide fermé.');
+$('rgprev').onclick=()=>guidePage(GUIDE.i-1);
+$('rgnext').onclick=()=>GUIDE.i===AIDE_TXT.guide.length-1?guideFermer('Guide terminé.'):guidePage(GUIDE.i+1);
+// Glisser à gauche ou à droite pour changer de page ; flèches et Échap au clavier.
+(()=>{let x0=null,y0=0;const g=$('rguide');
+  g.addEventListener('touchstart',e=>{const t=e.changedTouches[0];x0=t.clientX;y0=t.clientY},{passive:true});
+  g.addEventListener('touchend',e=>{if(x0==null)return;const t=e.changedTouches[0],dx=t.clientX-x0,dy=t.clientY-y0;x0=null;
+    if(Math.abs(dx)>50&&Math.abs(dx)>Math.abs(dy))guidePage(GUIDE.i+(dx<0?1:-1))});
+  g.addEventListener('keydown',e=>{if(e.key==='Escape')guideFermer('Guide fermé.');else if(e.key==='ArrowRight')guidePage(GUIDE.i+1);else if(e.key==='ArrowLeft')guidePage(GUIDE.i-1)});
+})();

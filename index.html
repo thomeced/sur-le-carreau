@@ -5,12 +5,12 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Sur le carreau</title>
 <!-- Version des fichiers (cache de la TV) : définie ici seulement, recopiée partout par python3 tools/version.py. -->
-<meta name="slc-version" content="2026-11-27c">
+<meta name="slc-version" content="2026-11-27d">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Poppins:wght@500;600;700&family=DM+Sans:wght@400;600;700&display=swap">
-<link rel="stylesheet" href="style.css?v=2026-11-27c">
-<script src="intro.js?v=2026-11-27c"></script>
-<script src="sons.js?v=2026-11-27c"></script>
-<script src="qrcode.js?v=2026-11-27c"></script>
+<link rel="stylesheet" href="style.css?v=2026-11-27d">
+<script src="intro.js?v=2026-11-27d"></script>
+<script src="sons.js?v=2026-11-27d"></script>
+<script src="qrcode.js?v=2026-11-27d"></script>
 </head>
 <body>
 <main>
@@ -40,7 +40,7 @@
     </div>
   </div>
   <p class="hlinks"><button type="button" class="lnk" id="hlocal">Configurer sur cet écran</button><a href="editeur.html" id="hedit">Créer mes catégories</a><a href="#arbitre">Ouvrir la régie sur cet appareil</a></p>
-  <p id="hver" class="hver">Version 2026-11-27c</p>
+  <p id="hver" class="hver">Version 2026-11-27d</p>
 </section>
 
 <section id="setup" hidden>
@@ -139,6 +139,25 @@
   <h1>Régie</h1>
   <ol class="steps" id="rsteps" aria-label="Étapes"><li>1. Connexion</li><li>2. Configuration</li><li>3. Partie</li></ol>
   <p id="rscreen"></p>
+  <button type="button" id="rhelp" class="rhelp" aria-label="Aide : guide de l’arbitre" aria-haspopup="dialog">?</button>
+  <!-- Guide de l'arbitre (js/aide.js) : 3 pages par-dessus la régie, qui continue de tourner dessous. -->
+  <div id="rguide" class="rguide" role="dialog" aria-modal="true" aria-labelledby="rgt" hidden>
+    <button type="button" class="alt rgskip" id="rgskip">Passer</button>
+    <div class="rgpage">
+      <h2 id="rgt" tabindex="-1"></h2>
+      <p id="rgp"></p>
+      <div id="rgmini" class="rgmini" aria-hidden="true" hidden>
+        <span class="big good">Bonne réponse</span>
+        <span class="big skip">Passé (−3 s)</span>
+      </div>
+    </div>
+    <ol id="rgdots" class="hcdots" aria-hidden="true"><li></li><li></li><li></li></ol>
+    <div class="rgnav">
+      <button type="button" class="alt" id="rgprev">Précédent</button>
+      <button type="button" id="rgnext">Suivant</button>
+    </div>
+  </div>
+  <p id="rgst" class="sr" role="status" aria-live="polite"></p>
   <form id="rj" class="panel setup">
     <label>Code affiché sur l’écran du jeu<input id="rc" maxlength="4" autocomplete="off" autocapitalize="characters" spellcheck="false"></label>
     <button type="submit">Se connecter à l’écran</button>
@@ -184,18 +203,18 @@
 </section>
 </main>
 
-<script src="categories.js?v=2026-11-27c"></script>
-<script src="photos.js?v=2026-11-27c"></script>
-<script src="perso.js?v=2026-11-27c"></script>
-<script src="js/base.js?v=2026-11-27c"></script>
-<script src="js/liaison.js?v=2026-11-27c"></script>
-<script src="js/duel.js?v=2026-11-27c"></script>
-<script src="js/accueil.js?v=2026-11-27c"></script>
-<script src="js/grille.js?v=2026-11-27c"></script>
-<script src="js/choix-categories.js?v=2026-11-27c"></script>
-<script src="js/plateau.js?v=2026-11-27c"></script>
-<script src="js/regie.js?v=2026-11-27c"></script>
-<script src="js/aide.js?v=2026-11-27c"></script>
-<script src="js/main.js?v=2026-11-27c"></script>
+<script src="categories.js?v=2026-11-27d"></script>
+<script src="photos.js?v=2026-11-27d"></script>
+<script src="perso.js?v=2026-11-27d"></script>
+<script src="js/base.js?v=2026-11-27d"></script>
+<script src="js/liaison.js?v=2026-11-27d"></script>
+<script src="js/duel.js?v=2026-11-27d"></script>
+<script src="js/accueil.js?v=2026-11-27d"></script>
+<script src="js/grille.js?v=2026-11-27d"></script>
+<script src="js/choix-categories.js?v=2026-11-27d"></script>
+<script src="js/plateau.js?v=2026-11-27d"></script>
+<script src="js/regie.js?v=2026-11-27d"></script>
+<script src="js/aide.js?v=2026-11-27d"></script>
+<script src="js/main.js?v=2026-11-27d"></script>
 </body>
 </html>

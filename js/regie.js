@@ -81,6 +81,7 @@ function arbJoin(c){
   // L'adresse garde le code : un rechargement rejoint le même écran (replaceState ne recharge pas la page).
   try{if(location.hash!=='#arbitre='+c)history.replaceState(null,'','#arbitre='+c)}catch(e){}
   arbView();$('alk').textContent=$('rwlk').textContent='Liaison entre appareils : connexion…';
+  guideArbitre(false); // première fois sur ce téléphone : guide de l'arbitre (js/aide.js)
   link(c,'arb',ronmsg,(m,st)=>{$('alk').textContent=$('rwlk').textContent=linkMsg(m,st)}).then(l=>{
     // Le message de présence porte le mode choisi : l'écran du jeu adapte ses cartes « Comment jouer ».
     L=l;const hi=()=>L.send('hi',{mode:$('gmode').value});hi();$('gmode').addEventListener('change',hi);setInterval(hi,3000);setInterval(arbRender,100);setInterval(arbView,1000);

@@ -95,15 +95,18 @@ function lancer(nom,fn,{delai=180000,largeur,hauteur}={}){
 const pause=ms=>new Promise(r=>setTimeout(r,ms));
 
 /* Ouvre l'écran du jeu puis la régie reliée (onglet `#arbitre=CODE`, code lu dans #hcode).
-   Attend que la régie affiche « relié ✓ ». L'horloge est simulée (clock de Playwright, commune à tous les onglets
+   Attend que la régie affiche « relié ✓ ». guide: true laisse le guide de l'arbitre s'ouvrir (1re connexion). L'horloge est simulée (clock de Playwright, commune à tous les onglets
    du contexte) : le temps s'écoule normalement, mais le test peut l'avancer d'un coup (vider les chronos) ou l'arrêter. */
-async function ouvrirEcranEtRegie(env,{horloge=true}={}){
+async function ouvrirEcranEtRegie(env,{horloge=true,guide=false}={}){
   const jeu=await env.page('jeu');
   if(horloge)await jeu.clock.install();
   await jeu.goto(env.url+'index.html?mode=serieux');
   await jeu.waitForFunction(()=>/^[A-Z0-9]{4}$/.test(document.getElementById('hcode').textContent));
   const code=await jeu.textContent('#hcode');
   const regie=await env.page('régie');
+  // Le guide de l'arbitre s'ouvre à la première connexion d'un téléphone : on le marque comme déjà vu,
+  // sauf pour le test qui le vérifie (guide: true).
+  if(!guide)await regie.addInitScript(()=>{try{localStorage.setItem('slc-guide-vu','1')}catch(e){}});
   await regie.goto(env.url+'index.html#arbitre='+code);
   await regie.waitForFunction(()=>/relié ✓/.test(document.getElementById('rscreen').textContent),null,{timeout:20000});
   return {jeu,regie,code};
