@@ -295,5 +295,8 @@ Chaque chantier est prévu dans sa propre conversation du projet, sur sa propre 
 ## Story 4.5 : trois nouvelles catégories (novembre 2026)
 - Séries et dessins animés (indices, `ind_series`), Sports en vrac (`vrac_sports`), Musique, genres et termes (mot à trous, `musique`) : 60 éléments chacune, 12 par niveau, domaines cinéma, sport et musique. 42 catégories, 22 à l'objectif d'E4. Aucun changement de code. Version `2026-11-27q`.
 
+## Story 4.6 : emojis à 40 éléments (novembre 2026)
+- Les 5 catégories emoji passent à 40 rébus, 8 par niveau (84 nouveaux ; avant : 19 à 30, niveaux 1 à 3 seulement). Emojis récents évités pour la TV. 27 catégories sur 42 à l'objectif : il ne reste que les photos. Aucun changement de code. Version `2026-11-27r`.
+
 ## Comment reprendre dans un nouveau projet Claude
 Reliez le dépôt GitHub (référence du code) et gardez ce document dans le projet, puis demandez par exemple : « Lis le document de contexte et reprends le jeu : ajoute l'éditeur de catégories. » Le fichier `sur-le-carreau.html` du projet est la version autonome du jeu (catégories incluses) ; la référence reste le dépôt.
