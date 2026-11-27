@@ -56,7 +56,7 @@ Epic terminé avec la story 3.1.
 | [4.2](4.2-mots-a-trous.md) | Mot à trous : 10 catégories de 60 éléments, niveaux 1 à 5 | EF18 | Terminée |
 | [4.3](4.3-indices-vrac-envers.md) | Indices, lettres mélangées, titres à l'envers : 9 catégories de 60 éléments | EF18 | Terminée |
 | 4.4 | 4 nouvelles catégories QCM | EF18, EF20 | Reportée avec la 3.2 |
-| 4.5 | Séries et dessins animés (indices), Sports en vrac, Musique (les 3 Devinettes sont reportées avec la 3.3) | EF18, EF20 | Brouillon |
+| [4.5](4.5-nouvelles-categories.md) | Séries et dessins animés (indices), Sports en vrac, Musique (les 3 Devinettes sont reportées avec la 3.3) | EF18, EF20 | Terminée |
 | 4.6 | Emojis : 5 catégories à 40 éléments | EF19 | Brouillon |
 | 4.7 | Photos : `liste.txt` à 40 par catégorie (préparation par Claude ; les 2 catégories Gros plan sont reportées avec la 3.5) | EF19 | Brouillon |
 | 4.8 | Photos : téléchargement et relecture (Ced, sur son Mac), intégration et crédits | EF19, EF22 | Brouillon |

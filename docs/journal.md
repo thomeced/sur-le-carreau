@@ -292,5 +292,8 @@ Chaque chantier est prévu dans sa propre conversation du projet, sur sa propre 
 ## Story 4.3 : indices, lettres mélangées, titres à l'envers à 60 éléments (novembre 2026)
 - 9 catégories passent de 40 à 60 éléments (180 nouveaux), 12 par niveau ; les indices n'avaient que 2 ou 3 éléments aux niveaux 4 et 5 (5 éléments existants changent de niveau pour équilibrer). Aucun changement de code. 19 catégories sur 39 à l'objectif d'E4. Version `2026-11-27p`.
 
+## Story 4.5 : trois nouvelles catégories (novembre 2026)
+- Séries et dessins animés (indices, `ind_series`), Sports en vrac (`vrac_sports`), Musique, genres et termes (mot à trous, `musique`) : 60 éléments chacune, 12 par niveau, domaines cinéma, sport et musique. 42 catégories, 22 à l'objectif d'E4. Aucun changement de code. Version `2026-11-27q`.
+
 ## Comment reprendre dans un nouveau projet Claude
 Reliez le dépôt GitHub (référence du code) et gardez ce document dans le projet, puis demandez par exemple : « Lis le document de contexte et reprends le jeu : ajoute l'éditeur de catégories. » Le fichier `sur-le-carreau.html` du projet est la version autonome du jeu (catégories incluses) ; la référence reste le dépôt.
