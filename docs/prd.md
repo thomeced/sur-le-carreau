@@ -8,7 +8,7 @@ Rendre le jeu jouable par une autre famille, sans Ced : on comprend les règles,
 
 **Ordre des epics** (décision de Ced) : E1 prise en main → E2 TV et identité → E3 nouveaux types → E4 contenu.
 
-**Reporté** (décision de Ced, 27 novembre 2026) : le type QCM (EF11, EF12) et ses 4 catégories (§6) deviennent une évolution future. Leur spec est gardée telle quelle pour plus tard.
+**Reporté** (décisions de Ced, 27 novembre 2026) : les trois nouveaux types, QCM (EF11, EF12), Gros plan (EF13, EF14) et Devinette (EF15), avec EF16 et leurs 9 catégories (§6), deviennent une évolution future (« on est bien en termes de types de jeu »). Leur spec est gardée telle quelle pour plus tard. E3 se limite à la progressivité (EF23).
 
 ## 2. Exigences fonctionnelles
 
@@ -29,10 +29,10 @@ Rendre le jeu jouable par une autre famille, sans Ced : on comprend les règles,
 ### Nouveaux types (E3)
 - **EF11 (QCM, reportée)** : un élément QCM porte une question, 4 propositions (dont une bonne) et un niveau. L'écran affiche la question et les 4 propositions (A, B, C, D) dans un ordre mélangé à chaque tirage. Le joueur répond à l'oral.
 - **EF12 (QCM, arbitrage, reportée)** : pendant un duel QCM, la régie affiche un bouton supplémentaire « Mauvaise réponse ». Il agit comme « Passé » : la bonne réponse s'affiche, −3 s, élément suivant.
-- **EF13 (Gros plan, variante)** : toute catégorie photo peut se jouer en gros plan. Dans la zone « Catégories de la partie », une catégorie photo existe en deux versions : normale et « en gros plan ». En gros plan, l'image commence très zoomée sur un point choisi au hasard dans sa zone centrale (×3 au niveau 1 jusqu'à ×8 au niveau 5), puis se dézoome jusqu'à l'image entière en 10 s environ.
-- **EF14 (Gros plan, catégories dédiées)** : `categories.js` (ou `photos.js`) peut déclarer une catégorie dont le type est `grosplan` d'emblée, éventuellement avec un point de zoom imposé par élément.
-- **EF15 (Devinette)** : un élément Devinette porte 2 à 4 phrases, une réponse (avec variantes) et un niveau. Chaque catégorie Devinette choisit sa présentation : `bloc` (tout affiché d'emblée) ou `revele` (une phrase de plus toutes les 3 s environ, en commençant par la plus vague).
-- **EF16** : chaque nouveau type a son nom, son icône et sa consigne dans `TYPES`, affichés sur la régie (EF6) et dans le choix des catégories.
+- **EF13 (Gros plan, variante, reportée)** : toute catégorie photo peut se jouer en gros plan. Dans la zone « Catégories de la partie », une catégorie photo existe en deux versions : normale et « en gros plan ». En gros plan, l'image commence très zoomée sur un point choisi au hasard dans sa zone centrale (×3 au niveau 1 jusqu'à ×8 au niveau 5), puis se dézoome jusqu'à l'image entière en 10 s environ.
+- **EF14 (Gros plan, catégories dédiées, reportée)** : `categories.js` (ou `photos.js`) peut déclarer une catégorie dont le type est `grosplan` d'emblée, éventuellement avec un point de zoom imposé par élément.
+- **EF15 (Devinette, reportée)** : un élément Devinette porte 2 à 4 phrases, une réponse (avec variantes) et un niveau. Chaque catégorie Devinette choisit sa présentation : `bloc` (tout affiché d'emblée) ou `revele` (une phrase de plus toutes les 3 s environ, en commençant par la plus vague).
+- **EF16 (reportée avec les types)** : chaque nouveau type a son nom, son icône et sa consigne dans `TYPES`, affichés sur la régie (EF6) et dans le choix des catégories.
 - **EF17** : l'éditeur de catégories ne change pas (décision de Ced) : les nouveaux types ne se créent que dans `categories.js`.
 
 ### Progressivité dans le duel (E3)
@@ -62,7 +62,7 @@ Rendre le jeu jouable par une autre famille, sans Ced : on comprend les règles,
 |---|---|---|
 | **E1 Prise en main** | Une famille comprend le jeu et l'arbitre sait quoi faire, sans explication extérieure. | EF1 à EF6 |
 | **E2 TV et identité** | Le jeu s'affiche correctement sur la TV Samsung, ne contient plus rien de l'émission, et la liaison a été vérifiée en conditions réelles. | EF7 à EF10 |
-| **E3 Nouveaux types et progressivité** | Gros plan et Devinette sont jouables et arbitrables (QCM reporté) ; un duel monte réellement jusqu'aux niveaux 4 et 5. | EF11 à EF17, EF23 |
+| **E3 Nouveaux types et progressivité** | Un duel monte réellement jusqu'aux niveaux 4 et 5 (nouveaux types reportés). | EF23 (EF11 à EF16 reportées) |
 | **E4 Contenu** | Environ 50 catégories variées, avec 60 éléments (texte) ou 40 (photo, emoji). | EF18 à EF22 |
 
 Proposition à confirmer en architecture : faire précéder E1 d'une story technique de **découpage d'`index.html`** en modules, puisque chaque epic y touche.
@@ -84,16 +84,16 @@ Proposition à confirmer en architecture : faire précéder E1 d'une story techn
 | Sciences du quotidien | QCM (reportée) | Sciences et nature |
 | Expressions françaises (sens) | QCM (reportée) | Langue et mots |
 | Histoire de France | QCM (reportée) | Histoire |
-| Objets de la maison | Devinette (bloc) | Vie quotidienne |
-| Animaux | Devinette (révélée) | Animaux |
-| Contes et légendes | Devinette (révélée) | Arts et lettres |
-| Textures et matières | Gros plan dédié | Sciences et nature |
-| Objets du quotidien | Gros plan dédié | Vie quotidienne |
+| Objets de la maison | Devinette (bloc) (reportée) | Vie quotidienne |
+| Animaux | Devinette (révélée) (reportée) | Animaux |
+| Contes et légendes | Devinette (révélée) (reportée) | Arts et lettres |
+| Textures et matières | Gros plan dédié (reportée) | Sciences et nature |
+| Objets du quotidien | Gros plan dédié (reportée) | Vie quotidienne |
 | Séries et dessins animés | Indices | Cinéma et séries |
 | Sports en vrac | Lettres mélangées | Sport et jeux |
 | Musique (genres, termes) | Mot à trous | Musique |
 
-Total : 51 catégories (47 sans les 4 QCM reportées), sans compter les variantes Gros plan des 15 catégories photo.
+Total : 51 catégories proposées, **42** sans les 9 des types reportés, sans compter les variantes Gros plan des 15 catégories photo.
 
 ## 7. Questions ouvertes
 - Liste des nouvelles catégories (§6) : validée par Ced.
