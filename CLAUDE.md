@@ -62,7 +62,7 @@ Jeu web de salon inspiré de The Floor : duels de catégories sur une grille de 
 - Tests automatisés (`tests/`, non-régression à chaque story) : écrans 1440×900 et 390×844, deux onglets du même navigateur (liaison `BroadcastChannel`, requêtes externes neutralisées) : écran du jeu sur `index.html` (ou `?mode=serieux` pour sauter le choix du lancement), régie sur `index.html#arbitre=CODE` (code lu dans `#hcode`). Sans régie reliée, « Démarrer le duel » reste bloqué. Les tests marquent le guide de l'arbitre comme déjà vu (sauf `tests/regie.js`). Chronos accélérés par l'horloge simulée de Playwright (`DUEL_SEC` est une constante).
 
 ## Risques et points ouverts
-- **Jamais testé sur deux vrais appareils avec PeerJS** (ni avec les photos, ni le parcours régie sur le téléphone) : priorité, test à faire par Ced.
+- **Jamais testé sur deux vrais appareils avec PeerJS** (ni avec les photos, ni le parcours régie sur le téléphone) : priorité, test à faire par Ced en suivant `docs/test-reel.md` (test express de 5 min, puis wifi, réseau mobile, incidents ; tableau des résultats).
 - Un rechargement de l'écran du jeu perd la partie en cours (pas de sauvegarde) : il revient à l'accueil, puis à « Partie en préparation » quand le téléphone se reconnecte.
 - Le choix Funky ou Sérieux se fait sur l'écran du jeu : sur une TV, il faut la télécommande (ou `?mode=serieux` dans l'adresse).
 - Le calque des candidats de l'intro reproduit des candidats reconnaissables de l'émission : à remplacer avant toute publication publique.

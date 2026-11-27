@@ -29,7 +29,7 @@ Statuts : Brouillon · Prête · En cours · En revue · Terminée
 | 2.2 | Vague de capture case par case (`js/plateau-lite.js`) | EF7 | Brouillon |
 | 2.3 | Préchargement des 3 photos suivantes (absent aujourd'hui) | ENF2 | Brouillon |
 | 2.4 | Nouveau calque de l'intro (esquisses à choisir par Ced) | EF9 | Brouillon |
-| 2.5 | Checklist de test réel `docs/test-reel.md` (test fait par Ced) | EF10 | Brouillon |
+| [2.5](2.5-test-reel.md) | Checklist de test réel `docs/test-reel.md` (test fait par Ced) | EF10 | Checklist livrée, test à faire |
 
 ## E3 Nouveaux types et progressivité
 | Story | Titre | Exigences | Statut |
