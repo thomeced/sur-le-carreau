@@ -12,6 +12,7 @@ node tests/regie.js
 node tests/aide.js
 node tests/lite.js
 node tests/photos.js
+node tests/niveaux.js
 node tests/intro.js
 ```
 
@@ -28,6 +29,7 @@ Chaque test sert lui-même le dépôt (`python3 -m http.server` sur un port libr
 | `aide.js` | Aide à la prise en main en 1920×1080. Cartes « Comment jouer » : apparition pendant la préparation (5 en grille), titre ≥ 56 px et phrase ≥ 40 px, panneau à 60 % de la largeur, 2e carte après 6 s, 3 cartes quand la régie passe en duel simple, disparition au lancement sans minuterie restante, redémarrage après « Arrêter la partie » avec une seule minuterie, mouvement réduit (9 s, sans fondu). Bandeau du plateau (grille 2×2) : un seul nœud `aria-live`, ≥ 32 px, les 5 phrases, absent du duel simple. | ~10 s |
 | `lite.js` | Mode allégé (TV) : aucun `color-mix()` sans couleur de secours (ni avec `var()`) dans `style.css` et `intro.css` ; page normale sans mode allégé ; `?lite=1&debug=1` : classe `lite`, panneaux sans flou à fond opaque, cadre de débogage ; navigateur sans `color-mix()` simulé : mode allégé détecté seul. Vague case par case (`?lite=1`, grille 2×2) : aucun flou sur le plateau, rien de dessiné hors des cases, cases non capturées inchangées, cases capturées à la couleur du gagnant, délais croissants avec la distance, fin propre. | ~5 s |
 | `photos.js` | Préchargement : duel simple dans une catégorie photo ; rien avant le lancement ; photo tirée et 3 suivantes demandées avant le départ ; chaque photo affichée après un verdict avait été demandée avant ; rien hors de la catégorie. | ~2 s |
+| `niveaux.js` | Progressivité : `niveauPour(n)` suit `LVL_CURVE` ; duel simple dans une catégorie texte (8 éléments par niveau), 16 verdicts alternés « Bonne réponse » / « Passé » : niveaux tirés 1,1,1,2,2,2,3,3,3,3,4,4,4,4,5,5 ; un verdict reçu deux fois ne compte qu'une fois ; nouveau duel au niveau 1. | ~9 s |
 | `intro.js` | Intro en mode funky (15 s) : 15 images (plateau, animateur en pied, 12 candidats, logo) chargées ; à 6 s la caméra a avancé (animateur plus grand, candidat le plus proche sorti du champ) ; à 12,5 s l'animateur est entier, au moins 1,6 fois plus grand, sous le logo ; « Passer l'intro » rend la main au jeu. | ~14 s |
 | `serveur.js` | Pas un test : utilitaire commun (serveur local, navigateur, collecte des erreurs, ouverture de l'écran et de la régie reliée). | |
 

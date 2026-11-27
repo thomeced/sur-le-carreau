@@ -274,5 +274,9 @@ Chaque chantier est prévu dans sa propre conversation du projet, sur sa propre 
 - Calques WebP recomposés (deux groupes de 6), logo en titre de fin en haut, animateur descendu, texte de l'écran retiré. Nouveau `tests/intro.js`. Version `2026-11-27i`.
 - Reprise après revue de la démo : scène en perspective (`couloir()`), seule la caméra bouge (3 m) dans un couloir de 12 candidats par deux jusqu'à l'animateur en pied ; logo de fin posé sur celui du plateau ; intro de 15 s ; générique « The Grand Reveal » (fourni par Ced, fondu de 13 à 15 s). Version `2026-11-27l`.
 
+## Story 3.1 : progressivité des niveaux (novembre 2026)
+- Le niveau suit le nombre d'éléments joués dans le duel (`S.joues`, bonnes réponses et « Passé ») au lieu des seules bonnes réponses : `niveauPour(n)` et seuils `LVL_CURVE = [3, 6, 10, 14]` (éléments 1 à 3 → 1 … 15 et plus → 5) ; `LVL_STEP` supprimé. Avec l'ancienne règle, 16 éléments alternés ne dépassaient pas le niveau 3.
+- `S.n` était déjà le compteur de ticks du chrono : nouveau compteur `S.joues`. Architecture §4.3 corrigée (nom du compteur, décalage d'un cran de la courbe). Nouveau `tests/niveaux.js`. Version `2026-11-27m`.
+
 ## Comment reprendre dans un nouveau projet Claude
 Reliez le dépôt GitHub (référence du code) et gardez ce document dans le projet, puis demandez par exemple : « Lis le document de contexte et reprends le jeu : ajoute l'éditeur de catégories. » Le fichier `sur-le-carreau.html` du projet est la version autonome du jeu (catégories incluses) ; la référence reste le dépôt.

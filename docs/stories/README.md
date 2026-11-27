@@ -37,7 +37,7 @@ Fini quand : les 3 nouveaux types se jouent de bout en bout (écran, régie, cho
 
 | Story | Titre | Exigences | Dépend de | Statut |
 |---|---|---|---|---|
-| [3.1](3.1-progressivite.md) | Progressivité : `LVL_CURVE` et compteur `S.joues` | EF23 | — | Prête |
+| [3.1](3.1-progressivite.md) | Progressivité : `LVL_CURVE` et compteur `S.joues` | EF23 | — | Terminée |
 | 3.2 | Type QCM et verdict « Mauvaise réponse » | EF11, EF12, EF16 | 3.1 | Brouillon |
 | 3.3 | Type Devinette (bloc et révélée) | EF15, EF16 | 3.2 | Brouillon |
 | 3.4 | Variante Gros plan des catégories photo (`@gp`) | EF13, EF16 | 3.2 | Brouillon |

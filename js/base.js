@@ -11,9 +11,12 @@ if(LITE)document.documentElement.classList.add('lite');
    ce que voient les joueurs est calculé à chaque tirage (lettres cachées au hasard). */
 const TYPES=(window.SLC_PERSO&&SLC_PERSO.TYPES)||{emoji:{nom:'Images',consigne:'Nommez ce que montre l’image.'}};
 const typeName=t=>t&&t!=='emoji'&&TYPES[t]?TYPES[t].nom:'';
-/* Niveaux de difficulté de 1 à 5 : +1 toutes les LVL_STEP bonnes réponses du duel. Une catégorie qui ne va que
-   jusqu'au niveau 3 reste au niveau 3 (on prend le niveau le plus proche qui a encore des éléments). */
-const LVL_MAX=5,LVL_STEP=3,LVLS=[1,2,3,4,5];
+/* Niveaux de difficulté de 1 à 5, selon le nombre d'éléments déjà joués dans le duel (bonnes réponses et « Passé »,
+   des deux joueurs) : les « Passé » font aussi monter, pour qu'un duel atteigne vraiment les niveaux 4 et 5.
+   LVL_CURVE = seuils : éléments 1 à 3 → niveau 1 ; 4 à 6 → 2 ; 7 à 10 → 3 ; 11 à 14 → 4 ; 15 et plus → 5.
+   Une catégorie qui ne va que jusqu'au niveau 3 reste au niveau 3 (on prend le niveau le plus proche qui a encore des éléments). */
+const LVL_MAX=5,LVL_CURVE=[3,6,10,14],LVLS=[1,2,3,4,5];
+const niveauPour=n=>Math.min(LVL_MAX,1+LVL_CURVE.filter(s=>n>=s).length); // n = éléments déjà joués
 function normItem(type,it){
   if(type==='trous'){
     const w=typeof it==='string'?it:Array.isArray(it)?it[0]:null;
