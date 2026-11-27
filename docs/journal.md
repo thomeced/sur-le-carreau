@@ -246,5 +246,9 @@ Chaque chantier est prévu dans sa propre conversation du projet, sur sa propre 
 - BMAD, epic E1. `js/aide.js` (`AIDE_TXT`, pictogrammes SVG, carrousel) dans le panneau de préparation, élargi à 60 % ; 5 cartes en grille, 3 en duel simple ; 6 s avec fondu, 9 s sans en mouvement réduit ; arrêt au lancement. Mode de la régie transmis dans `hi`.
 - `tests/aide.js` (1920×1080). Version `2026-11-27b`.
 
+## Story 1.2 : bandeau d'aide du plateau (novembre 2026)
+- `#gaide` sous le titre de la grille, bande pleine largeur, une phrase par étape (`AIDE_TXT.bandeau`, `aideTexteGrille`, `aideBandeau`, `aideVictoire`), appelé en fin de `gridRender` et dans `gridAfterDuel`. Victoire en formulation neutre. `html{overflow-x:hidden}`.
+- `tests/aide.js` complété (5 phrases). Version `2026-11-27c`.
+
 ## Comment reprendre dans un nouveau projet Claude
 Reliez le dépôt GitHub (référence du code) et gardez ce document dans le projet, puis demandez par exemple : « Lis le document de contexte et reprends le jeu : ajoute l'éditeur de catégories. » Le fichier `sur-le-carreau.html` du projet est la version autonome du jeu (catégories incluses) ; la référence reste le dépôt.

@@ -78,6 +78,14 @@ h1{font-size:clamp(2.2rem,8vw,4rem);line-height:1.1}
 #grid{max-width:760px;margin:0 auto}
 #gtitle{font:700 clamp(1.4rem,5vw,2rem)/1.2 var(--disp);margin:0 0 4px;overflow-wrap:anywhere}
 #ghint,#gstat,#dcat{margin:4px 0}
+/* Bandeau d'aide du plateau (js/aide.js) : une ligne lisible à 3 m (32 px sur une TV 1920 px). */
+/* Bandeau sur toute la largeur de l'écran (pour tenir sur une ligne), centré ; html coupe le débordement horizontal
+   (la largeur 100vw compte la barre de défilement d'un ordinateur). */
+html{overflow-x:hidden}
+.gaide{font:600 clamp(1.05rem,1.7vw,2.4rem)/1.3 var(--disp);width:100vw;box-sizing:border-box;margin:6px 0 10px calc(50% - 50vw);padding:.3em 24px;min-height:1.9em;text-align:center;background:var(--tile);border-top:1px solid var(--line);border-bottom:1px solid var(--line);transition:opacity .18s ease}
+.gaide strong{color:var(--p1);font-weight:700}
+.gaide.out{opacity:0}
+@media(prefers-reduced-motion:reduce){.gaide{transition:none}}
 #gnote{margin:4px 0;min-height:0;font-weight:700;color:var(--p1)}
 #gnote:empty{display:none}
 .gpanel button[aria-pressed="true"]{border-color:var(--p1);background:rgba(255,197,61,.18)}
