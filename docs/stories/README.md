@@ -19,8 +19,8 @@ Statuts : Brouillon · Prête · En cours · En revue · Terminée
 |---|---|---|---|---|
 | [1.1](1.1-cartes-comment-jouer.md) | Cartes « Comment jouer » pendant la préparation | EF1, EF2 | 0.2 | Terminée |
 | [1.2](1.2-bandeau-aide.md) | Bandeau d'aide sur le plateau | EF5 | 1.1 | Terminée |
-| [1.3](1.3-guide-arbitre.md) | Guide de l'arbitre et bouton « ? » | EF3, EF4 | 1.1 | En revue |
-| [1.4](1.4-consigne-annoncer.md) | Consigne à annoncer mise en avant | EF6 | 0.2 | Prête |
+| [1.3](1.3-guide-arbitre.md) | Guide de l'arbitre et bouton « ? » | EF3, EF4 | 1.1 | Terminée |
+| [1.4](1.4-consigne-annoncer.md) | Consigne à annoncer mise en avant | EF6 | 0.2 | En revue |
 
 ## E2 TV et identité
 | Story | Titre | Exigences | Statut |

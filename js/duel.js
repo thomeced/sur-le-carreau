@@ -38,7 +38,7 @@ function render(){
 }
 function push(){
   if(!(S&&S.oral&&S.link))return;
-  const k=S.cur[0],d={names:S.names,t:S.t.map(Math.round),sc:S.sc,turn:S.turn,card:[k,S.cur[1],S.cur[2]],disp:S.disp,lvl:S.lvl,over:S.over,lock:S.lock,started:S.started,count:S.counting?S.count:0,cat:S.cat,type:S.type,tnom:TYPES[S.type].nom,consigne:TYPES[S.type].consigne,gold:S.gold};
+  const k=S.cur[0],d={names:S.names,t:S.t.map(Math.round),sc:S.sc,turn:S.turn,card:[k,S.cur[1],S.cur[2]],disp:S.disp,lvl:S.lvl,over:S.over,lock:S.lock,started:S.started,count:S.counting?S.count:0,cat:S.cat,type:S.type,tnom:TYPES[S.type].nom,icone:TYPES[S.type].icone,consigne:TYPES[S.type].consigne,gold:S.gold};
   // Photo : la vignette n'est envoyée à l'arbitre qu'au changement d'image (et de temps en temps, au cas où).
   if(S.type==='photo'&&S.cur[3]&&(S.imgK!==k||++S.imgN%8===0)){d.img=S.cur[3].thumb;S.imgK=k}
   S.link.send('st',d);

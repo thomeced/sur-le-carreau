@@ -6,6 +6,7 @@
    La régie configure un duel simple (noms, catégorie), le lance puis appuie sur « Démarrer le duel ».
    Elle envoie « Bonne réponse » : le joueur qui avait la main marque 1 point et la main passe.
    Puis « Passé » : la réponse s'affiche sur l'écran et le chrono du joueur perd 3 s.
+   Consigne à annoncer (story 1.4) : en grand avant le départ (« Annoncez : »), sur une ligne pendant le duel.
    Guide de l'arbitre (story 1.3, régie en 390×844) : affiché à la 1re connexion (3 pages, « Suivant », glissement,
    « C'est parti », boutons d'au moins 44 px), plus affiché après un rechargement ; bouton « ? » pendant le duel :
    le guide s'ouvre par-dessus, « Passer » le ferme (annoncé), et les verdicts restent possibles aussitôt.
@@ -78,6 +79,16 @@ lancer('regie',async env=>{
   // L'écran du jeu ouvre le duel ; la régie le démarre.
   await jeu.waitForSelector('#game:not([hidden])');
   await regie.waitForSelector('#rgo:not([hidden])');
+
+  etape('consigne à annoncer');
+  // Avant le départ : encadré en tête, « Annoncez : » et la consigne du type, en 24 px gras.
+  const typ=await jeu.evaluate(()=>({nom:TYPES[S.type].nom,icone:TYPES[S.type].icone,consigne:TYPES[S.type].consigne}));
+  await regie.waitForFunction(()=>/Annoncez :/.test(document.getElementById('atype').textContent));
+  const cons=await regie.evaluate(()=>{const e=document.getElementById('atype'),cs=getComputedStyle(e);
+    return{txt:e.textContent,px:parseFloat(cs.fontSize),gras:+cs.fontWeight,avantGo:!!(e.compareDocumentPosition(document.getElementById('rgo'))&Node.DOCUMENT_POSITION_FOLLOWING)}});
+  const attenduCons=typ.icone+' Annoncez : '+typ.nom+', '+typ.consigne.charAt(0).toLowerCase()+typ.consigne.slice(1);
+  attendu(cons.txt===attenduCons,'Consigne : « '+cons.txt+' » au lieu de « '+attenduCons+' »');
+  attendu(cons.px>=24&&cons.gras>=700&&cons.avantGo,'Encadré de la consigne : '+JSON.stringify(cons));
   await regie.click('#rgo');
   await jeu.waitForFunction(()=>/Départ dans/.test(document.getElementById('who').textContent));
   await jeu.clock.runFor(3500); // compte à rebours 3-2-1
@@ -85,6 +96,11 @@ lancer('regie',async env=>{
   // On arrête le temps : les chronos ne bougent plus que par les verdicts et quand le test avance l'horloge.
   await jeu.clock.pauseAt(await jeu.evaluate(()=>Date.now()+1000));
   await pause(200);
+
+  // Pendant le duel : l'encadré tient sur une ligne (icône, nom du type).
+  await regie.waitForFunction(()=>document.getElementById('atype').classList.contains('mini'));
+  const mini=await regie.evaluate(()=>{const e=document.getElementById('atype');return{txt:e.textContent,h:e.getBoundingClientRect().height}});
+  attendu(mini.txt===typ.icone+' '+typ.nom&&mini.h<50,'Encadré réduit pendant le duel : '+JSON.stringify(mini));
 
   etape('état de départ');
   const e0=await etat(jeu);

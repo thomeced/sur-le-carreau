@@ -3,20 +3,30 @@
    Connexion à l'écran du jeu (code ou QR code), configuration de la partie (formulaire #setup, déplacé ici),
    puis arbitrage. La vue suit l'étape envoyée par l'écran (message gs). Le code est retenu (localStorage
    « slc-arb-code » et adresse #arbitre=CODE) : après une mise en veille ou un rechargement, la régie se reconnecte seule. */
-let R,L,cool=false,AFACE='',AIMG={k:null,src:null},GSAT=0,RCODE='',CFGW=null,CFGT=0,PSK='',RWIN=null;
+let ATK='',R,L,cool=false,AFACE='',AIMG={k:null,src:null},GSAT=0,RCODE='',CFGW=null,CFGT=0,PSK='',RWIN=null;
 function arbRender(){
   if(!R){$('ast').textContent='En attente du duel…';$('bok').disabled=$('bpass').disabled=true;return}
   $('ast').textContent='';
   const t=R.t.slice();if(R.started&&!R.over)t[R.turn]-=performance.now()-R.at;
   for(let i=0;i<2;i++){const s=$('a'+i);s.querySelector('.nm').textContent=R.names[i];s.querySelector('.tm').textContent=Math.ceil(Math.max(0,t[i])/1000);s.classList.toggle('on',R.turn===i&&!R.over);s.classList.toggle('low',t[i]<=5000)}
   $('actx').textContent=R.cat?'Catégorie : '+R.cat:'';$('agold').textContent=R.gold||'';
-  // Type de jeu et consigne à annoncer aux candidats.
+  // Consigne à annoncer aux joueurs : en grand avant le départ, réduite à une ligne (icône, type) pendant le duel.
   $('atype').hidden=!R.consigne;
-  if(R.consigne){$('atype').querySelector('.tn').textContent='Type de jeu : '+(R.tnom||'Images');$('atype').querySelector('.tc').textContent='À annoncer : « '+R.consigne+' »'}
+  if(R.consigne)arbConsigne(!R.started||!!R.count);
   const fk=R.started?'c|'+R.card[0]+'|'+R.disp+'|'+(R.type==='photo'&&AIMG.k===R.card[0]):'n|'+(R.count||'?');
   if(fk!==AFACE){AFACE=fk;if(R.started)paintCard($('acard'),R.type||'emoji',R.disp!=null?R.disp:R.card[0],AIMG.k===R.card[0]?AIMG.src:null);else{$('acard').className='';$('acard').textContent=R.count||'?'}}
   $('aans').textContent=R.over?'Duel terminé':R.count?'Départ dans '+R.count+'…':!R.started?'Le duel n’a pas encore démarré':'À '+R.names[R.turn]+' (niveau '+R.lvl+') · réponse : '+R.card[1].split('|').join(' / ');
   $('bok').disabled=$('bpass').disabled=!R.started||R.over||R.lock||cool;
+}
+function arbConsigne(grand){
+  const ic=R.icone||'🖼️',nom=R.tnom||'Images',k=grand+'|'+ic+'|'+nom+'|'+R.consigne;
+  if(k===ATK)return;ATK=k; // arbRender tourne toutes les 100 ms : on ne touche au texte que s'il change
+  const el=$('atype');el.classList.toggle('mini',!grand);el.textContent='';
+  const i=document.createElement('span');i.className='ti';i.setAttribute('aria-hidden','true');i.textContent=ic+' ';el.append(i);
+  if(!grand)return el.append(nom);
+  const b=document.createElement('strong');b.textContent='Annoncez : ';el.append(b);
+  // « Mot à trous, retrouvez le mot complet. » : la consigne suit le nom du type, sans majuscule.
+  el.append(nom+', '+R.consigne.charAt(0).toLowerCase()+R.consigne.slice(1));
 }
 function act(a){if(!L||!R||cool)return;L.send('act',{a,c:R.card[0]});cool=true;arbRender();setTimeout(()=>{cool=false;arbRender()},700)}
 $('bok').onclick=()=>act('ok');
