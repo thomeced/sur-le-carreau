@@ -229,5 +229,9 @@ Chaque chantier est prévu dans sa propre conversation du projet, sur sa propre 
 - Demande de Ced : on faisait vite le tour des catégories. Toutes les catégories qui ne sont ni en photos ni en emojis passent à 40 éléments : 10 en mot à trous (+81 mots), 3 en indices (+41, avec des niveaux 4 et 5), 3 en lettres mélangées (+45) et 3 en titres à l'envers (+41), soit 208 ajouts, sans doublon ni personne vivante.
 - Vérifié : 40 éléments chargés par catégorie, aucune ligne rejetée, duels joués jusqu'au bout sans erreur.
 
+## Story 0.1 : tests de fumée et de régie (novembre 2026)
+- BMAD, epic E0. Dossier `tests/` : `serveur.js` (serveur local, Chromium, collecte des erreurs), `fumee.js` (grille 2×2 jouée jusqu'au vainqueur), `regie.js` (duel configuré et arbitré depuis la régie), `README.md`. Aucun changement du code du jeu.
+- Écarts à la story : chronos accélérés par l'horloge simulée de Playwright (`DUEL_SEC` est une constante) ; régie ouverte aussi dans le test de fumée (sans elle, « Démarrer le duel » est bloqué) ; requêtes externes neutralisées (réseau filtré de Claude, PeerJS).
+
 ## Comment reprendre dans un nouveau projet Claude
 Reliez le dépôt GitHub (référence du code) et gardez ce document dans le projet, puis demandez par exemple : « Lis le document de contexte et reprends le jeu : ajoute l'éditeur de catégories. » Le fichier `sur-le-carreau.html` du projet est la version autonome du jeu (catégories incluses) ; la référence reste le dépôt.
