@@ -250,5 +250,9 @@ Chaque chantier est prévu dans sa propre conversation du projet, sur sa propre 
 - `#gaide` sous le titre de la grille, bande pleine largeur, une phrase par étape (`AIDE_TXT.bandeau`, `aideTexteGrille`, `aideBandeau`, `aideVictoire`), appelé en fin de `gridRender` et dans `gridAfterDuel`. Victoire en formulation neutre. `html{overflow-x:hidden}`.
 - `tests/aide.js` complété (5 phrases). Version `2026-11-27c`.
 
+## Story 1.3 : guide de l'arbitre et bouton « ? » (novembre 2026)
+- `#rguide` (surcouche plein écran de la régie, 3 pages de `AIDE_TXT.guide`, « Passer », « Suivant » / « C'est parti », glissement), `guideArbitre(force)` appelé dans `arbJoin` ; `slc-guide-vu` posé à la fermeture ; bouton rond `#rhelp`. « Mauvaise réponse » attendra le QCM (3.2).
+- Les tests posent `slc-guide-vu` d'avance (option `guide: true` sinon) ; `tests/regie.js` complété. Version `2026-11-27d`.
+
 ## Comment reprendre dans un nouveau projet Claude
 Reliez le dépôt GitHub (référence du code) et gardez ce document dans le projet, puis demandez par exemple : « Lis le document de contexte et reprends le jeu : ajoute l'éditeur de catégories. » Le fichier `sur-le-carreau.html` du projet est la version autonome du jeu (catégories incluses) ; la référence reste le dépôt.

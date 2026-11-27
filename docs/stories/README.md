@@ -18,8 +18,8 @@ Statuts : Brouillon · Prête · En cours · En revue · Terminée
 | Story | Titre | Exigences | Dépend de | Statut |
 |---|---|---|---|---|
 | [1.1](1.1-cartes-comment-jouer.md) | Cartes « Comment jouer » pendant la préparation | EF1, EF2 | 0.2 | Terminée |
-| [1.2](1.2-bandeau-aide.md) | Bandeau d'aide sur le plateau | EF5 | 1.1 | En revue |
-| [1.3](1.3-guide-arbitre.md) | Guide de l'arbitre et bouton « ? » | EF3, EF4 | 1.1 | Prête |
+| [1.2](1.2-bandeau-aide.md) | Bandeau d'aide sur le plateau | EF5 | 1.1 | Terminée |
+| [1.3](1.3-guide-arbitre.md) | Guide de l'arbitre et bouton « ? » | EF3, EF4 | 1.1 | En revue |
 | [1.4](1.4-consigne-annoncer.md) | Consigne à annoncer mise en avant | EF6 | 0.2 | Prête |
 
 ## E2 TV et identité
@@ -35,7 +35,7 @@ Statuts : Brouillon · Prête · En cours · En revue · Terminée
 | Story | Titre | Exigences | Statut |
 |---|---|---|---|
 | 3.1 | Progressivité : `LVL_CURVE` et compteur `S.n` | EF23 | Brouillon |
-| 3.2 | Type QCM et verdict « Mauvaise réponse » | EF11, EF12, EF16 | Brouillon |
+| 3.2 | Type QCM et verdict « Mauvaise réponse » (ajouter aussi sa miniature au guide de l'arbitre, `AIDE_TXT.guide`) | EF11, EF12, EF16 | Brouillon |
 | 3.3 | Type Devinette (bloc et révélée) | EF15, EF16 | Brouillon |
 | 3.4 | Variante Gros plan des catégories photo (`@gp`) | EF13, EF16 | Brouillon |
 | 3.5 | Catégories Gros plan dédiées (foyer, `liste.txt`, `photos-js.py`) | EF14 | Brouillon |
