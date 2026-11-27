@@ -21,6 +21,9 @@
  *   - "envers" (titres à l'envers) : items: [["Le Grand Prince", "le petit prince", 1]] (titre d'un film, d'un livre
  *     ou d'une chanson dont les mots sont remplacés par leur contraire, puis le vrai titre et ses variantes, et le niveau).
  * Les catégories créées avec editeur.html restent dans le navigateur (voir perso.js), pas dans ce fichier.
+ * Domaine : chaque catégorie (y compris celles de photos.js) a un domaine dans DOM_CAT, en bas de ce fichier.
+ *   Le tirage au hasard d'une partie prend une catégorie par domaine avant d'en reprendre un. Une nouvelle
+ *   catégorie doit y être ajoutée (sinon elle est rangée dans « autre » ; tests/contenu.js le signale).
  * Les catégories en photos (Wikimedia Commons) sont dans photos.js, généré par tools/photos-js.py.
  * Une ligne mal écrite est ignorée (avertissement dans la console du navigateur).
  */
@@ -1060,4 +1063,37 @@ const CATEGORIES = {
       ["Contre une rupture", "pour un flirt", 5],
     ],
   }
+};
+
+/* Domaines des catégories (story 4.1) : le tirage au hasard d'une partie mélange les domaines.
+   DOMAINES : liste fixe (clé → nom affichable). DOM_CAT : domaine de chaque catégorie, ici et dans photos.js.
+   Une catégorie absente de DOM_CAT (catégories perso comprises) est rangée dans « autre ». */
+const DOMAINES = {
+  geo: "Géographie", histoire: "Histoire", cinema: "Cinéma et séries", musique: "Musique",
+  sport: "Sport et jeux", sciences: "Sciences et nature", animaux: "Animaux", cuisine: "Cuisine",
+  arts: "Arts et lettres", langue: "Langue et mots", quotidien: "Vie quotidienne"
+};
+const DOM_CAT = {
+  // Géographie
+  capitales: "geo", villes: "geo", departements: "geo", geographie: "geo", ind_villes: "geo", ind_pays: "geo",
+  vrac_pays: "geo", pho_drapeaux: "geo", pho_monuments: "geo",
+  // Histoire
+  histoire: "histoire", pho_histoire: "histoire",
+  // Cinéma et séries
+  films: "cinema", ind_films: "cinema", envers_films: "cinema",
+  // Musique
+  envers_chansons: "musique", pho_musique: "musique",
+  // Sport et jeux
+  jeux: "sport", pho_sports: "sport",
+  // Sciences et nature
+  corps: "sciences", anatomie: "sciences", pho_nature: "sciences", pho_espace: "sciences",
+  // Animaux
+  vrac_animaux: "animaux", pho_animaux: "animaux", pho_insectes: "animaux",
+  // Cuisine
+  fromages: "cuisine", desserts: "cuisine", vrac_cuisine: "cuisine", pho_fruits: "cuisine", pho_plats: "cuisine",
+  // Arts et lettres
+  mythologie: "arts", peintres: "arts", envers_livres: "arts",
+  // Vie quotidienne
+  metiers: "quotidien", fetes: "quotidien", pho_transports: "quotidien", pho_outils: "quotidien",
+  pho_vetements: "quotidien", pho_techno: "quotidien"
 };

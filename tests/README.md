@@ -13,6 +13,7 @@ node tests/aide.js
 node tests/lite.js
 node tests/photos.js
 node tests/niveaux.js
+node tests/contenu.js
 node tests/intro.js
 ```
 
@@ -30,6 +31,7 @@ Chaque test sert lui-même le dépôt (`python3 -m http.server` sur un port libr
 | `lite.js` | Mode allégé (TV) : aucun `color-mix()` sans couleur de secours (ni avec `var()`) dans `style.css` et `intro.css` ; page normale sans mode allégé ; `?lite=1&debug=1` : classe `lite`, panneaux sans flou à fond opaque, cadre de débogage ; navigateur sans `color-mix()` simulé : mode allégé détecté seul. Vague case par case (`?lite=1`, grille 2×2) : aucun flou sur le plateau, rien de dessiné hors des cases, cases non capturées inchangées, cases capturées à la couleur du gagnant, délais croissants avec la distance, fin propre. | ~5 s |
 | `photos.js` | Préchargement : duel simple dans une catégorie photo ; rien avant le lancement ; photo tirée et 3 suivantes demandées avant le départ ; chaque photo affichée après un verdict avait été demandée avant ; rien hors de la catégorie. | ~2 s |
 | `niveaux.js` | Progressivité : `niveauPour(n)` suit `LVL_CURVE` ; duel simple dans une catégorie texte (8 éléments par niveau), 16 verdicts alternés « Bonne réponse » / « Passé » : niveaux tirés 1,1,1,2,2,2,3,3,3,3,4,4,4,4,5,5 ; un verdict reçu deux fois ne compte qu'une fois ; nouveau duel au niveau 1. | ~9 s |
+| `contenu.js` | Contenu et tirage : aucun élément ignoré à la validation (avertissements de la console) ; chaque catégorie de `categories.js` et `photos.js` a un domaine valide dans `DOM_CAT`, qui ne cite aucune catégorie inexistante ; tirage équilibré par domaine (`ptirer`, `pdraw`, `pfill`) sur 1 800 tirages en 2×2, 3×3 et 4×4. Affiche les quantités par catégorie et par niveau face aux objectifs d'E4 ; `node tests/contenu.js --strict` les exige. | ~1 s |
 | `intro.js` | Intro en mode funky (15 s) : 15 images (plateau, animateur en pied, 12 candidats, logo) chargées ; à 6 s la caméra a avancé (animateur plus grand, candidat le plus proche sorti du champ) ; à 12,5 s l'animateur est entier, au moins 1,6 fois plus grand, sous le logo ; « Passer l'intro » rend la main au jeu. | ~14 s |
 | `serveur.js` | Pas un test : utilitaire commun (serveur local, navigateur, collecte des erreurs, ouverture de l'écran et de la régie reliée). | |
 

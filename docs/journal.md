@@ -278,5 +278,12 @@ Chaque chantier est prévu dans sa propre conversation du projet, sur sa propre 
 - Le niveau suit le nombre d'éléments joués dans le duel (`S.joues`, bonnes réponses et « Passé ») au lieu des seules bonnes réponses : `niveauPour(n)` et seuils `LVL_CURVE = [3, 6, 10, 14]` (éléments 1 à 3 → 1 … 15 et plus → 5) ; `LVL_STEP` supprimé. Avec l'ancienne règle, 16 éléments alternés ne dépassaient pas le niveau 3.
 - `S.n` était déjà le compteur de ticks du chrono : nouveau compteur `S.joues`. Architecture §4.3 corrigée (nom du compteur, décalage d'un cran de la courbe). Nouveau `tests/niveaux.js`. Version `2026-11-27m`.
 
+## Nouveaux types reportés (novembre 2026)
+- Décision de Ced (27/11) : QCM, Devinette et Gros plan (stories 3.2 à 3.5) deviennent une évolution future ; E3 se limite à la progressivité. Spec gardée (PRD, UX, architecture, notes du backlog). Objectif de contenu : 42 catégories.
+
+## Story 4.1 : domaines et tirage équilibré (novembre 2026)
+- `DOMAINES` et `DOM_CAT` en bas de `categories.js` (39 catégories, `photos.js` compris) ; `domaineDe` (`js/base.js`) ; `ptirer(n, deja)` (`js/choix-categories.js`) : domaine le moins représenté d'abord, utilisé par `pdraw` et `pfill`. Avant, une grille 4×4 tirée au hasard recevait souvent 4 ou 5 catégories de géographie.
+- Nouveau `tests/contenu.js` : domaines, éléments ignorés, tirage équilibré, quantités face aux objectifs d'E4 (`--strict`). Constat : mots à trous et emojis sans élément aux niveaux 4 et 5. Version `2026-11-27n`.
+
 ## Comment reprendre dans un nouveau projet Claude
 Reliez le dépôt GitHub (référence du code) et gardez ce document dans le projet, puis demandez par exemple : « Lis le document de contexte et reprends le jeu : ajoute l'éditeur de catégories. » Le fichier `sur-le-carreau.html` du projet est la version autonome du jeu (catégories incluses) ; la référence reste le dépôt.
