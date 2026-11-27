@@ -24,6 +24,7 @@ Jeu web de salon inspiré de The Floor : duels de catégories sur une grille de 
 - `intro.js`, `intro.css`, `assets/intro/` : écran de lancement (Funky ou Sérieux) et intro, déclenchés par `SLC_INTRO.start()`. `tools/generique-intro.py` génère le générique.
 - `sons.js` : sons synthétisés (Web Audio), appelés par `snd(nom)`.
 - `qrcode.js` : générateur de QR code (Kazuhiko Arase, licence MIT, repris du paquet npm qrcode-terminal), `SLC_QR(texte)`.
+- `tests/` : tests de bout en bout (Node + Playwright pris dans l'environnement, rien à installer dans le dépôt) : `node tests/fumee.js` (partie 2×2 complète) et `node tests/regie.js` (régie : configuration, « Bonne réponse », « Passé »). À lancer avant et après chaque story ; mode d'emploi dans `tests/README.md`.
 
 ## Règles
 - **Duel** : deux chronos de 40 s (`DUEL_SEC`, plus de sélecteur sur l'écran de départ ; 45 s avec la case d'or), seul celui du joueur qui a la main tourne. Bonne réponse : la main passe. « Passé » : réponse révélée, −3 s. À 0 s, le joueur perd. Compte à rebours 3-2-1 avant le départ. Niveaux 1 à 5 (`LVL_MAX`) : +1 toutes les 3 bonnes réponses du duel (`LVL_STEP`) ; sans élément au niveau visé, on prend le plus proche ; un niveau épuisé est recyclé ; le niveau affiché est celui de l'élément tiré.
@@ -55,7 +56,7 @@ Jeu web de salon inspiré de The Floor : duels de catégories sur une grille de 
 - Pas de visuel ni de musique protégés ; pas de marques ni de personnes vivantes dans les catégories.
 - Photos : licence libre seulement, crédit dans `credits.html` ; pas de personne reconnaissable (sauf les portraits historiques, de personnes décédées), pas de marque mise en avant, pas de texte qui donne la réponse, pas de bâtiment récent encore protégé.
 - `prefers-reduced-motion` respecté partout ; messages annoncés (`aria-live`) ; tout jouable au clavier.
-- Tests automatisés : écrans 1440×900 et 390×844, deux onglets du même navigateur (liaison `BroadcastChannel`) : écran du jeu sur `index.html` (ou `?mode=serieux` pour sauter le choix du lancement), régie sur `index.html#arbitre=CODE` (code lu dans `#hcode`). Sans téléphone : « Configurer sur cet écran ».
+- Tests automatisés (`tests/`, non-régression à chaque story) : écrans 1440×900 et 390×844, deux onglets du même navigateur (liaison `BroadcastChannel`, requêtes externes neutralisées) : écran du jeu sur `index.html` (ou `?mode=serieux` pour sauter le choix du lancement), régie sur `index.html#arbitre=CODE` (code lu dans `#hcode`). Sans régie reliée, « Démarrer le duel » reste bloqué. Chronos accélérés par l'horloge simulée de Playwright (`DUEL_SEC` est une constante).
 
 ## Risques et points ouverts
 - **Jamais testé sur deux vrais appareils avec PeerJS** (ni avec les photos, ni le parcours régie sur le téléphone) : priorité, test à faire par Ced.

@@ -10,7 +10,7 @@ Statuts : Brouillon · Prête · En cours · En revue · Terminée
 ## E0 Socle technique
 | Story | Titre | Exigences | Dépend de | Statut |
 |---|---|---|---|---|
-| [0.1](0.1-tests-fumee.md) | Tests de fumée et de régie (Playwright) | archi §8 | — | Prête |
+| [0.1](0.1-tests-fumee.md) | Tests de fumée et de régie (Playwright) | archi §8 | — | En revue |
 | [0.2](0.2-decoupage-index.md) | Découpage d'`index.html` en fichiers | archi §3 | 0.1 | Prête |
 | [0.3](0.3-version-cache.md) | Version des fichiers (cache de la TV) | archi §2 | 0.2 | Prête |
 
