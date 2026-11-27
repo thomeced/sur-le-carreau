@@ -272,6 +272,7 @@ Chaque chantier est prévu dans sa propre conversation du projet, sur sa propre 
 ## Story 2.4 : nouveaux visuels de l'intro (novembre 2026)
 - 6 pistes dessinées proposées (silhouettes, pions, cases-prénoms, mascottes carreaux, néons, personnages dessinés) ; Ced a préféré des visuels photographiques générés par IA, qu'il a fournis (animateur, 12 candidats, plateau, logo). Remarques faites : clichés (2 candidats régénérés), résolution (relevée), ressemblance de l'animateur avec l'ancien (gardé, choix de Ced).
 - Calques WebP recomposés (deux groupes de 6), logo en titre de fin en haut, animateur descendu, texte de l'écran retiré. Nouveau `tests/intro.js`. Version `2026-11-27i`.
+- Reprise après revue de la démo : scène en perspective (`couloir()`), seule la caméra bouge (3 m) dans un couloir de 12 candidats par deux jusqu'à l'animateur en pied ; logo de fin posé sur celui du plateau ; intro de 15 s ; générique « The Grand Reveal » (fourni par Ced, fondu de 13 à 15 s). Version `2026-11-27l`.
 
 ## Comment reprendre dans un nouveau projet Claude
 Reliez le dépôt GitHub (référence du code) et gardez ce document dans le projet, puis demandez par exemple : « Lis le document de contexte et reprends le jeu : ajoute l'éditeur de catégories. » Le fichier `sur-le-carreau.html` du projet est la version autonome du jeu (catégories incluses) ; la référence reste le dépôt.
