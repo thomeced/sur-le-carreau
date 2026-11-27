@@ -21,7 +21,7 @@
 ## 2. Stack
 HTML, CSS et JavaScript sans framework ; scripts classiques qui partagent l'espace global, chargés dans un ordre fixe. Bibliothèques externes inchangées : PeerJS 1.5.4 (CDN). Outils hors exécution : Python (photos Commons, générique), Node + Playwright (tests, §8), utilisés seulement par Claude ou Ced, jamais par le jeu.
 
-**Cache de la TV** : chaque `<script>` et `<link>` porte `?v=<VERSION>` (constante unique en tête d'`index.html`, montée à chaque PR), pour que la TV ne garde pas un vieux fichier après une mise à jour.
+**Cache de la TV** : chaque `<script>` et `<link>` porte `?v=<VERSION>`, pour que la TV ne garde pas un vieux fichier après une mise à jour. La version est définie une seule fois (`<meta name="slc-version">` d'`index.html`), recopiée dans les trois pages et le pied de l'accueil par `tools/version.py`, lancé dans chaque PR qui touche du code (story 0.3).
 
 ## 3. Structure du code après découpage (story 0)
 Découpage **à comportement identique** du bloc `<style>` et du bloc `<script>` d'`index.html`, en suivant les sections déjà repérées dans le code :
@@ -110,7 +110,7 @@ Rien d'autre de nouveau : pas de mémoire des éléments déjà vus (écartée p
 - Script de contrôle `tests/contenu.js` (Node, §8) : nombre d'éléments par catégorie et par niveau, domaine présent, formats valides.
 
 ## 7. Déploiement
-Inchangé : branche `main` → GitHub Pages (racine). Une story = une branche = une PR, relue et fusionnée par Ced. La constante `VERSION` est montée dans chaque PR qui touche du code (§2).
+Inchangé : branche `main` → GitHub Pages (racine). Une story = une branche = une PR, relue et fusionnée par Ced. La version est montée dans chaque PR qui touche du code : `python3 tools/version.py` (§2).
 
 ## 8. Standards de code et stratégie de test
 **Standards** : style existant (noms courts, commentaires en français qui expliquent le pourquoi) ; aucune nouvelle dépendance ; fonctionnalités limitées à M94 (§1) ; accessibilité (focus visible pour la télécommande, `aria-live`, mouvement réduit) pour tout nouvel écran ; `CLAUDE.md` et sa copie du projet claude.ai mis à jour en fin de story.

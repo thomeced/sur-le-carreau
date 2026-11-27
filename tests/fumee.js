@@ -77,4 +77,15 @@ lancer('fumee',async env=>{
   if(duels!==3)throw new Error('Une grille 2×2 doit se jouer en 3 duels, joués : '+duels);
   if(enLice!=='1 joueur en lice')throw new Error('Fin de partie inattendue : « '+enLice+' »');
   console.log('Vainqueur : '+titre+' ('+duels+' duels)');
+
+  // Cache de la TV : chaque fichier CSS et JS du jeu est demandé avec la version de la page (?v=…),
+  // qui est aussi affichée en pied de l'accueil.
+  const version=await jeu.getAttribute('meta[name="slc-version"]','content');
+  const pied=(await jeu.textContent('#hver')).trim();
+  if(pied!=='Version '+version)throw new Error('Pied de l’accueil « '+pied+' » au lieu de « Version '+version+' »');
+  const fichiers=env.requetes.filter(u=>/\.(js|css)(\?|$)/.test(u));
+  const sansVersion=fichiers.filter(u=>!u.endsWith('?v='+version));
+  if(!fichiers.some(u=>u.startsWith('intro.css')))throw new Error('intro.css n’a pas été demandé');
+  if(sansVersion.length)throw new Error('Fichiers demandés sans ?v='+version+' : '+[...new Set(sansVersion)].join(', '));
+  console.log('Version '+version+' : '+new Set(fichiers).size+' fichiers CSS et JS, tous avec ?v=');
 });

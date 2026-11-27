@@ -19,7 +19,7 @@ Chaque test sert lui-même le dépôt (`python3 -m http.server` sur un port libr
 
 | Fichier | Vérifie | Durée |
 |---|---|---|
-| `fumee.js` | Partie complète en grille 2×2 : accueil (`?mode=serieux`, 1440×900), « Configurer sur cet écran », tirage de 4 catégories, 3 duels (adversaire, « Lancer le duel », « Démarrer le duel », une « Bonne réponse » et un « Passé » envoyés par la régie, chronos vidés), jusqu'à « … remporte la partie ! » avec 1 joueur en lice. | ~13 s |
+| `fumee.js` | Partie complète en grille 2×2 : accueil (`?mode=serieux`, 1440×900), « Configurer sur cet écran », tirage de 4 catégories, 3 duels (adversaire, « Lancer le duel », « Démarrer le duel », une « Bonne réponse » et un « Passé » envoyés par la régie, chronos vidés), jusqu'à « … remporte la partie ! » avec 1 joueur en lice ; puis vérifie que chaque fichier CSS et JS a été demandé avec `?v=<version>` (cache de la TV) et que le pied de l'accueil affiche cette version. | ~13 s |
 | `regie.js` | Écran et régie dans deux onglets : la régie configure un duel simple (noms, catégorie), le lance et le démarre ; « Bonne réponse » donne 1 point et passe la main sans toucher aux chronos ; « Passé » affiche la réponse et retire exactement 3 s au joueur qui a la main ; la régie affiche les mêmes chronos que l'écran. | ~2 s |
 | `serveur.js` | Pas un test : utilitaire commun (serveur local, navigateur, collecte des erreurs, ouverture de l'écran et de la régie reliée). | |
 
