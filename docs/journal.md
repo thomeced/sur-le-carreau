@@ -319,5 +319,11 @@ Chaque chantier est prévu dans sa propre conversation du projet, sur sa propre 
 - « Corde à sauter » remplacée par « boule de bowling » (aucune photo libre sans personne reconnaissable).
 - `tools/photos-js.py` réduit désormais lui-même à 640 px (Pillow) et ne réécrit pas une photo inchangée : 30 Mo pour 600 photos. Version `2026-11-28d`. `contenu.js --strict` : 42/42.
 
+## Refonte visuelle : accueil, préparation, lancement (story 5.1, 28 novembre 2026)
+- Maquettes validées par Ced sur une planche Design (https://claude.ai/artifact/SooGA1em5qFjNB8TgRqq22) : accueil (piste B), préparation, plateau en perspective (photo de l'émission en référence), duel en bandeau (autre photo de l'émission), régie. Spec : `docs/ux.md` §5 ; epic E5 dans le backlog.
+- Accueil : logo doré agrandi, cadre « grand écran » (QR code, code, état), étapes en pastilles, boutons ; textes de 28 px et plus en 1920×1080, rien à faire défiler. L'état de la liaison n'est plus montré qu'avec `?debug=1`.
+- Ced ne voyait pas toujours le choix Funky ou Sérieux : l'écran de lancement n'apparaissait qu'une fois par onglet (`slc-lance`). Remplacé par une bascule « Lancement » toujours visible sur l'accueil et dans la configuration (écran et régie) ; le mode retenu s'applique à la connexion du téléphone. Intro en vraie vidéo (MP4) écartée pour l'instant.
+- Nouveau test `tests/accueil.js`. Version `2026-11-28e`.
+
 ## Comment reprendre dans un nouveau projet Claude
 Reliez le dépôt GitHub (référence du code) et gardez ce document dans le projet, puis demandez par exemple : « Lis le document de contexte et reprends le jeu : ajoute l'éditeur de catégories. » Le fichier `sur-le-carreau.html` du projet est la version autonome du jeu (catégories incluses) ; la référence reste le dépôt.

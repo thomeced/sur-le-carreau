@@ -171,41 +171,82 @@ a.btnlink:focus-visible{outline:3px solid var(--p1);outline-offset:2px}
 .steps li{border:2px solid var(--line);border-radius:999px;padding:4px 12px;opacity:.6}
 .steps li.done{border-color:var(--ok);color:var(--ok);opacity:1}
 .steps li.cur{border-color:var(--p1);background:rgba(255,197,61,.15);opacity:1}
-#home{text-align:center}
-#home h1{margin-top:4px}
-.hpanel{max-width:520px;margin:0 auto 14px;text-align:center}
-.hpanel h2{font:700 clamp(1.4rem,4.4vw,2rem)/1.2 var(--disp);margin:0 0 10px}
-#hqr svg{display:block;width:min(62vw,300px,42vh);height:auto;margin:0 auto;border-radius:6px}
+/* ---------- Accueil et préparation (story 5.1, docs/ux.md §5.2 et §5.3) ----------
+   Tailles en vw, calées sur une TV 1920 px de large (1 vw = 19,2 px), avec un minimum pour les petits écrans.
+   L'accueil prend toute la largeur (le reste du jeu garde la colonne de main). */
+#home{--hw:min(calc(100vw - 48px),1760px);width:var(--hw);margin-left:calc(50% - var(--hw)/2);text-align:center;
+  display:flex;flex-direction:column;align-items:center;gap:clamp(12px,1.15vw,24px);min-height:calc(100vh - 52px)}
+.hlogo{margin:0;line-height:0;text-shadow:none}
+.hlogo img{display:block;width:min(39vw,69vh,750px);height:auto;filter:drop-shadow(0 0 2vw rgba(255,197,61,.35))}
+html.lite .hlogo img{filter:none}
+#home.hp .hlogo img{width:min(23vw,40vh,440px)}
+/* Cadre « grand écran » : bord doré, liseré bleu nuit, halo bleu (sans flou en mode allégé). */
+.gscreen{background:radial-gradient(ellipse at 50% 30%,#2353E0,#0B1F8A 70%);border:clamp(3px,.31vw,6px) solid #F2C44E;border-radius:clamp(10px,.94vw,18px);
+  box-shadow:0 0 0 clamp(5px,.52vw,10px) #071340,0 0 0 clamp(7px,.73vw,14px) rgba(242,196,78,.5),0 0 6vw rgba(80,130,255,.55)}
+html.lite .gscreen{box-shadow:0 0 0 clamp(5px,.52vw,10px) #071340,0 0 0 clamp(7px,.73vw,14px) #8A7A3C}
+.hscreen{width:min(100%,60.5vw,1160px);box-sizing:border-box;padding:clamp(18px,1.9vw,36px) clamp(18px,2.9vw,56px);display:flex;gap:clamp(18px,2.9vw,56px);align-items:center;text-align:left;margin-top:8px}
+#hqr{flex:0 0 auto;background:#fff;padding:clamp(8px,.94vw,18px);border-radius:clamp(6px,.52vw,10px)}
+#hqr svg{display:block;width:min(14.6vw,26vh,280px);min-width:150px;height:auto}
 #hqr:empty{display:none}
-.bigcode{font:700 clamp(2.6rem,9vw,4rem)/1 var(--disp);letter-spacing:.2em;color:var(--p1);margin:12px 0 4px}
-#hst,#hpst{font-weight:700;min-height:1.5em;margin:6px 0}
-#hst.on,#hpst.on{color:var(--ok)}
-.hlinks{display:flex;flex-wrap:wrap;justify-content:center;gap:4px 18px;margin:8px 0 0;font-size:.9rem}
-.hlinks a,.hlinks button.lnk{color:var(--ink);opacity:.7;background:none;border:0;box-shadow:none;padding:6px 2px;font:600 .9rem/1.3 var(--disp);text-decoration:underline;text-underline-offset:3px}
-.hlinks a:hover,.hlinks button.lnk:hover{opacity:1}
-.hlinks a:focus-visible{outline:3px solid var(--p1);outline-offset:2px}
-/* Version des fichiers, en petit dans le coin de l'accueil (toujours visible, sans défiler) : pour vérifier ce que la TV a chargé. */
-.hver{position:fixed;right:12px;bottom:8px;margin:0;font-size:.75rem;opacity:.5;pointer-events:none}
-@media(max-width:600px){.hver{position:static;margin:12px 0 0;text-align:center}}
-/* Cartes « Comment jouer » (préparation) : le panneau s'élargit à 60 % de l'écran ; textes lisibles à 3 m
-   (titre 56 px et phrase 40 px sur une TV 1920 px de large). */
-#hprep.cartes{max-width:none;width:60vw;margin-left:calc(50% - 30vw);margin-right:calc(50% - 30vw)}
-#hprep.cartes h2{font-size:clamp(1.2rem,1.6vw,2rem);margin-bottom:4px}
-#hprep.cartes #hpst{font-size:clamp(.9rem,1.1vw,1.4rem)}
-.hcards{margin-top:10px}
+.hside{display:flex;flex-direction:column;gap:clamp(10px,1.15vw,22px);min-width:0}
+.hside h2{margin:0;font:700 clamp(1.35rem,2.3vw,2.8rem)/1.12 var(--disp)}
+.hcodel{margin:0;display:flex;align-items:baseline;gap:clamp(10px,1.46vw,28px);font:600 clamp(1rem,1.67vw,2rem)/1 var(--disp);color:rgba(244,246,255,.85)}
+.bigcode{font:700 clamp(2.6rem,5vw,6rem)/1 var(--disp);letter-spacing:.14em;color:var(--p1);text-shadow:0 0 1.6vw rgba(255,197,61,.5)}
+html.lite .bigcode{text-shadow:none}
+.hpill{align-self:flex-start;display:inline-flex;align-items:center;gap:.6em;margin:0;padding:.5em 1em;border-radius:999px;background:rgba(3,4,14,.45);font:600 clamp(1rem,1.46vw,1.75rem)/1.2 var(--disp)}
+.hpill::before{content:"";width:.6em;height:.6em;border-radius:50%;background:var(--p2);box-shadow:0 0 .6em var(--p2);flex:0 0 auto}
+.hpill:empty{display:none}
+.hpill.on{color:var(--ok);background:transparent;border:2px solid var(--ok)}
+.hpill.on::before{background:var(--ok);box-shadow:none}
+/* État de la liaison (PeerJS, BroadcastChannel…) : seulement avec ?debug=1. */
+#hlnk{display:none;margin:0;font-size:clamp(.8rem,1vw,1.2rem)}
+html.slc-debug #hlnk{display:block}
+.hprep{display:flex;flex-direction:column;align-items:center;gap:clamp(14px,1.35vw,26px);width:100%}
+.hphead{display:flex;flex-wrap:wrap;justify-content:center;align-items:center;gap:10px clamp(14px,1.46vw,28px)}
+.hphead h2{margin:0;font:700 clamp(1.2rem,2.1vw,2.6rem)/1.2 var(--disp)}
+.hphead .hpill{align-self:center}
+.hcards{width:min(100%,66.7vw,1280px);box-sizing:border-box;padding:clamp(16px,2.3vw,44px) clamp(16px,4.2vw,80px) clamp(14px,1.9vw,36px);text-align:center}
+.hcsur{margin:0 0 4px;font:700 clamp(.8rem,1.46vw,1.75rem)/1 var(--disp);letter-spacing:.12em;text-transform:uppercase;color:#B9C8FF}
 .hcard{transition:opacity .45s ease}
 .hcard.out{opacity:0}
-.hcpic svg{display:block;width:auto;height:clamp(80px,16vh,190px);margin:4px auto 10px;max-width:100%}
-.hct{font:700 clamp(1.6rem,2.95vw,4rem)/1.15 var(--disp);margin:0 0 10px;color:var(--p1)}
-.hcp{font:600 clamp(1.15rem,2.1vw,2.9rem)/1.3 var(--disp);margin:0 auto;max-width:28em;min-height:2.6em}
-.hcdots{display:flex;justify-content:center;gap:12px;list-style:none;margin:18px 0 4px;padding:0}
-.hcdots li{width:clamp(10px,.8vw,16px);height:clamp(10px,.8vw,16px);border-radius:50%;border:2px solid var(--ink);opacity:.6}
-.hcdots li.on{background:var(--ink);opacity:1}
-@media(max-width:700px){#hprep.cartes{width:auto;margin-left:auto;margin-right:auto}}
+.hcpic svg{display:block;width:auto;height:clamp(64px,12vh,150px);margin:2px auto 6px;max-width:100%}
+.hct{font:700 clamp(1.6rem,3.95vw,4.8rem)/1.05 var(--disp);margin:0 0 10px;color:var(--p1)}
+.hcp{font:600 clamp(1.15rem,2.5vw,3rem)/1.25 var(--disp);margin:0 auto;max-width:24em;min-height:2.5em}
+.hcdots{display:flex;justify-content:center;gap:clamp(8px,.83vw,16px);list-style:none;margin:clamp(10px,1.15vw,22px) 0 0;padding:0}
+.hcdots li{width:clamp(14px,1.15vw,22px);height:clamp(6px,.52vw,10px);border-radius:5px;background:rgba(255,255,255,.35)}
+.hcdots li.on{width:clamp(28px,2.5vw,48px);background:var(--p1)}
 @media(prefers-reduced-motion:reduce){.hcard{transition:none}}
 .hwait{animation:hwait 1.6s ease-in-out infinite alternate}
 @keyframes hwait{to{opacity:.55}}
 @media(prefers-reduced-motion:reduce){.hwait{animation:none}}
+#hsteps{margin:0;gap:clamp(8px,1.04vw,20px);font:700 clamp(.95rem,1.56vw,1.85rem)/1 var(--disp)}
+#hsteps li{padding:.55em 1.1em;border-width:3px;background:rgba(3,4,14,.7);opacity:1;border-color:rgba(255,255,255,.35)}
+#hsteps li.done{border-color:var(--ok);color:var(--ok)}
+#hsteps li.done::after{content:" ✓"}
+#hsteps li.cur{background:var(--p1);border-color:var(--p1);color:#101B4D}
+.hbottom{margin-top:auto;width:100%;display:flex;flex-wrap:wrap;justify-content:space-between;align-items:center;gap:14px 24px;padding-bottom:8px}
+.hlinks{display:flex;flex-wrap:wrap;justify-content:center;gap:clamp(8px,.94vw,18px);margin:0}
+.hlinks a,.hlinks button.lnk{display:inline-block;color:var(--ink);background:rgba(3,4,14,.75);border:2px solid rgba(255,255,255,.3);border-radius:12px;box-shadow:none;
+  padding:.5em .95em;font:600 clamp(.95rem,1.46vw,1.75rem)/1 var(--disp);text-decoration:none}
+.hlinks a:hover,.hlinks button.lnk:hover{border-color:rgba(255,255,255,.7)}
+/* Focus très visible (télécommande) sur tout ce qui se clique dans l'accueil. */
+#home a:focus-visible,#home button:focus-visible{outline:clamp(3px,.31vw,6px) solid var(--p1);outline-offset:clamp(3px,.31vw,6px)}
+/* Bascule à deux choix (lancement Funky ou Sérieux) : accueil, formulaire de départ et régie. */
+.seg{display:inline-flex;align-items:center;gap:4px;padding:4px;border-radius:999px;background:rgba(3,4,14,.75);border:2px solid rgba(255,255,255,.3)}
+.seg button{border:0;border-radius:999px;background:transparent;color:var(--ink);box-shadow:none;padding:.55em 1.1em;font:700 1rem/1.1 var(--disp);min-height:44px}
+.seg button[aria-pressed="true"]{background:var(--p1);color:#101B4D}
+.seg .segl{padding:0 .4em 0 .8em;font:600 1rem/1 var(--disp);color:#B9C4F2}
+.hmode .segl,.hmode button{font-size:clamp(.95rem,1.46vw,1.75rem)}
+.lmode{display:grid;gap:6px;justify-items:start}
+.segt{font-weight:600}
+.lmode .seg{border-radius:14px;width:100%;box-sizing:border-box}
+.lmode .seg button{flex:1 1 0;border-radius:10px}
+@media(max-width:700px){
+  .hscreen{flex-direction:column;text-align:center;width:100%}
+  .hcodel,.hpill{align-self:center;justify-content:center}
+  .hbottom{justify-content:center}
+}
+
 #arb .steps{margin-bottom:8px}
 #rscreen{text-align:center;margin:0 0 12px;font-weight:600;opacity:.85}
 #rscreen:empty{display:none}
@@ -249,3 +290,7 @@ html.slc-arb #setup{padding-top:0}
 html.slc-arb main{padding-top:12px}
 /* ?debug=1 (js/main.js) : navigateur et mode allégé, en petit en bas à gauche. */
 .slcdebug{position:fixed;left:6px;bottom:6px;z-index:99;max-width:min(70vw,900px);padding:4px 8px;font:12px/1.35 ui-monospace,monospace;background:#000;color:#9f9;border:1px solid #393;border-radius:3px;pointer-events:none;overflow-wrap:anywhere}
+
+/* Version des fichiers, en petit dans le coin de l'accueil (toujours visible, sans défiler) : pour vérifier ce que la TV a chargé. */
+.hver{position:fixed;right:12px;bottom:8px;margin:0;font-size:.75rem;opacity:.5;pointer-events:none}
+@media(max-width:600px){.hver{position:static;margin:12px 0 0;text-align:center}}

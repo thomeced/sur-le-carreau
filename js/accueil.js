@@ -55,8 +55,8 @@ function qrInto(box,u){
   const p=document.createElementNS(NS,'path');p.setAttribute('d',d);p.setAttribute('fill','#03040E');
   svg.append(bg,p);box.appendChild(svg);
 }
-const HOWTXT=u=>u?'Scannez le QR code avec le téléphone. Sinon, ouvrez le jeu sur le téléphone, touchez « Ouvrir la régie sur cet appareil » et saisissez le code.'
-  :'Sur le téléphone, ouvrez le jeu, touchez « Ouvrir la régie sur cet appareil » et saisissez le code.';
+const HOWTXT=u=>u?'Scannez le QR code avec le téléphone. Sinon, ouvrez le jeu sur le téléphone, touchez « Ouvrir la régie ici » et saisissez le code.'
+  :'Sur le téléphone, ouvrez le jeu, touchez « Ouvrir la régie ici » et saisissez le code.';
 function pairRender(){
   $('pcode').textContent=LCODE||'…';$('hcode').textContent=LCODE||'…';
   const u=LCODE&&window.SLC_QR&&pairURL();
@@ -123,10 +123,11 @@ function homeRender(){
   if(isArb)return;
   const on=arbOn(),prep=HOMEST!=='home';
   $('hconnect').hidden=prep&&on;$('hprep').hidden=!prep;
-  $('hh2').textContent=prep?'Reconnectez le téléphone':'Scannez pour prendre la main';
+  $('hh2').textContent=prep?'Reconnectez le téléphone':'Scannez avec votre téléphone pour prendre la main';
+  $('home').classList.toggle('hp',prep&&on);
   const t=!LCODE?'Création du code…':on?'Téléphone connecté ✓':'En attente du téléphone…',st=$('hst');
   if(st.textContent!==t)st.textContent=t;st.classList.toggle('on',on);
-  const pt=on?'Régie connectée ✓ · écran '+LCODE:'La régie s’est déconnectée : reconnectez le téléphone.',ps=$('hpst');
+  const pt=on?'Régie reliée · '+LCODE:'La régie s’est déconnectée : reconnectez le téléphone.',ps=$('hpst');
   if(ps.textContent!==pt)ps.textContent=pt;ps.classList.toggle('on',on);
   $('hph2').textContent=HOMEST==='launch'?'Lancement…':'Partie en préparation sur le téléphone…';
   setSteps($('hsteps'),prep&&on?1:0);
@@ -161,10 +162,15 @@ function gridCmd(d){
   else if(d.c==='back'&&!$('wback').hidden&&!$('game').hidden)$('wback').onclick();
   else if(d.c==='grille'&&S&&S.pid&&S.over&&!$('end').hidden&&S.winP!=null)gridAfterDuel();
 }
-// Funky ou Sérieux choisi sur le téléphone : même effet que le bouton de l'écran de lancement.
-function lanceDistant(m){
-  if(HOMEST!=='launch')return;
-  const b=document.querySelector(m==='funky'?'.slcl-funky':'.slcl-serious');if(b)b.click();
+/* Lancement Funky ou Sérieux (story 5.1) : bascule toujours visible sur l'accueil (et dans le formulaire de départ),
+   ou choix envoyé par la régie (cmd « lance »). Le mode est retenu par intro.js (slc-mode) et s'applique à la
+   connexion du téléphone. */
+const lmode=()=>window.SLC_INTRO&&SLC_INTRO.mode?SLC_INTRO.mode():'funky';
+function modeRender(){const m=lmode();document.querySelectorAll('[data-lm]').forEach(b=>b.setAttribute('aria-pressed',b.dataset.lm===m?'true':'false'))}
+function lanceDistant(m){if(window.SLC_INTRO&&SLC_INTRO.setMode)SLC_INTRO.setMode(m,false);modeRender()}
+if(!isArb){
+  document.querySelectorAll('[data-lm]').forEach(b=>b.onclick=()=>{if(window.SLC_INTRO&&SLC_INTRO.setMode)SLC_INTRO.setMode(b.dataset.lm,true);modeRender();gsSend(true)});
+  modeRender();
 }
 // État de la grille pour la régie : qui a la main, adversaires possibles, choix en cours, case d'or.
 function gridState(){
@@ -184,7 +190,7 @@ function gsSend(force){
   const d={phase:gphase(),code:LCODE,info:ginfo(),win:/Windows/.test(navigator.userAgent),perso:persoList(),
     duel:!!(S&&!S.over&&!$('game').hidden),wait:!!(S&&S.oral&&S.link&&!S.started&&!S.counting&&!S.over&&!$('game').hidden),
     grid:gridState(),back:!!(S&&S.pid&&!S.started&&!S.counting&&!S.over&&!$('game').hidden),again:!!(S&&S.pid&&S.over&&!$('end').hidden&&S.winP!=null),
-    lance:HOMEST==='launch'&&!$('home').hidden&&!!document.querySelector('.slcl')};
+    mode:lmode()};
   const k=JSON.stringify(d);
   if(!force&&k===GSK&&Date.now()-GST<3000)return;
   GSK=k;GST=Date.now();LINK.send('gs',d);

@@ -34,8 +34,9 @@ lancer('aide',async env=>{
   etape('tailles lisibles à 3 m');
   const px=await jeu.evaluate(()=>[parseFloat(getComputedStyle(document.getElementById('hct')).fontSize),parseFloat(getComputedStyle(document.getElementById('hcp')).fontSize)]);
   attendu(px[0]>=56&&px[1]>=40,'Textes trop petits en 1920×1080 : titre '+px[0]+' px, phrase '+px[1]+' px');
-  const larg=await jeu.evaluate(()=>document.getElementById('hprep').getBoundingClientRect().width);
-  attendu(Math.abs(larg-0.6*1920)<30,'Largeur du panneau des cartes : '+Math.round(larg)+' px au lieu de 60 % de l’écran');
+  // Cadre « grand écran » des cartes (story 5.1, docs/ux.md §5.3) : 1280 px de large en 1920×1080.
+  const larg=await jeu.evaluate(()=>document.getElementById('hcards').getBoundingClientRect().width);
+  attendu(Math.abs(larg-1280)<30,'Largeur du cadre des cartes : '+Math.round(larg)+' px au lieu de 1280 px');
 
   etape('2e carte après 6 s');
   await avance(jeu,5500);

@@ -69,6 +69,7 @@
   addEventListener('hashchange',()=>{if(location.hash.startsWith('#arbitre')&&btn){btn.remove();btn=null}else mount()});
   // Le mode (funky / sérieux) est choisi après le chargement : on réaffiche l'état du bouton à ce moment.
   document.addEventListener('slc:intro-end',show);
+  document.addEventListener('slc:mode',show);
   if(document.body)mount();else document.addEventListener('DOMContentLoaded',mount,{once:true});
   window.SLC_SND={play,enabled,toggle};
 })();

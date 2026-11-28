@@ -1,6 +1,6 @@
 # Spec UX : Sur le carreau, version « partageable »
 
-> BMAD, phase 2 (UX). Validé par Ced le 23 novembre 2026.
+> BMAD, phase 2 (UX). Validé par Ced le 23 novembre 2026 ; refonte visuelle (§5) validée le 28 novembre 2026.
 > Entrée : `docs/prd.md`. Ne décrit que ce qui change ; le reste de l'interface est décrit dans `CLAUDE.md`.
 
 ## 1. Principes
@@ -79,3 +79,67 @@
 
 ## 4. Hors spec
 Le visuel de remplacement de l'intro (EF9) sera proposé en Dev sous forme de deux ou trois esquisses à choisir par Ced.
+
+## 5. Refonte visuelle (validée par Ced le 28 novembre 2026)
+
+Maquettes : planche Design « Sur le carreau — Accueil TV » (https://claude.ai/artifact/SooGA1em5qFjNB8TgRqq22), rangées « Piste B », « Plateau en perspective », « Variante 1 (retenue) » et « Régie ». Les autres rangées (pistes A et C, duel « studio », variante 2) sont gardées pour l'historique et ne sont pas à coder.
+
+### 5.1 Commun
+- Logo doré « Sur le carreau » (`assets/intro/logo.webp`) à la place du titre en police simple.
+- Cadre « grand écran » : bord doré `#F2C44E` de 6 px, liseré bleu nuit `#071340`, halo bleu ; fond dégradé bleu `#2353E0` → `#0B1F8A`.
+- Tailles TV : 28 px minimum partout (exception : catégories dans les cases d'une grille 4×4, 24 px au fond ; voir 5.4).
+- Messages techniques (« Liaison entre appareils : indisponible… ») retirés de l'écran des joueurs, visibles seulement avec `?debug=1`.
+- Mode allégé (TV Samsung) : pas de flou ni de halo flou ; un trait net les remplace.
+
+### 5.2 TV : accueil (piste B)
+- Ciel étoilé et sol quadrillé actuels.
+- En haut, logo agrandi (environ 750 × 300 px en 1080p) avec léger halo doré.
+- Dessous, cadre « grand écran » compact (environ 1160 px de large) : QR code à gauche (280 px, environ 18 cm sur une TV de 55 pouces), à droite « Scannez avec votre téléphone pour prendre la main » (48 px), « Code » + code en 96 px jaune, pastille « En attente du téléphone… » (28 px).
+- Étapes en pastilles (30 px), puis les trois accès discrets en vrais boutons (28 px) : « Configurer sur cet écran », « Créer mes catégories », « Ouvrir la régie ici ». Focus télécommande : contour jaune de 6 px.
+- **Choix du lancement toujours accessible** : en bas à gauche, bascule « Lancement : Funky | Sérieux » (28 px), modifiable à tout moment sur l'accueil ; le même réglage est dans la configuration de la régie (« Lancement sur l'écran »). Le mode choisi est retenu sur l'appareil (`slc-mode`).
+- À la connexion du téléphone, le mode retenu s'applique directement : Funky lance l'intro, Sérieux passe à la préparation. L'écran de lancement séparé (« Comment voulez-vous lancer le jeu ? ») et la mémoire d'onglet `slc-lance`, qui le faisaient disparaître sans prévenir après un premier lancement, sont supprimés. Le son du générique n'est garanti que si quelqu'un a touché l'écran du jeu (la bascule compte) ; sinon l'intro démarre muette avec son bouton « Son ».
+
+### 5.3 TV : partie en préparation
+- Logo, puis « Partie en préparation sur le téléphone… » (40 px) et pastille verte « Régie reliée · CODE ».
+- Carte « Comment jouer » dans le cadre « grand écran » (1280 px) : surtitre « Comment jouer · 1 sur 5 », pictogramme, titre 76 px jaune, phrase 48 px, pagination en tirets.
+- Étapes en bas : « 1. Connexion ✓ » en vert, étape en cours en jaune.
+
+### 5.4 TV : plateau en perspective
+- Plateau vu en perspective, comme depuis les gradins (référence : photo de l'émission fournie par Ced). Chaque case est un polygone SVG calculé par projection (pas de transformation 3D en CSS, pour la TV Samsung). Le rang du fond est environ 1,6 fois plus étroit que le premier.
+- Sol bleu vif (`#2457D6`), lignes blanches de 4 px, liseré violet néon autour (`#C07BFF`, halo `#A24DFF` flou hors mode allégé), points lumineux sur les côtés (projecteurs), rang du fond légèrement assombri.
+- Couleurs : joueur en cours `#7A3FD8`, adversaires possibles `#5B95F5`, adversaire choisi `#A9C8FF` avec contour blanc épais, case d'or `#E0AC22`.
+- Étiquettes droites, centrées sur la case d'origine, taille réduite avec la profondeur : nom 44 px et catégorie 30 px au premier rang, environ 33 et 23 px au dernier en 4×4 (plus grand en 3×3 et 2×2).
+- Barre du haut (112 px) : petit logo, phrase de l'étape (remplace le titre et le bandeau d'aide actuels, 44 px, `aria-live`), pastille « Régie reliée ».
+- Plus de colonne d'informations à droite : bouton « Détails » en bas à droite (atteignable à la télécommande) qui ouvre un panneau en bas de l'écran, sur trois colonnes : prochain duel (qui contre qui, catégorie, type), légende des couleurs avec la case d'or, joueurs en lice avec « Lancer le duel » et « Changer ».
+- La vague de capture suit les polygones en perspective.
+
+### 5.5 TV : duel (variante 1, « bandeau »)
+D'après la photo de l'émission fournie par Ced : plus de barre en haut ; grand écran central, chronos et réponse dans un bandeau en bas.
+- Grand écran central (environ 1440 × 780 px), cadre doré ; deux colonnes néon violettes sur les côtés de la scène.
+- Bandeau en bas, sur toute la largeur :
+  - à gauche et à droite, chaque joueur : nom en majuscules dans sa couleur (jaune `#FFC53D`, cyan `#5CE1FF`), chrono 128 px ; le joueur qui a la main est allumé (bord et chiffre à sa couleur), l'autre éteint ; chrono en rouge à 5 s ou moins ;
+  - au centre, onglet violet de la catégorie (36 px), puis zone de réponse (142 px de haut).
+- Zone de réponse selon l'étape :
+  - attente du départ : « Prêts ? » ;
+  - compte à rebours : « Départ dans 3… » ;
+  - en cours : discrète (« Niveau 1 · à vous de répondre ») ;
+  - bonne réponse : fond vert, réponse en 72 px, étiquette « Bonne réponse » ; la main passe à l'autre chrono ;
+  - « Passé » : fond rouge, réponse en 72 px, étiquette « Passé · NOM −3 s » ; pour un mot à trous, les lettres manquantes apparaissent dans les tuiles ;
+  - fin du duel : fond violet, « NOM gagne », étiquette « Fin du duel ».
+- Grand écran selon l'étape :
+  - attente du départ : logo, « Joueur 5 contre Joueur 1 » (64 px, aux couleurs des joueurs), consigne du type (40 px), pastille « L'arbitre lance le duel… » ; les deux chronos à 40, éteints ;
+  - compte à rebours : « Joueur 1 commence » (44 px) au-dessus d'un chiffre blanc de 340 px, sans cercle ni points ; le chrono du joueur qui commence s'allume déjà. Animation : chaque chiffre arrive en grossissant légèrement puis s'efface ; en mouvement réduit ou en mode allégé, simple changement ;
+  - en cours : photo, ou tuiles du mot (92 px) ;
+  - fin du duel : coupe, « NOM remporte le duel ! » (96 px), « NOM2 est éliminé. NOM prend son territoire. », « Retour au plateau… » ; chrono du perdant estompé.
+
+### 5.6 Téléphone : régie
+- En-tête : petit logo, pastille « Écran CODE ✓ », bouton « ? », menu « ⋯ » (« Arrêter la partie », « Changer d'écran » : retirés de la zone des boutons de jeu). Étapes en barre de progression fine.
+- Configuration : titre « Préparez la partie » (sans texte d'introduction) ; mode, taille et lancement sur l'écran (Funky ou Sérieux) en boutons côte à côte au lieu de listes déroulantes ; catégories en liste (nom, type, ✕), 6 visibles puis « Voir les N autres », boutons « Nouveau tirage » et « Ajouter… » ; noms des joueurs repliés derrière « Saisir les noms » ; « Commencer la partie » collé en bas.
+- Choix de l'adversaire : mini-plateau aux couleurs de la TV, « NOM choisit son adversaire », adversaires possibles en grands boutons (nom, catégorie, type), « Retourner sur le sol ».
+- Avant le duel : « Joueur 5 contre Joueur 1 », consigne à annoncer dans un encadré violet (24 px), ligne case d'or avec « Utiliser +5 s », puis en bas « Démarrer le duel » (68 px de haut) et « Changer d'adversaire ».
+- Arbitrage : chronos sur une ligne, vignette de l'image avec catégorie et niveau, **réponse attendue en 40 px** avec les variantes acceptées, puis en bas « Bonne réponse » (vert, 96 px de haut) et « Passé (−3 s) » (rouge, 76 px).
+
+### 5.7 Plus tard (après la refonte)
+- Intro en vraie vidéo (MP4) pour supprimer les saccades sur la TV : écartée pour l'instant (Ced, 28/11).
+- Vague de capture plus lente (environ 2 à 3 s, à régler sur la TV), dans la story du plateau en perspective.
+- Tirage au sort du premier attaquant à l'ouverture du plateau, avec la même animation que « Retourner sur le sol » (story séparée).

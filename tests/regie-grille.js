@@ -2,8 +2,8 @@
    Lancer depuis la racine du dépôt :   node tests/regie-grille.js
    (Playwright vient de l'environnement ; rien à installer dans le dépôt. Voir tests/README.md.)
 
-   Déroulé : écran du jeu sur index.html sans ?mode=serieux (l'écran de lancement s'affiche à la connexion),
-   régie en 390×844. La régie choisit « Mode sérieux » : l'écran de lancement disparaît, l'écran passe en
+   Déroulé : écran du jeu sur index.html sans ?mode=serieux (mode funky par défaut : l'intro démarre à la connexion),
+   régie en 390×844. La régie choisit « Sérieux » (story 5.1) : l'intro s'arrête, l'écran passe en
    préparation. Elle configure une grille 2×2, puis joue toute la partie sans toucher l'écran du jeu :
    adversaire choisi par un bouton (nom et catégorie), « Changer d'adversaire », « Retourner sur le sol »,
    « Lancer le duel », « Démarrer le duel », verdicts, « Retour à la grille » après chaque duel, jusqu'au vainqueur.
@@ -27,17 +27,19 @@ lancer('regie-grille',async env=>{
   const {jeu,regie}=await ouvrirEcranEtRegie(env,{lancement:true});
   await regie.setViewportSize({width:390,height:844});
 
-  etape('lancement depuis le téléphone');
-  await jeu.waitForSelector('.slcl');
+  etape('lancement : intro en funky à la connexion, puis « Sérieux » choisi sur le téléphone');
   await regie.waitForSelector('#rlance:not([hidden])');
-  await regie.click('#rserieux');
-  await jeu.waitForFunction(()=>!document.querySelector('.slcl')&&document.documentElement.classList.contains('slc-serieux'));
-  await jeu.waitForFunction(()=>/Partie en préparation/.test(document.getElementById('hph2').textContent)&&!document.getElementById('hprep').hidden);
+  attendu(await jeu.evaluate(()=>SLC_INTRO.started&&!document.documentElement.classList.contains('slc-serieux')),'Intro pas lancée en funky à la connexion du téléphone');
+  attendu(await regie.getAttribute('#rlance [data-lm="funky"]','aria-pressed')==='true','La régie ne montre pas le mode funky de l’écran');
+  await regie.click('#rlance [data-lm="serieux"]');
+  await avancerJusqua(jeu,jeu,()=>document.documentElement.classList.contains('slc-serieux')&&!document.querySelector('.slci')&&/Partie en préparation/.test(document.getElementById('hph2').textContent)&&!document.getElementById('hprep').hidden,{pas:500,max:10000,quoi:'intro arrêtée et préparation après « Sérieux »'});
   attendu(await jeu.evaluate(()=>localStorage.getItem('slc-mode'))==='serieux','Choix « sérieux » pas retenu');
+  attendu(await jeu.getAttribute('#home [data-lm="serieux"]','aria-pressed')==='true','La bascule de l’accueil ne suit pas le choix de la régie');
 
   etape('configuration d’une grille 2×2 sur la régie');
   await regie.waitForSelector('#arb #setup:not([hidden])');
-  attendu(await regie.isHidden('#rlance'),'Boutons de lancement encore visibles pendant la configuration');
+  attendu(await regie.isHidden('#rlance'),'Bascule de l’attente encore visible pendant la configuration');
+  attendu(await regie.getAttribute('#setup [data-lm="serieux"]','aria-pressed')==='true','La configuration de la régie ne montre pas le mode sérieux');
   await regie.selectOption('#gmode','grid');
   await regie.selectOption('#gsize','2');
   await regie.click('#pdraw');

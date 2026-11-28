@@ -66,6 +66,17 @@ Epic terminé avec la story 3.1.
 
 Constat de la story 4.1 (`node tests/contenu.js`) : plusieurs catégories n'avaient aucun élément aux niveaux 4 et 5 ; réglé en 4.2 (mots à trous), 4.3 (indices) et 4.6 (emojis). Après la 4.6, toutes les catégories sauf les 15 catégories photo sont à l'objectif ; après la 4.8, les 42 le sont. Le domaine « Langue et mots » n'a aucune catégorie.
 
+## E5 Refonte visuelle
+Maquettes validées par Ced le 28 novembre 2026 : `docs/ux.md` §5, planche https://claude.ai/artifact/SooGA1em5qFjNB8TgRqq22.
+
+| Story | Titre | Exigences | Statut |
+|---|---|---|---|
+| [5.1](5.1-accueil-refonte.md) | Socle, accueil, préparation, choix Funky ou Sérieux toujours accessible | UX §5.1 à §5.3 | En revue |
+| 5.2 | Duel en bandeau (attente, compte à rebours, réponse, fin du duel) | UX §5.5 | Brouillon |
+| 5.3 | Plateau en perspective, panneau « Détails », vague ralentie (2 à 3 s) | UX §5.4, §5.7 | Brouillon |
+| 5.4 | Régie : menu « ⋯ », configuration compacte, réponse attendue en grand | UX §5.6 | Brouillon |
+| 5.5 | Tirage au sort du premier attaquant à l'ouverture du plateau | UX §5.7 | Brouillon |
+
 ## Ordre de passage
 0.1 → 0.2 → 0.3 → 1.1 → 1.2 → 1.3 → 1.4 → E2 → E3 (3.1 seule) → E4.
 Les stories 1.4 et 0.3 sont indépendantes et peuvent être glissées plus tôt.
