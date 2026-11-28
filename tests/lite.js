@@ -10,6 +10,8 @@
    - navigateur sans color-mix() (simulé) : mode allégé détecté tout seul, sans paramètre ;
    - TV récente avec color-mix() (user agent de la TV Samsung de Ced, Tizen 8.0, story 2.6) : mode allégé quand même,
      « TV détectée » dans le cadre ?debug ; ?lite=0 l'empêche ;
+   - story 2.7 : la même TV en user agent « ordinateur » (SamsungBrowser sans Mobile) est détectée, un téléphone Samsung
+     ne l'est pas ; ?lite=1 est mémorisé sur l'appareil, ?lite=0 efface ce choix ;
    - vague de capture en mode allégé (story 2.2), sur une grille 2×2 : pas de clip-path ni de dessin hors des cases,
      seules les cases capturées changent de couleur, avec un délai qui grandit avec la distance, et toutes finissent
      à la couleur du gagnant ; pas de flou SVG sur le plateau. */
@@ -54,7 +56,9 @@ lancer('lite',async env=>{
   const version=await p2.getAttribute('meta[name="slc-version"]','content');
   attendu(e.lite&&e.classe,'?lite=1 : mode allégé attendu ('+JSON.stringify(e)+')');
   attendu(e.flou==='none'&&e.fond==='rgb(4, 7, 31)','Panneau en mode allégé : flou '+e.flou+', fond '+e.fond);
-  attendu(e.debug&&e.debug.includes('Version '+version)&&/Chromium \d+/.test(e.debug)&&e.debug.includes('mode allégé : oui (forcé par ?lite=1)'),'Cadre ?debug=1 : « '+e.debug+' »');
+  attendu(e.debug&&e.debug.includes('Version '+version)&&/Chromium \d+/.test(e.debug)&&e.debug.includes('mode allégé : oui (forcé par ?lite=1, mémorisé)'),'Cadre ?debug=1 : « '+e.debug+' »');
+
+  await p2.goto(env.url+'index.html?mode=serieux&lite=0'); // ?lite=1 est mémorisé (story 2.7) : on efface pour la suite
 
   // Navigateur sans color-mix() (comme la TV) : CSS.supports répond non pour color-mix, sans paramètre dans l'adresse.
   const p3=await env.page('sans color-mix');
@@ -70,6 +74,30 @@ lancer('lite',async env=>{
   await p4.goto(env.url+'index.html?mode=serieux&debug=1');
   e=await etat(p4);
   attendu(e.lite&&e.classe&&e.debug.includes('color-mix : oui')&&e.debug.includes('mode allégé : oui (TV détectée)'),'TV Tizen 8 avec color-mix : '+JSON.stringify(e));
+  // Story 2.7 : la même TV s'annonce aussi comme un ordinateur Linux (photo de Ced du 28/11).
+  const UA_TV_PC='Mozilla/5.0 (X11; Linux i686) AppleWebKit/537.36 (KHTML, like Gecko) SamsungBrowser/7.0 Chrome/120.0.6099.5 Safari/537.36';
+  const UA_TEL='Mozilla/5.0 (Linux; Android 14; SM-S918B) AppleWebKit/537.36 (KHTML, like Gecko) SamsungBrowser/23.0 Chrome/115.0.0.0 Mobile Safari/537.36';
+  const p6=await env.page('TV en mode ordinateur');
+  await p6.addInitScript(ua=>Object.defineProperty(navigator,'userAgent',{get:()=>ua}),UA_TV_PC);
+  await p6.goto(env.url+'index.html?mode=serieux&debug=1');
+  e=await etat(p6);
+  attendu(e.lite&&e.debug.includes('mode allégé : oui (TV détectée)'),'TV Samsung en user agent « ordinateur » : '+JSON.stringify(e));
+  const p7=await env.page('téléphone Samsung');
+  await p7.addInitScript(ua=>Object.defineProperty(navigator,'userAgent',{get:()=>ua}),UA_TEL);
+  await p7.goto(env.url+'index.html?mode=serieux');
+  e=await etat(p7);
+  attendu(!e.lite,'Téléphone Samsung (Samsung Internet) : mode allégé non attendu ('+JSON.stringify(e)+')');
+  // ?lite=1 mémorisé sur l'appareil : un navigateur récent sans paramètre reste en mode allégé, jusqu'à ?lite=0.
+  const p8=await env.page('mémoire');
+  await p8.goto(env.url+'index.html?mode=serieux&lite=1');
+  await p8.goto(env.url+'index.html?mode=serieux&debug=1');
+  e=await etat(p8);
+  attendu(e.lite&&e.debug.includes('mode allégé : oui (mémorisé)'),'?lite=1 non mémorisé : '+JSON.stringify(e));
+  await p8.goto(env.url+'index.html?mode=serieux&lite=0');
+  await p8.goto(env.url+'index.html?mode=serieux');
+  e=await etat(p8);
+  attendu(!e.lite,'?lite=0 n\'a pas effacé la mémoire : '+JSON.stringify(e));
+
   const p5=await env.page('TV, ?lite=0');
   await p5.addInitScript(ua=>Object.defineProperty(navigator,'userAgent',{get:()=>ua}),UA_TV);
   await p5.goto(env.url+'index.html?mode=serieux&lite=0');

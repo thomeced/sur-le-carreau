@@ -75,12 +75,13 @@ Nouveaux fichiers des epics suivants : `js/aide.js` (E1 : cartes, bandeau, guide
 | Clé | Où | Contenu |
 |---|---|---|
 | `slc-guide-vu` | téléphone, `localStorage` | `1` quand le guide de l'arbitre a été vu ou passé (EF3) |
+| `slc-lite` | écran du jeu, `localStorage` | `1` après `?lite=1` : mode allégé gardé sur cet appareil (story 2.7) ; effacé par `?lite=0` |
 Rien d'autre de nouveau : pas de mémoire des éléments déjà vus (écartée par Ced).
 
 ## 5. Flux principaux
 
 ### 5.1 Mode allégé de la TV (E2)
-- `LITE` vrai si le navigateur n'a pas `color-mix()`, **ou si c'est une TV connectée** (`SLC_TV` : user agent contenant `SMART-TV`, `SmartTV`, `Tizen`, `Web0S`, `webOS`, `HbbTV`, `NetCast` ou `BRAVIA` ; story 2.6), ou avec `?lite=1` ; `?lite=0` l'empêche (dépannage). Les paramètres servent aux tests et au dépannage.
+- `LITE` vrai si le navigateur n'a pas `color-mix()`, **ou si c'est une TV connectée** (`SLC_TV` : user agent contenant `SMART-TV`, `SmartTV`, `Tizen`, `Web0S`, `webOS`, `HbbTV`, `NetCast` ou `BRAVIA`, story 2.6 ; ou `SamsungBrowser` sans `Mobile`, story 2.7, car la TV de Ced peut s'annoncer comme un ordinateur Linux), ou si `?lite=1` a été ouvert une fois sur l'appareil (mémorisé dans `localStorage` `slc-lite`, story 2.7) ; `?lite=0` l'empêche et efface ce choix.
 - En mode allégé : `gcapture` délègue à `js/plateau-lite.js`. Chaque case capturée passe à la couleur du gagnant par une transition CSS sur `fill`, avec un délai proportionnel à sa distance (en cases) au bord du duel : environ 90 ms par case, pour une durée totale proche de la vague actuelle. Ni `clip-path`, ni `#gglow`, ni contours recalculés.
 - Toujours (allégé ou non) : chaque `color-mix()` du CSS est précédé d'une déclaration de secours en couleur pleine ; `backdrop-filter` reçoit un fond opaque de secours. (Story 2.1 : le seul `color-mix()`, qui contenait `var()`, a été remplacé par des couleurs précalculées ; un secours placé avant une valeur avec `var()` ne sert pas. `tests/lite.js` vérifie qu'aucun `color-mix()` n'arrive sans secours.)
 - `?debug=1` affiche dans un coin le navigateur détecté (user agent) et l'état de `LITE`, pour que Ced vérifie la TV d'un coup d'œil.

@@ -301,5 +301,8 @@ Chaque chantier est prévu dans sa propre conversation du projet, sur sa propre 
 ## Story 2.6 : mode allégé sur les TV récentes (novembre 2026)
 - Test réel du 27-28/11 sur la TV de Ced : la vague débordait encore. `?debug=1` : Tizen 8.0, Samsung Internet 7.0, Chromium 120, `color-mix()` pris en charge, donc mode allégé non déclenché ; le `clip-path` de la vague reste ignoré. Le mode allégé se déclenche maintenant aussi sur le user agent d'une TV (`SLC_TV`) ; `?lite=0` l'empêche. `tests/lite.js` simule le user agent de la TV. Version `2026-11-28a`.
 
+## Story 2.7 : mode allégé, Samsung en mode ordinateur et choix mémorisé (novembre 2026)
+- Test du 28/11 avec la version `2026-11-28a` : toujours « mode allégé : non ». La TV s'annonçait cette fois `X11; Linux i686 … SamsungBrowser/7.0 Chrome/120 … Safari` (sans `SMART-TV` ni `Tizen`). `SLC_TV` reconnaît aussi `SamsungBrowser` sans `Mobile` (les téléphones Samsung restent exclus) ; `?lite=1` est mémorisé sur l'appareil (`slc-lite`), `?lite=0` l'efface. Version `2026-11-28b`.
+
 ## Comment reprendre dans un nouveau projet Claude
 Reliez le dépôt GitHub (référence du code) et gardez ce document dans le projet, puis demandez par exemple : « Lis le document de contexte et reprends le jeu : ajoute l'éditeur de catégories. » Le fichier `sur-le-carreau.html` du projet est la version autonome du jeu (catégories incluses) ; la référence reste le dépôt.

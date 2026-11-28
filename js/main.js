@@ -23,6 +23,6 @@ if(/[?&]debug=1(&|$)/.test(location.search)){
   const cm=!!(window.CSS&&CSS.supports&&CSS.supports('color','color-mix(in srgb, red, blue)'));
   const d=document.createElement('div');d.id='slcdebug';d.className='slcdebug';
   d.textContent='Version '+v+' · '+(chr?'Chromium '+chr:'moteur non Chromium')+' · color-mix : '+(cm?'oui':'non')+
-    ' · mode allégé : '+(LITE?'oui':'non')+(LITE&&/[?&]lite=1(&|$)/.test(location.search)?' (forcé par ?lite=1)':LITE&&SLC_TV?' (TV détectée)':'')+(SLC_TV?' · TV':'')+' · '+innerWidth+'×'+innerHeight+' · '+ua;
+    ' · mode allégé : '+(LITE?'oui':'non')+(!LITE?'':LITE_PARAM_V==='1'?' (forcé par ?lite=1, mémorisé)':LITE_MEMO?' (mémorisé)':SLC_TV?' (TV détectée)':'')+' · '+innerWidth+'×'+innerHeight+' · '+ua;
   document.body.append(d);
 }

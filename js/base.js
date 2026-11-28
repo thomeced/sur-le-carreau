@@ -5,10 +5,20 @@ const $=id=>document.getElementById(id);
    dans l'adresse (tests, dépannage). Il signale un navigateur ancien ou lent : flou des panneaux coupé (classe lite),
    et vague de capture simplifiée (story 2.2). */
 /* Mode allégé : navigateur sans color-mix(), ou TV connectée (story 2.6 : la TV Samsung de Ced, Tizen 8.0 et Chromium 120,
-   gère color-mix() mais ignore toujours le clip-path qui découpe la vague : elle débordait). ?lite=1 le force, ?lite=0 l'empêche. */
-const SLC_TV=/SMART-TV|SmartTV|Tizen|Web0S|webOS|HbbTV|NetCast|BRAVIA/i.test(navigator.userAgent);
-const LITE=/[?&]lite=0(&|$)/.test(location.search)?false:
-  !(window.CSS&&CSS.supports&&CSS.supports('color','color-mix(in srgb, red, blue)'))||SLC_TV||/[?&]lite=1(&|$)/.test(location.search);
+   gère color-mix() mais ignore toujours le clip-path qui découpe la vague : elle débordait).
+   Story 2.7 : la même TV peut aussi s'annoncer comme un ordinateur (« X11; Linux i686 … SamsungBrowser/7.0 ») : on
+   reconnaît donc SamsungBrowser hors téléphone (sans « Mobile »). Et ?lite=1 est mémorisé sur l'appareil (localStorage
+   slc-lite) : l'ouvrir une fois suffit, quel que soit le user agent ; ?lite=0 l'empêche et efface ce choix. */
+const SLC_TV=/SMART-TV|SmartTV|Tizen|Web0S|webOS|HbbTV|NetCast|BRAVIA/i.test(navigator.userAgent)||
+  (/SamsungBrowser/.test(navigator.userAgent)&&!/Mobile/.test(navigator.userAgent));
+const LITE_PARAM=/[?&]lite=([01])(&|$)/.exec(location.search),LITE_PARAM_V=LITE_PARAM?LITE_PARAM[1]:null;
+const LITE_MEMO=(()=>{try{
+  if(LITE_PARAM_V==='1')localStorage.setItem('slc-lite','1');
+  if(LITE_PARAM_V==='0')localStorage.removeItem('slc-lite');
+  return localStorage.getItem('slc-lite')==='1';
+}catch(e){return false}})();
+const LITE=LITE_PARAM_V==='0'?false:
+  !(window.CSS&&CSS.supports&&CSS.supports('color','color-mix(in srgb, red, blue)'))||SLC_TV||LITE_MEMO;
 if(LITE)document.documentElement.classList.add('lite');
 /* Types de catégories : « emoji » (par défaut), « trous » (mot à trous), « photo » et « indices ». Chaque élément est
    ramené à [clé unique, "réponse|variante", niveau, {img, thumb} pour une photo, {clues} pour des indices]. Pour un mot à trous,
