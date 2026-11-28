@@ -75,7 +75,6 @@ function bandRender(){
   else{k='run';txt='Niveau '+S.lvl+' · à '+S.names[S.turn]+' de répondre'}
   const d=$('dans'),c='dans'+(k?' '+k:'');
   if(d.className!==c)d.className=c;
-  if($('dtag').textContent!==tag)$('dtag').textContent=tag;
   if($('dtxt').textContent!==txt)$('dtxt').textContent=txt;
 }
 // « Passé » sur un mot à trous : le mot complet s'affiche, les lettres qui manquaient en couleur.

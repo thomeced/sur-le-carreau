@@ -123,11 +123,11 @@ D'après la photo de l'émission fournie par Ced : plus de barre en haut ; grand
   - attente du départ : « Prêts ? » ;
   - compte à rebours : « Départ dans 3… » ;
   - en cours : discrète (« Niveau 1 · à vous de répondre ») ;
-  - bonne réponse : fond vert, réponse en 72 px, étiquette « Bonne réponse » ; la main passe à l'autre chrono ;
-  - « Passé » : fond rouge, réponse en 72 px, étiquette « Passé · NOM −3 s » ; pour un mot à trous, les lettres manquantes apparaissent dans les tuiles ;
-  - fin du duel : fond violet, « NOM gagne », étiquette « Fin du duel ».
+  - bonne réponse : fond vert, réponse en 72 px, sans étiquette (Ced, 28/11 : la couleur suffit) ; la main passe à l'autre chrono ;
+  - « Passé » : fond rouge, réponse en 72 px, sans étiquette ; pour un mot à trous, les lettres manquantes apparaissent dans les tuiles ;
+  - fin du duel : fond violet, « NOM gagne ».
 - Grand écran selon l'étape :
-  - attente du départ : logo, « Joueur 5 contre Joueur 1 » (64 px, aux couleurs des joueurs), consigne du type (40 px), pastille « L'arbitre lance le duel… » ; les deux chronos à 40, éteints ;
+  - attente du départ : le logo seul, centré (Ced, 28/11 : « A contre B », consigne, état de la régie et boutons sont sur le téléphone ; badge de la régie masqué tant qu'elle est reliée) ; les deux chronos à 40, éteints ;
   - compte à rebours : « Joueur 1 commence » (44 px) au-dessus d'un chiffre blanc de 340 px, sans cercle ni points ; le chrono du joueur qui commence s'allume déjà. Animation : chaque chiffre arrive en grossissant légèrement puis s'efface ; en mouvement réduit ou en mode allégé, simple changement ;
   - en cours : photo, ou tuiles du mot (92 px) ;
   - fin du duel : coupe, « NOM remporte le duel ! » (96 px), « NOM2 est éliminé. NOM prend son territoire. », « Retour au plateau… » ; chrono du perdant estompé.

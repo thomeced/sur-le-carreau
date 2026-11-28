@@ -308,14 +308,15 @@ html.slc-serieux .dstage::before,html.slc-serieux .dstage::after{display:none}
 #game.ph-end #card{display:none}
 .dgold{position:absolute;top:clamp(8px,.83vw,16px);left:50%;transform:translateX(-50%);z-index:2;margin:0;padding:.35em .9em;border-radius:999px;background:#FFC53D;color:#101B4D;font:700 clamp(.95rem,1.46vw,1.75rem)/1.2 var(--disp);white-space:nowrap}
 .dgold:empty{display:none}
-/* Attente du départ : logo, qui contre qui, consigne du type, état et boutons (aussi sur le téléphone). */
+/* Attente du départ : le logo seul, centré. */
 .dwait{flex-direction:column;align-items:center;justify-content:center;gap:clamp(10px,1.4vw,28px);text-align:center;height:100%;width:100%}
 .dlogo{width:min(31vw,62vh,600px);height:auto;filter:drop-shadow(0 0 2vw rgba(255,197,61,.4))}
 html.lite .dlogo{filter:none}
-.dvs{margin:0;font:800 clamp(1.6rem,3.33vw,4rem)/1.1 var(--disp)}
-#dvs0{color:var(--p1)}#dvs1{color:var(--p2)}
-.dvsc{font-size:.62em;color:#B9C8FF;margin:0 .35em}
-.dcons{margin:0;max-width:30em;font:700 clamp(1.1rem,2.1vw,2.6rem)/1.3 var(--disp)}
+/* Attente épurée (Ced, 28/11) : le logo seul ; qui contre qui, consigne, état de la régie et boutons sont sur le téléphone.
+   #wait reste dans le code (« Démarrer le duel » de l'écran, commandes de la régie) mais n'est plus affiché. */
+#game #wait{display:none!important}
+/* Badge de la régie masqué pendant le duel tant qu'elle est reliée ; il réapparaît (« non connectée ») si elle se déconnecte. */
+body:has(#game:not([hidden])) .arbadge.on{display:none}
 #wait{display:flex;flex-direction:column;align-items:center;gap:clamp(10px,.94vw,18px)}
 #wait .hpill{align-self:center}
 .dwbtns{display:flex;gap:14px;flex-wrap:wrap;justify-content:center}
@@ -371,9 +372,6 @@ html.lite #game .side.on .tm{box-shadow:none}
 .dans.pass{background:linear-gradient(#FF7A6B,#D9483B);box-shadow:0 0 2.6vw rgba(255,107,107,.5)}
 .dans.end{background:linear-gradient(#9B5CFF,#6A2FD0);box-shadow:0 0 2.6vw rgba(162,77,255,.55)}
 html.lite .dans{box-shadow:none}
-.dtag{position:absolute;top:0;left:50%;transform:translate(-50%,-50%);font:800 clamp(.8rem,1.46vw,1.75rem)/1 var(--disp);letter-spacing:.08em;text-transform:uppercase;padding:.35em .8em;border-radius:999px;background:#fff;white-space:nowrap}
-.dtag:empty{display:none}
-.dans.good .dtag{color:#14965C}.dans.pass .dtag{color:#C23A2E}.dans.end .dtag{color:#6A2FD0}
 @media(prefers-reduced-motion:reduce){.dans{transition:none}}
 #game .answer,#game #pass{width:min(100%,600px)}
 @media(max-width:700px){

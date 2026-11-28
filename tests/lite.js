@@ -105,7 +105,7 @@ lancer('lite',async env=>{
   attendu(!e.lite&&!e.classe,'?lite=0 sur une TV : mode allégé non attendu ('+JSON.stringify(e)+')');
 
   etape('vague case par case (?lite=1)');
-  const {jeu}=await ouvrirEcranEtRegie(env,{params:'&lite=1'});
+  const {jeu,regie}=await ouvrirEcranEtRegie(env,{params:'&lite=1'});
   await jeu.click('#hlocal');
   await jeu.selectOption('#gmode','grid');await jeu.selectOption('#gsize','2');await jeu.click('#pdraw');
   await jeu.click('#gosubmit');
@@ -117,7 +117,7 @@ lancer('lite',async env=>{
   await jeu.getByRole('button',{name:'Lancer le duel'}).click();
   await jeu.waitForSelector('#game:not([hidden])');
   for(let k=0;k<20&&await jeu.isDisabled('#go');k++){await jeu.clock.runFor(1000);await pause(30)}
-  await jeu.click('#go');
+  await regie.click('#rgo'); // « Démarrer le duel » : sur la régie seulement (l'attente de l'écran n'a plus de boutons)
   for(let k=0;k<60&&await jeu.isHidden('#end');k++){await jeu.clock.runFor(2000);await pause(20)}
   // Espion : cases capturées et couleur du gagnant ; couleurs de toutes les cases juste avant la vague.
   await jeu.evaluate(()=>{const o=gcaptureLite;gcaptureLite=function(A,V0,ox,oy,col){
