@@ -43,10 +43,13 @@ function arbView(){
   if(v==='wait'){
     if(!GS)m='Connexion à l’écran '+RCODE+'…';
     else if(ph==='local'){m='La partie se configure sur l’écran du jeu.';b='Configurer depuis le téléphone'}
-    else if(GS.lance)m='Connecté ✓ Choisissez le lancement (ici ou sur l’écran du jeu) :';
-    else m='Connecté ✓ Lancement sur l’écran du jeu…';
+    else if(ph==='launch')m='Connecté ✓ Lancement sur l’écran du jeu…';
+    else m='Connecté ✓';
   }
-  $('rlance').hidden=!(v==='wait'&&GS&&GS.lance);
+  $('rlance').hidden=!(v==='wait'&&GS&&ph!=='local');
+  // Bascule « Lancement sur l'écran » (attente et configuration) : reflète le mode retenu par l'écran du jeu.
+  const lm=GS&&GS.mode==='serieux'?'serieux':'funky';
+  document.querySelectorAll('[data-lm]').forEach(b=>b.setAttribute('aria-pressed',b.dataset.lm===lm?'true':'false'));
   if($('rwmsg').textContent!==m)$('rwmsg').textContent=m;
   $('rwbtn').hidden=!b;$('rwbtn').textContent=b;
   if(v==='play'){
@@ -148,8 +151,7 @@ $('rwbtn').onclick=()=>cmd('prep');
 $('rgo').onclick=()=>cmd('go');
 $('rback').onclick=()=>cmd('back');
 $('ragain').onclick=()=>cmd('grille');
-$('rfunky').onclick=()=>cmd('lance','funky');
-$('rserieux').onclick=()=>cmd('lance','serieux');
+if(isArb)document.querySelectorAll('[data-lm]').forEach(b=>b.onclick=()=>{cmd('lance',b.dataset.lm);document.querySelectorAll('[data-lm]').forEach(x=>x.setAttribute('aria-pressed',x.dataset.lm===b.dataset.lm?'true':'false'))});
 $('rnew').onclick=()=>cmd('new');
 $('rquit').onclick=()=>{if(confirm('Arrêter la partie en cours ?'))cmd('quit')};
 $('rchange').onclick=()=>{try{localStorage.removeItem('slc-arb-code')}catch(e){}location.hash='#arbitre'};

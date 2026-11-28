@@ -27,12 +27,12 @@ Si tu n'as pas le temps de tout faire : ces 6 points disent déjà l'essentiel.
 ### A1. Accueil et connexion
 | # | Vérification | Résultat | Remarques |
 |---|---|---|---|
-| A1.1 | Accueil lisible à 3 m : titre, code en grand, étapes | | |
+| A1.1 | Accueil lisible à 3 m : logo, QR code, code en grand, étapes, boutons (refonte, story 5.1) | | |
 | A1.2 | Le QR code se scanne du premier coup depuis le canapé | | |
 | A1.3 | Le téléphone ouvre la régie et le **guide de l'arbitre** s'affiche (1re fois sur ce téléphone) | | |
 | A1.4 | Guide : glisser d'une page à l'autre, « Suivant », « C'est parti » ; textes compréhensibles | | |
 | A1.5 | « Écran XXXX · relié ✓ » sur le téléphone ; « Régie connectée » sur la TV. Temps de connexion : … s | | |
-| A1.6 | La TV propose Funky ou Sérieux ; choix possible à la télécommande (depuis la story 2.8, aussi sur le téléphone) | ❌ 28/11 (`2026-11-28b`) | Télécommande pénible. Story 2.8 : boutons « Mode funky » et « Mode sérieux » sur le téléphone ; à retester. |
+| A1.6 | Bascule « Lancement : Funky / Sérieux » visible sur l'accueil, réglable à la télécommande et sur le téléphone (story 5.1 : plus d'écran de lancement séparé) | ❌ 28/11 (`2026-11-28b`) | Télécommande pénible ; le choix n'apparaissait qu'une fois par onglet. Story 5.1 : bascule toujours visible ; à retester. |
 | A1.7 | Mode funky : l'intro se joue, avec le son, sans saccade | ❌ 28/11 (`2026-11-28b`, TV) | Intro saccadée sur la TV Samsung. Depuis la story 2.8, le lancement se choisit aussi sur le téléphone : préférer le mode sérieux sur la TV. |
 
 ### A2. Préparation

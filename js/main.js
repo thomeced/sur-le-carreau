@@ -21,6 +21,7 @@ addEventListener('hashchange',()=>location.reload());
 if(/[?&]debug=1(&|$)/.test(location.search)){
   const ua=navigator.userAgent,chr=(ua.match(/Chrom(?:e|ium)\/(\d+)/)||[])[1],v=(document.querySelector('meta[name="slc-version"]')||{}).content;
   const cm=!!(window.CSS&&CSS.supports&&CSS.supports('color','color-mix(in srgb, red, blue)'));
+  document.documentElement.classList.add('slc-debug'); // affiche aussi l'état de la liaison sur l'accueil (#hlnk)
   const d=document.createElement('div');d.id='slcdebug';d.className='slcdebug';
   d.textContent='Version '+v+' · '+(chr?'Chromium '+chr:'moteur non Chromium')+' · color-mix : '+(cm?'oui':'non')+
     ' · mode allégé : '+(LITE?'oui':'non')+(!LITE?'':LITE_PARAM_V==='1'?' (forcé par ?lite=1, mémorisé)':LITE_MEMO?' (mémorisé)':SLC_TV?' (TV détectée)':'')+' · '+innerWidth+'×'+innerHeight+' · '+ua;

@@ -5,32 +5,33 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Sur le carreau</title>
 <!-- Version des fichiers (cache de la TV) : définie ici seulement, recopiée partout par python3 tools/version.py. -->
-<meta name="slc-version" content="2026-11-28d">
+<meta name="slc-version" content="2026-11-28e">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Poppins:wght@500;600;700&family=DM+Sans:wght@400;600;700&display=swap">
-<link rel="stylesheet" href="style.css?v=2026-11-28d">
-<script src="intro.js?v=2026-11-28d"></script>
-<script src="sons.js?v=2026-11-28d"></script>
-<script src="qrcode.js?v=2026-11-28d"></script>
+<link rel="stylesheet" href="style.css?v=2026-11-28e">
+<script src="intro.js?v=2026-11-28e"></script>
+<script src="sons.js?v=2026-11-28e"></script>
+<script src="qrcode.js?v=2026-11-28e"></script>
 </head>
 <body>
 <main>
 <!-- Écran d'accueil de l'écran du jeu : QR code pour que le téléphone prenne la main, puis attente de la configuration. -->
 <section id="home">
-  <h1>Sur le carreau</h1>
-  <ol class="steps" id="hsteps" aria-label="Étapes"><li>1. Connexion</li><li>2. Configuration</li><li>3. Partie</li></ol>
-  <div id="hconnect" class="panel hpanel">
-    <h2 id="hh2">Scannez pour prendre la main</h2>
+  <h1 class="hlogo"><img src="assets/intro/logo.webp" alt="Sur le carreau" width="1000" height="400"></h1>
+  <div id="hconnect" class="gscreen hscreen">
     <div id="hqr" aria-hidden="true"></div>
-    <div id="hcode" class="bigcode" aria-label="Code de l’écran"></div>
-    <p id="hhow"></p>
-    <p id="hst" role="status" aria-live="polite"></p>
-    <p id="hlnk" class="plnk"></p>
+    <div class="hside">
+      <h2 id="hh2">Scannez avec votre téléphone pour prendre la main</h2>
+      <p class="hcodel"><span>Code</span> <span id="hcode" class="bigcode" aria-label="Code de l’écran"></span></p>
+      <p id="hst" class="hpill" role="status" aria-live="polite"></p>
+      <p id="hhow" class="sr"></p>
+      <p id="hlnk" class="plnk"></p>
+    </div>
   </div>
-  <div id="hprep" class="panel hpanel" hidden>
-    <h2 class="hwait" id="hph2">Partie en préparation sur le téléphone…</h2>
-    <p id="hpst" role="status" aria-live="polite"></p>
+  <div id="hprep" class="hprep" hidden>
+    <div class="hphead"><h2 class="hwait" id="hph2">Partie en préparation sur le téléphone…</h2><p id="hpst" class="hpill" role="status" aria-live="polite"></p></div>
     <!-- Cartes « Comment jouer » pendant la préparation (js/aide.js) : défilent seules, une à la fois. -->
-    <div id="hcards" class="hcards" role="group" aria-roledescription="carrousel" hidden>
+    <div id="hcards" class="hcards gscreen" role="group" aria-roledescription="carrousel" hidden>
+      <p class="hcsur" aria-hidden="true">Comment jouer</p>
       <div id="hcard" class="hcard">
         <div id="hcpic" class="hcpic"></div>
         <h3 id="hct" class="hct"></h3>
@@ -39,8 +40,12 @@
       <ol id="hcdots" class="hcdots" aria-hidden="true"></ol>
     </div>
   </div>
-  <p class="hlinks"><button type="button" class="lnk" id="hlocal">Configurer sur cet écran</button><a href="editeur.html" id="hedit">Créer mes catégories</a><a href="#arbitre">Ouvrir la régie sur cet appareil</a></p>
-  <p id="hver" class="hver">Version 2026-11-28d</p>
+  <ol class="steps" id="hsteps" aria-label="Étapes"><li>1. Connexion</li><li>2. Configuration</li><li>3. Partie</li></ol>
+  <div class="hbottom">
+    <div class="seg hmode" role="group" aria-labelledby="hmodet"><span class="segl" id="hmodet">Lancement</span><button type="button" data-lm="funky" aria-pressed="true">Funky</button><button type="button" data-lm="serieux" aria-pressed="false">Sérieux</button></div>
+    <p class="hlinks"><button type="button" class="lnk" id="hlocal">Configurer sur cet écran</button><a href="editeur.html" id="hedit">Créer mes catégories</a><a href="#arbitre">Ouvrir la régie ici</a></p>
+  </div>
+  <p id="hver" class="hver">Version 2026-11-28e</p>
 </section>
 
 <section id="setup" hidden>
@@ -51,6 +56,9 @@
     <label>Mode de jeu
       <select id="gmode"><option value="grid" selected>Grille de territoires</option><option value="duel">Duel à deux</option></select>
     </label>
+    <div class="lmode"><span class="segt" id="lmt">Lancement sur l’écran</span>
+      <div class="seg" role="group" aria-labelledby="lmt"><button type="button" data-lm="funky" aria-pressed="true">Funky (intro et son)</button><button type="button" data-lm="serieux" aria-pressed="false">Sérieux</button></div>
+    </div>
     <div id="duelfields" class="fields" hidden>
       <div class="row2">
         <label>Joueur 1<input id="n0" maxlength="14" placeholder="Joueur 1" autocomplete="off"></label>
@@ -165,10 +173,10 @@
   </form>
   <div id="rwait" class="panel" hidden>
     <p id="rwmsg" role="status" aria-live="polite"></p>
-    <div id="rlance" hidden>
-      <button type="button" class="big" id="rfunky">🎬 Mode funky</button>
-      <button type="button" class="big alt" id="rserieux">Mode sérieux</button>
-      <p class="rnote">Le mode sérieux, sans intro, convient mieux aux TV. En mode funky lancé d’ici, le son du générique peut rester coupé.</p>
+    <div id="rlance" class="lmode" hidden>
+      <span class="segt" id="rlmt">Lancement sur l’écran</span>
+      <div class="seg" role="group" aria-labelledby="rlmt"><button type="button" data-lm="funky" aria-pressed="true">Funky (intro et son)</button><button type="button" data-lm="serieux" aria-pressed="false">Sérieux</button></div>
+      <p class="rnote">Le mode sérieux, sans intro, convient mieux aux TV. En mode funky choisi d’ici, le son du générique peut rester coupé.</p>
     </div>
     <button type="button" id="rwbtn" hidden></button>
     <p id="rwlk" class="plnk"></p>
@@ -211,19 +219,19 @@
 </section>
 </main>
 
-<script src="categories.js?v=2026-11-28d"></script>
-<script src="photos.js?v=2026-11-28d"></script>
-<script src="perso.js?v=2026-11-28d"></script>
-<script src="js/base.js?v=2026-11-28d"></script>
-<script src="js/liaison.js?v=2026-11-28d"></script>
-<script src="js/duel.js?v=2026-11-28d"></script>
-<script src="js/accueil.js?v=2026-11-28d"></script>
-<script src="js/grille.js?v=2026-11-28d"></script>
-<script src="js/choix-categories.js?v=2026-11-28d"></script>
-<script src="js/plateau.js?v=2026-11-28d"></script>
-<script src="js/plateau-lite.js?v=2026-11-28d"></script>
-<script src="js/regie.js?v=2026-11-28d"></script>
-<script src="js/aide.js?v=2026-11-28d"></script>
-<script src="js/main.js?v=2026-11-28d"></script>
+<script src="categories.js?v=2026-11-28e"></script>
+<script src="photos.js?v=2026-11-28e"></script>
+<script src="perso.js?v=2026-11-28e"></script>
+<script src="js/base.js?v=2026-11-28e"></script>
+<script src="js/liaison.js?v=2026-11-28e"></script>
+<script src="js/duel.js?v=2026-11-28e"></script>
+<script src="js/accueil.js?v=2026-11-28e"></script>
+<script src="js/grille.js?v=2026-11-28e"></script>
+<script src="js/choix-categories.js?v=2026-11-28e"></script>
+<script src="js/plateau.js?v=2026-11-28e"></script>
+<script src="js/plateau-lite.js?v=2026-11-28e"></script>
+<script src="js/regie.js?v=2026-11-28e"></script>
+<script src="js/aide.js?v=2026-11-28e"></script>
+<script src="js/main.js?v=2026-11-28e"></script>
 </body>
 </html>

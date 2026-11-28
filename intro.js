@@ -12,11 +12,11 @@
  * - Bouton son (générique assets/intro/generique.mp3) : coupé par défaut, car les navigateurs
  *   bloquent le son sans geste de l'utilisateur. Le choix est retenu (localStorage) et réessayé à la visite suivante.
  * - Pas d'intro sur la vue arbitre (#arbitre).
- * - Écran de lancement : « mode funky » (intro + son) ou « mode sérieux » (sans intro, fond noir épuré, classe slc-serieux
- *   sur <html>). Il ne s'ouvre plus à l'ouverture de la page : le jeu appelle SLC_INTRO.start() une fois le téléphone
- *   (la régie) connecté. Le dernier choix est retenu (localStorage « slc-mode ») et pré-sélectionné. Liens directs :
- *   ?mode=serieux (pas d'écran de lancement) et ?mode=funky. Une fois le lancement fait dans l'onglet
- *   (sessionStorage « slc-lance »), un rechargement ne le redemande pas.
+ * - Mode « funky » (intro + son) ou « sérieux » (sans intro, fond noir épuré, classe slc-serieux sur <html>), retenu
+ *   dans localStorage (« slc-mode », funky par défaut) et changé à tout moment par SLC_INTRO.setMode(m, geste) (bascule
+ *   « Lancement » de l'accueil et de la régie, story 5.1 ; événement « slc:mode »). Le jeu appelle SLC_INTRO.start()
+ *   une fois le téléphone (la régie) connecté : intro en funky, rien en sérieux. Liens directs : ?mode=serieux et
+ *   ?mode=funky (pour cette page) ; au retour de l'éditeur ou des crédits, l'intro n'est pas rejouée.
  * - Si une image ne se charge pas, l'intro est sautée.
  * - Fin de l'intro : événement « slc:intro-end » sur document, et window.SLC_INTRO_DONE = true.
  * - Version autonome (artefact claude.ai) : définir avant ce script window.SLC_INTRO_ASSETS
@@ -146,59 +146,45 @@
       }));
     },()=>{clearTimeout(fail);end()});
   }
-  // ---- Écran de lancement : mode « funky » (intro + son) ou mode « sérieux » (sans intro, fond noir) ----
+  // ---- Mode « funky » (intro + son) ou « sérieux » (sans intro, fond noir), choisi à tout moment (story 5.1) ----
+  // Plus d'écran de lancement : la bascule « Lancement » de l'accueil (et de la régie) appelle SLC_INTRO.setMode().
   const MKEY='slc-mode';
-  const getMode=()=>{try{return localStorage.getItem(MKEY)}catch(e){return null}};
-  const setMode=v=>{try{localStorage.setItem(MKEY,v)}catch(e){}};
-  function serious(){root.classList.add('slc-serieux')}
+  const getMode=()=>{try{return localStorage.getItem(MKEY)==='serieux'?'serieux':'funky'}catch(e){return'funky'}};
+  function serious(on){root.classList.toggle('slc-serieux',on!==false)}
   function skipAll(){ // pas d'intro : on rend la main au jeu tout de suite
     done=true;root.classList.remove('slci-on');hide.remove();
     window.SLC_INTRO_DONE=true;document.dispatchEvent(new CustomEvent('slc:intro-end'));
   }
-  function launchScreen(){
-    const last=getMode();
-    const lb=document.createElement('div');lb.className='slcl';
-    lb.innerHTML=
-      '<div class="slcl-in">'+
-        '<h1 class="slcl-title">Sur le carreau</h1>'+
-        '<p class="slcl-ok">Téléphone connecté ✓</p>'+
-        '<p class="slcl-lead">Comment voulez-vous lancer le jeu ?</p>'+
-        '<button type="button" class="slcl-funky"><b>🎬 Mode funky</b><span>Générique animé et son</span></button>'+
-        '<button type="button" class="slcl-serious"><b>Mode sérieux</b><span>Sans intro, fond noir épuré</span></button>'+
-      '</div>';
-    document.body.appendChild(lb);
-    const kill=()=>{lb.remove();lanced()};
-    lb.querySelector('.slcl-funky').onclick=()=>{
-      setMode('funky');setPref(true);try{localStorage.setItem('slc-sons','1')}catch(e){}
-      // Ce clic est le geste qui autorise le son : on « débloque » l'élément audio (utile sur iPhone).
-      if(A.music){try{audio=new Audio(A.music);audio.preload='auto';audio.muted=true;
-        const p=audio.play();const un=()=>{try{audio.pause();audio.currentTime=0;audio.muted=false}catch(e){}};
-        if(p&&p.then)p.then(un,()=>{audio.muted=false});else un()}catch(e){}}
-      kill();build();
-    };
-    lb.querySelector('.slcl-serious').onclick=()=>{setMode('serieux');setPref(false);try{localStorage.setItem('slc-sons','0')}catch(e){}serious();kill();skipAll()};
-    (lb.querySelector(last==='serieux'?'.slcl-serious':'.slcl-funky')).focus({preventScroll:true});
+  // Le clic sur « Funky » est le geste qui autorise le son : on « débloque » l'élément audio (utile sur iPhone et sur la TV).
+  function prime(){
+    if(!A.music||audio)return;
+    try{audio=new Audio(A.music);audio.preload='auto';audio.muted=true;
+      const p=audio.play();const un=()=>{try{audio.pause();audio.currentTime=0;audio.muted=false}catch(e){}};
+      if(p&&p.then)p.then(un,()=>{audio.muted=false});else un()}catch(e){}
   }
-  /* Le lancement n'a plus lieu à l'ouverture : la page affiche d'abord l'écran d'accueil (QR code), et le jeu
-     appelle SLC_INTRO.start() quand le téléphone (la régie) est connecté. PRE = choix déjà fait :
-     ?mode=serieux, ?mode=funky, retour de l'éditeur ou des crédits, ou lancement déjà fait dans cet onglet. */
+  /* PRE : choix imposé pour cette page : ?mode=serieux, ?mode=funky, ou « skip » au retour de l'éditeur ou des crédits
+     (l'intro n'est pas rejouée). Le jeu appelle SLC_INTRO.start() quand le téléphone (la régie) est connecté. */
   let PRE=null,started=false;
-  const LKEY='slc-lance';
-  function lanced(){try{sessionStorage.setItem(LKEY,'1')}catch(e){}}
   const q=new URLSearchParams(location.search).get('mode');
-  if(q==='serieux'||q==='sérieux'){PRE='serieux';serious()}
+  if(q==='serieux'||q==='sérieux')PRE='serieux';
   else if(q==='funky')PRE='funky';
-  try{
-    if(sessionStorage.getItem('slc-retour')){sessionStorage.removeItem('slc-retour');PRE=PRE||'skip'}
-    if(sessionStorage.getItem(LKEY))PRE=PRE||'skip';
-  }catch(e){}
-  if(PRE==='skip'&&getMode()==='serieux')serious();
+  try{if(sessionStorage.getItem('slc-retour')){sessionStorage.removeItem('slc-retour');PRE=PRE||'skip'}}catch(e){}
+  const mode=()=>PRE==='serieux'||PRE==='funky'?PRE:getMode();
+  serious(mode()==='serieux');
+  function setMode(m,geste){
+    if(m!=='funky'&&m!=='serieux')return;
+    if(PRE!=='skip')PRE=null;
+    try{localStorage.setItem(MKEY,m);localStorage.setItem('slc-sons',m==='funky'?'1':'0')}catch(e){}
+    setPref(m==='funky');serious(m==='serieux');
+    if(m==='funky'&&geste)prime();
+    if(m==='serieux'&&box&&!done)end(); // intro en cours : on l'arrête
+    document.dispatchEvent(new CustomEvent('slc:mode',{detail:m}));
+  }
   function start(){
     if(started)return;started=true;
-    if(PRE==='serieux'||PRE==='skip'){lanced();return skipAll()}
-    if(PRE==='funky'){lanced();return build()}
-    cssReady.then(launchScreen,()=>{lanced();skipAll()});
+    if(PRE==='skip'||mode()==='serieux')return skipAll();
+    build();
   }
-  window.SLC_INTRO={start,get started(){return started}};
-  addEventListener('hashchange',()=>{if(location.hash.startsWith('#arbitre')){if(box)end();else{const l=document.querySelector('.slcl');if(l)l.remove();skipAll()}}});
+  window.SLC_INTRO={start,setMode,mode,get started(){return started}};
+  addEventListener('hashchange',()=>{if(location.hash.startsWith('#arbitre')){if(box)end();else skipAll()}});
 })();
