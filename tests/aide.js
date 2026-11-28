@@ -120,7 +120,7 @@ lancer('aide',async env=>{
     await jeu.getByRole('button',{name:'Lancer le duel'}).click();
     await jeu.waitForSelector('#game:not([hidden])');
     for(let k=0;k<20&&await jeu.isDisabled('#go');k++){await avance(jeu,1000);await pause(30)}
-    await jeu.click('#go');
+    await regie.click('#rgo'); // « Démarrer le duel » : sur la régie seulement (l'attente de l'écran n'a plus de boutons)
     for(let k=0;k<60&&await jeu.isHidden('#end');k++){await avance(jeu,2000);await pause(20)}
     await jeu.click('#again');
     await jeu.waitForSelector('#grid:not([hidden])');

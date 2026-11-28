@@ -53,7 +53,7 @@ lancer('fumee',async env=>{
 
     // « Démarrer le duel » sur l'écran, compte à rebours 3-2-1.
     await avancerJusqua(jeu,()=>!document.getElementById('go').disabled,{pas:1000,max:15000,quoi:'« Démarrer le duel » actif (régie connectée)'});
-    await jeu.click('#go');
+    await regie.click('#rgo'); // « Démarrer le duel » : sur la régie seulement (l'attente de l'écran n'a plus de boutons)
     await avancerJusqua(jeu,()=>/de jouer/.test(document.getElementById('who').textContent),{pas:1000,max:10000,quoi:'début du duel'});
 
     // La régie juge : une bonne réponse, puis un « Passé ».
