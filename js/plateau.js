@@ -1,8 +1,11 @@
 // Sur le carreau : plateau SVG, vague de capture, « Retourner sur le sol » (gdraw), rendu de la grille et enchaînement des duels.
 /* ---------- Plateau SVG ----------
-   Le plateau est un quadrillage droit : une case carrée par joueur au départ. Les formes irrégulières
+   Le plateau est un quadrillage droit : une case par joueur au départ. Les formes irrégulières
    (façon pièces de Tetris) naissent des captures : les cases d'un même joueur sont fusionnées
-   visuellement (même couleur, frontière blanche seulement entre joueurs différents). */
+   visuellement (même couleur, frontière blanche seulement entre joueurs différents).
+   Story 5.3 (docs/ux.md §5.4) : plateau vu en perspective, comme depuis les gradins. Chaque point de la grille est
+   projeté (gproj) : le rang du fond est 1,6 fois plus étroit que le premier. Ce sont de simples polygones SVG
+   (pas de transformation 3D en CSS, mal gérée par la TV Samsung) ; les étiquettes restent droites, plus petites au fond. */
 const GNS='http://www.w3.org/2000/svg';
 const sv=(tag,at,par)=>{const e=document.createElementNS(GNS,tag);for(const k in at)e.setAttribute(k,at[k]);if(par)par.appendChild(e);return e};
 function grng(seed){let s=(seed>>>0)||1;return()=>{s^=s<<13;s^=s>>>17;s^=s<<5;return(s>>>0)/4294967296}}
@@ -12,9 +15,15 @@ function gshape(){
   for(let y=0;y<=n;y++){P[y]=[];H[y]=[];V[y]=[];for(let x=0;x<=n;x++){P[y][x]=[x,y];H[y][x]=V[y][x]=[0,0]}}
   return G.shape={P,H,V};
 }
+/* Projection en perspective d'un point (x, y) de la grille n×n (0 à n, y = 0 au fond) vers l'écran (largeur Wd au
+   premier rang, hauteur Ht). K : profondeur (le fond est 1+K fois plus étroit que le premier rang). */
+function gproj(n,Wd,Ht,K){
+  const s=v=>1/(1+K*(1-v)),s0=s(0);
+  return q=>{const u=q[0]/n,v=q[1]/n,k=s(v);return[Wd/2+(u-.5)*Wd*k,Ht*(k-s0)/(1-s0)]};
+}
 /* Couleurs du plateau : un bleu unique pour toutes les cases, violet pour le joueur en cours,
    bleu clair pour les adversaires qu'il peut défier, plus clair encore pour l'adversaire choisi. */
-const GC={gold:'#D9A21B',goldSel:'#F2C44E',base:'#1B3DB0',me:'#7A3FD8',foe:'#3D78EA',sel:'#6A9CFF',pick:'#BFD3FF',flash:['#4F86F7','#6E9BFF','#3F74E8','#8DB0FF','#5A8FFF']};
+const GC={gold:'#E0AC22',goldSel:'#F2C44E',base:'#2457D6',me:'#7A3FD8',foe:'#5B95F5',sel:'#A9C8FF',pick:'#BFD3FF',flash:['#4F86F7','#6E9BFF','#3F74E8','#8DB0FF','#5A8FFF']};
 // Le détenteur de la case d'or garde son territoire en jaune (plus clair s'il est l'adversaire choisi).
 function gfill(o,foes){
   if(G.players[o].gold&&!G.over)return G.sel===o?GC.goldSel:GC.gold;
@@ -46,8 +55,8 @@ function gwrap(t,px,w,max,lines){
    les cases prises gardent l'ancien propriétaire jusqu'au passage de la vague). */
 function gboardBuild(tg){
   const box=$('gboard'),n=G.size,{P,H,V}=gshape();
-  const Wd=Math.max(260,Math.round(box.clientWidth||700)),narrow=Wd<560,Ht=Math.round(Wd*(narrow?1.05:.7));
-  const sx=Wd/n,sy=Ht/n,pt=q=>[q[0]*sx,q[1]*sy],f=v=>Math.round(v*10)/10;
+  const Wd=Math.max(260,Math.round(box.clientWidth||700)),narrow=Wd<560,Ht=Math.round(Wd*(narrow?.85:.5));
+  const sx=Wd/n,sy=Ht/n,pt=gproj(n,Wd,Ht,narrow?.35:.6),f=v=>Math.round(v*10)/10;
   // Un bord : de A à B, deux points de contrôle décalés perpendiculairement (forme en S).
   const edge=(A,B,o)=>{const dx=B[0]-A[0],dy=B[1]-A[1],L=Math.hypot(dx,dy)||1,px=-dy/L,py=dx/L;
     return[A,[A[0]+dx/3+px*o[0],A[1]+dy/3+py*o[0]],[A[0]+2*dx/3+px*o[1],A[1]+2*dy/3+py*o[1]],B].map(pt)};
@@ -60,19 +69,23 @@ function gboardBuild(tg){
   const cells=G.cells.map((_,i)=>{
     const y=Math.floor(i/n),x=i%n,co=[P[y][x],P[y][x+1],P[y+1][x+1],P[y+1][x]].map(pt);
     return{d:'M'+co[0].map(f)+seg(hE[y][x])+seg(vE[y][x+1])+seg(hE[y+1][x],1)+seg(vE[y][x],1)+'Z',
-      cx:co.reduce((a,q)=>a+q[0],0)/4,cy:co.reduce((a,q)=>a+q[1],0)/4};
+      cx:co.reduce((a,q)=>a+q[0],0)/4,cy:co.reduce((a,q)=>a+q[1],0)/4,
+      w:(co[1][0]-co[0][0]+co[2][0]-co[3][0])/2,h:co[3][1]-co[0][1]}; // largeur et hauteur de la case à l'écran
   });
   box.textContent='';
-  const svg=sv('svg',{viewBox:'-6 -6 '+(Wd+12)+' '+(Ht+12),role:'group','aria-label':'Plateau de jeu'},box);
+  const M=Math.round(Wd*.03),svg=sv('svg',{viewBox:(-M)+' '+(-M)+' '+(Wd+2*M)+' '+(Ht+2*M),role:'group','aria-label':'Plateau de jeu'},box);
   const defs=sv('defs',{},svg);
   const glow=sv('filter',{id:'gglow',x:'-20%',y:'-20%',width:'140%',height:'140%'},defs);
   sv('feGaussianBlur',{stdDeviation:'4',result:'b'},glow);
   const fm=sv('feMerge',{},glow);sv('feMergeNode',{in:'b'},fm);sv('feMergeNode',{in:'SourceGraphic'},fm);
+  // Rang du fond légèrement assombri (profondeur).
   const lg=sv('linearGradient',{id:'gsheen',x1:0,y1:0,x2:0,y2:1},defs);
-  sv('stop',{offset:0,'stop-color':'#AFC4FF','stop-opacity':.22},lg);sv('stop',{offset:.45,'stop-color':'#AFC4FF','stop-opacity':0},lg);
-  sv('stop',{offset:1,'stop-color':'#03040E','stop-opacity':.25},lg);
-  sv('rect',{x:-4,y:-4,width:Wd+8,height:Ht+8,rx:6,fill:'#03040E',stroke:'#9DB8FF','stroke-opacity':.5,'stroke-width':2,filter:'url(#gglow)'},svg);
-  const gz=sv('g',{},svg),gsh=sv('rect',{x:0,y:0,width:Wd,height:Ht,fill:'url(#gsheen)','pointer-events':'none'},svg);
+  sv('stop',{offset:0,'stop-color':'#03040E','stop-opacity':.5},lg);sv('stop',{offset:.45,'stop-color':'#03040E','stop-opacity':0},lg);
+  // Liseré violet néon autour du sol (halo flou hors mode allégé).
+  const poly=m=>[[-m,-m],[n+m,-m],[n+m,n+m],[-m,n+m]].map(q=>pt(q).map(f).join(',')).join(' ');
+  sv('polygon',{points:poly(.12),fill:'none',stroke:'#A24DFF','stroke-width':Math.max(8,Wd*.012),'stroke-opacity':.85,filter:'url(#gglow)',class:'gneon'},svg);
+  sv('polygon',{points:poly(.12),fill:'#0E1E66',stroke:'#C07BFF','stroke-width':Math.max(3,Wd*.004),'stroke-linejoin':'round'},svg);
+  const gz=sv('g',{},svg),gsh=sv('polygon',{points:poly(0),fill:'url(#gsheen)','pointer-events':'none'},svg);
   const gan=sv('g',{'pointer-events':'none'},svg),ge=sv('g',{},svg),go=sv('g',{filter:'url(#gglow)'},svg),gt=sv('g',{},svg),gl=sv('g',{},svg);
   const zones=cells.map((c,i)=>{
     const isT=tg.includes(i),z=sv('path',{d:c.d,class:'gz'+(isT?' t':''),'data-i':i},gz);
@@ -102,13 +115,15 @@ function gpaint(own){
      Les catégories des cases conquises disparaissent : un joueur ne peut être attaqué que sur la sienne. */
   V0.gl.textContent='';
   const size={};G.cells.forEach((_,i)=>{size[own(i)]=(size[own(i)]||0)+1});
-  const ch=V0.sy,cw=V0.sx,max=cw*.82;
+  // Tailles d'après la largeur de la case à l'écran (plus petites au fond) : 44 et 30 px au premier rang en 4×4 sur une TV.
+  const near=V0.Wd/G.size,base=Math.min(48,near*.115);
   G.cells.forEach((c,i)=>{
     const o=own(i);
     V0.zones[i].setAttribute('aria-label',G.players[o].name+', '+DATA[G.cells[o].cat].label+(G.players[o].gold?', case d’or':'')+(V0.zones[i].classList.contains('t')?', adversaire possible':''));
     if(o!==i)return;
-    const cp=Math.max(11,Math.min(15,ch*.1)),cat=gwrap(DATA[c.cat].label,cp,500,max,2);
-    let np=Math.max(13,Math.min(22,ch*.15))*Math.min(1.35,1+.08*(size[o]-1));
+    const C=V0.cells[i],k=Math.pow(C.w/near,.6),max=C.w*.84;
+    const cp=Math.max(11,Math.min(C.h*.17,base*.68*k)),cat=gwrap(DATA[c.cat].label,cp,500,max,2);
+    let np=Math.max(13,Math.min(C.h*.26,base*k))*Math.min(1.35,1+.08*(size[o]-1));
     const full=G.players[o].name;while(np>11&&gmeasure(full,np,700)>max)np-=.5;const nm=gfit(full,np,700,max);
     const tot=np*1.15+4+cat.length*cp*1.2;let y=V0.cells[i].cy-tot/2;
     const t=sv('text',{class:'gl','stroke-width':4},V0.gl);
@@ -143,7 +158,7 @@ function gcapture(A){
   // Mode allégé (TV) : vague case par case, sans clip-path ni flou (js/plateau-lite.js).
   if(LITE)return gcaptureLite(A,V0,ox,oy,G.players[A.to].gold?GC.gold:GC.me,fin);
   // Rayon final : assez grand pour que même le creux le plus profond du front couvre toutes les cases.
-  let R=0;A.cells.forEach(i=>{const c=V0.cells[i];for(const dx of[-.5,.5])for(const dy of[-.5,.5])R=Math.max(R,Math.hypot(c.cx+dx*V0.sx-ox,c.cy+dy*V0.sy-oy))});R=R/.67+4;
+  let R=0;A.cells.forEach(i=>{const c=V0.cells[i];for(const dx of[-.5,.5])for(const dy of[-.5,.5])R=Math.max(R,Math.hypot(c.cx+dx*c.w-ox,c.cy+dy*c.h-oy))});R=R/.67+4;
   const rr=grng(G.seed^(A.cells.length*7919+A.to)),ph=[0,0,0,0].map(()=>rr()*Math.PI*2);
   const cp=sv('clipPath',{id:'gcap'},V0.svg.querySelector('defs'));
   A.cells.forEach(i=>sv('path',{d:V0.cells[i].d},cp));
@@ -152,7 +167,7 @@ function gcapture(A){
   const body=sv('path',{d:'',fill:col},g);
   const ring=sv('path',{d:'',fill:'none',stroke:'#EAF0FF','stroke-width':6,filter:'url(#gglow)'},g);
   V0.gt.classList.add('wait');
-  const dur=Math.min(1900,950+160*A.cells.length),t0=performance.now();
+  const dur=Math.min(3000,2000+120*A.cells.length),t0=performance.now(); // 2 à 3 s (story 5.3 : la vague était trop rapide)
   snd('capture');
   const step=now=>{
     if(GV!==V0)return;
@@ -285,6 +300,15 @@ $('wback').onclick=()=>{
   S.over=true;push();G.sel=null;show('grid');gridRender();
 };
 $('gquit').onclick=backToStart;
+/* Bouton « Détails » (story 5.3) : prochain duel, légende, joueurs en lice et boutons, dans un panneau en bas de l'écran,
+   fermé par défaut. Il reste ouvert ou fermé d'un duel à l'autre. */
+let GDET=false;
+function gdetRender(){
+  $('gdetails').hidden=!GDET;$('gdet').setAttribute('aria-expanded',String(GDET));
+  $('gdett').textContent=GDET?'Masquer les détails':'Détails';$('gdet').classList.toggle('on',GDET);
+}
+$('gdet').onclick=()=>{GDET=!GDET;gdetRender()};
+gdetRender();
 // Le plateau est dessiné à la largeur réelle de l'écran : on le redessine si elle change, et une fois la police chargée.
 {let rt=0,lw=0;addEventListener('resize',()=>{clearTimeout(rt);rt=setTimeout(()=>{const w=$('gboard').clientWidth;if(G&&!$('grid').hidden&&!gAnimT&&!G.draw&&w!==lw){lw=w;gridRender()}},150)})}
 if(document.fonts&&document.fonts.ready)document.fonts.ready.then(()=>{if(G&&!$('grid').hidden&&!gAnimT&&!G.draw)gridRender()});

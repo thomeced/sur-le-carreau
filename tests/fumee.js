@@ -8,7 +8,7 @@
    Chaque duel : un adversaire, « Lancer le duel », « Démarrer le duel », une « Bonne réponse » et un « Passé »
    envoyés par la régie, puis on avance l'horloge simulée (commune aux deux onglets) jusqu'à ce qu'un chrono tombe à 0.
    Le test échoue à la moindre erreur JavaScript ou console.error, dans l'un ou l'autre onglet. */
-const {lancer,ouvrirEcranEtRegie,pause}=require('./serveur.js');
+const {lancer,ouvrirEcranEtRegie,pause,ouvrirDetails}=require('./serveur.js');
 
 // Avance l'horloge simulée par petits pas jusqu'à ce que `cond` soit vraie dans la page.
 async function avancerJusqua(page,cond,{pas=2000,max=120000,quoi='condition'}={}){
@@ -47,6 +47,7 @@ lancer('fumee',async env=>{
     const cibles=jeu.locator('#gboard path.gz.t');
     if(!await cibles.count())throw new Error('Aucun adversaire possible sur le plateau : '+await jeu.textContent('#gpanel'));
     await cibles.first().dispatchEvent('click');
+    await ouvrirDetails(jeu);
     await jeu.getByRole('button',{name:'Lancer le duel'}).click();
     await jeu.waitForSelector('#game:not([hidden])');
 

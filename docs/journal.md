@@ -329,5 +329,10 @@ Chaque chantier est prévu dans sa propre conversation du projet, sur sa propre 
 - D'après une photo de l'émission fournie par Ced : plus de barre en haut, grand écran au centre, bandeau en bas (chronos des deux joueurs, onglet de la catégorie, zone de réponse). Étapes : attente (logo, « A contre B », consigne), compte à rebours (« X commence », grand chiffre blanc), en cours, bonne réponse (zone verte avec la réponse), « Passé » (zone rouge, lettres manquantes révélées sur un mot à trous), fin dans le grand écran (coupe, zone violette).
 - Nouveau test `tests/duel.js`. Version `2026-11-28f`.
 
+## Plateau en perspective (story 5.3, 28 novembre 2026)
+- D'après une photo de l'émission fournie par Ced : plateau vu depuis les gradins (projection des points de la grille en SVG, pas de 3D en CSS pour la TV Samsung), liseré violet néon, étiquettes plus petites au fond. Colonne d'informations remplacée par un bouton « Détails » (panneau en bas). Barre du haut : logo et phrase de l'étape, dont « X défie Y en « catégorie » ».
+- Vague de capture ralentie à 2 à 3 s (Ced la trouvait trop rapide) ; en mode allégé, 260 ms par case.
+- Nouveau test `tests/plateau.js`. Version `2026-11-28g`.
+
 ## Comment reprendre dans un nouveau projet Claude
 Reliez le dépôt GitHub (référence du code) et gardez ce document dans le projet, puis demandez par exemple : « Lis le document de contexte et reprends le jeu : ajoute l'éditeur de catégories. » Le fichier `sur-le-carreau.html` du projet est la version autonome du jeu (catégories incluses) ; la référence reste le dépôt.

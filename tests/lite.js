@@ -16,7 +16,7 @@
      seules les cases capturées changent de couleur, avec un délai qui grandit avec la distance, et toutes finissent
      à la couleur du gagnant ; pas de flou SVG sur le plateau. */
 const fs=require('fs'),path=require('path');
-const {lancer,RACINE,ouvrirEcranEtRegie,pause,etape}=require('./serveur.js');
+const {lancer,RACINE,ouvrirEcranEtRegie,pause,etape,ouvrirDetails}=require('./serveur.js');
 const attendu=(ok,msg)=>{if(!ok)throw new Error(msg)};
 
 // Contrôle statique des feuilles de style.
@@ -113,6 +113,7 @@ lancer('lite',async env=>{
   const flou=await jeu.evaluate(()=>[...document.querySelectorAll('#gboard [filter]')].map(n=>getComputedStyle(n).filter).filter(f=>f!=='none').length);
   attendu(flou===0,'Flou SVG encore actif sur le plateau en mode allégé ('+flou+' éléments)');
   await jeu.locator('#gboard path.gz.t').first().dispatchEvent('click');
+  await ouvrirDetails(jeu);
   await jeu.getByRole('button',{name:'Lancer le duel'}).click();
   await jeu.waitForSelector('#game:not([hidden])');
   for(let k=0;k<20&&await jeu.isDisabled('#go');k++){await jeu.clock.runFor(1000);await pause(30)}
