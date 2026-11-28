@@ -12,11 +12,41 @@ Sortie, à la racine du dépôt :
     (auteur, licence, lien de chaque photo), lu par le jeu et par credits.html.
 Les photos des catégories absentes du manifeste sont laissées telles quelles ; celles qui ne sont plus
 retenues dans une catégorie traitée sont supprimées.
+Chaque photo est réduite à 640 px (JPEG qualité 70, PNG optimisé pour les drapeaux), avec Pillow. Une photo
+déjà dans le dépôt et venant de la même page Commons (d'après l'ancien photos.js) n'est pas réécrite : on
+évite ainsi de réencoder les photos inchangées à chaque passage.
 """
-import json, os, re, shutil, sys
+import json, os, re, sys
+
+from PIL import Image
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 MIN = 5
+MAXPX = 640       # plus grand côté des photos du dépôt (la TV et le téléphone n'ont pas besoin de plus)
+
+
+def anciennes_sources():
+    """Page Commons de chaque photo d'après le photos.js actuel : {chemin: page}."""
+    path = os.path.join(ROOT, 'photos.js')
+    if not os.path.exists(path):
+        return {}
+    src = {}
+    for line in open(path, encoding='utf-8'):
+        m = re.match(r'^\s*("assets/photos/[^"]+"): (\{.*\}),$', line)
+        if m:
+            src[json.loads(m.group(1))] = json.loads(m.group(2)).get('s', '')
+    return src
+
+
+def reduire(src, dst):
+    """Copie réduite à MAXPX : JPEG qualité 70 progressif, ou PNG optimisé (drapeaux)."""
+    im = Image.open(src)
+    im.thumbnail((MAXPX, MAXPX), Image.LANCZOS)
+    im = im.convert('RGB')
+    if dst.endswith('.png'):
+        im.save(dst, 'PNG', optimize=True)
+    else:
+        im.save(dst, 'JPEG', quality=70, optimize=True, progressive=True)
 
 
 def main():
@@ -31,7 +61,8 @@ def main():
             line = line.strip()
             if line and not line.startswith('#'):
                 out_ex.add(line.split()[0])
-    cats, credits, kept, skipped = {}, {}, 0, []
+    old = anciennes_sources()
+    cats, credits, kept, skipped, written = {}, {}, 0, [], 0
     for key, cat in man.items():
         items = []
         dest_dir = os.path.join(ROOT, 'assets', 'photos', key)
@@ -43,9 +74,12 @@ def main():
                 skipped.append(ref)
                 continue
             name = os.path.basename(it['chemin'])
-            shutil.copyfile(os.path.join(src, 'photos', it['chemin']), os.path.join(dest_dir, name))
-            wanted.add(name)
             path = 'assets/photos/%s/%s' % (key, name)
+            dst = os.path.join(dest_dir, name)
+            if not (os.path.exists(dst) and old.get(path) and old.get(path) == it.get('page')):
+                reduire(os.path.join(src, 'photos', it['chemin']), dst)
+                written += 1
+            wanted.add(name)
             items.append([path, it['a'], it['l']])
             auteur = re.sub(r'(?i)^(auteur inconnu|unknown author|unknown)(\s+(unknown author|auteur inconnu))?$', '',
                             (it.get('auteur') or '').strip())
@@ -76,7 +110,8 @@ def main():
     js += ['  %s: %s,' % (json.dumps(k, ensure_ascii=False), json.dumps(v, ensure_ascii=False)) for k, v in credits.items()]
     js.append('};')
     open(os.path.join(ROOT, 'photos.js'), 'w', encoding='utf-8').write('\n'.join(js) + '\n')
-    print('%d photos dans %d catégories ; écartées : %d' % (kept, len(cats), len(skipped)))
+    print('%d photos dans %d catégories (%d écrites, les autres inchangées) ; écartées : %d'
+          % (kept, len(cats), written, len(skipped)))
     for s in skipped:
         print('  -', s)
 

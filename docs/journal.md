@@ -314,5 +314,10 @@ Chaque chantier est prévu dans sa propre conversation du projet, sur sa propre 
 - Nouveau test `tests/regie-grille.js` : une partie 2×2 entière jouée depuis la régie. Version `2026-11-28c`.
 - Reste ouvert : l'intro saccadée sur la TV (le mode sérieux l'évite).
 
+## Photos à 40 par catégorie (story 4.8, 28 novembre 2026)
+- Ced lance `photos-commons.py` sur son Mac : 595 photos sur 600 du premier coup. Claude relit les 220 nouvelles sur des planches par catégorie et en signale 30 ; avec les 5 échecs, 35 éléments passent par `--candidats` (8 propositions chacun), choisis sur planches, inscrits en `> File:`. Piège principal : l'article Wikipédia homonyme (Fez, Sari, Tablier, Halo, Burin, Kora, Sainte-Sophie au Québec).
+- « Corde à sauter » remplacée par « boule de bowling » (aucune photo libre sans personne reconnaissable).
+- `tools/photos-js.py` réduit désormais lui-même à 640 px (Pillow) et ne réécrit pas une photo inchangée : 30 Mo pour 600 photos. Version `2026-11-28d`. `contenu.js --strict` : 42/42.
+
 ## Comment reprendre dans un nouveau projet Claude
 Reliez le dépôt GitHub (référence du code) et gardez ce document dans le projet, puis demandez par exemple : « Lis le document de contexte et reprends le jeu : ajoute l'éditeur de catégories. » Le fichier `sur-le-carreau.html` du projet est la version autonome du jeu (catégories incluses) ; la référence reste le dépôt.

@@ -62,9 +62,9 @@ Epic terminé avec la story 3.1.
 | [4.5](4.5-nouvelles-categories.md) | Séries et dessins animés (indices), Sports en vrac, Musique (les 3 Devinettes sont reportées avec la 3.3) | EF18, EF20 | Terminée |
 | [4.6](4.6-emojis.md) | Emojis : 5 catégories à 40 éléments, niveaux 1 à 5 | EF19 | Terminée |
 | [4.7](4.7-photos-liste.md) | Photos : `liste.txt` à 40 par catégorie (préparation par Claude ; les 2 catégories Gros plan sont reportées avec la 3.5) | EF19 | Terminée (liste à relire par Ced) |
-| [4.8](4.8-photos-telechargement.md) | Photos : téléchargement et relecture (Ced, sur son Mac), intégration et crédits | EF19, EF22 | En attente de Ced (téléchargement) |
+| [4.8](4.8-photos-telechargement.md) | Photos : téléchargement et relecture (Ced, sur son Mac), intégration et crédits | EF19, EF22 | En revue |
 
-Constat de la story 4.1 (`node tests/contenu.js`) : plusieurs catégories n'avaient aucun élément aux niveaux 4 et 5 ; réglé en 4.2 (mots à trous), 4.3 (indices) et 4.6 (emojis). Après la 4.6, toutes les catégories sauf les 15 catégories photo sont à l'objectif. Le domaine « Langue et mots » n'a aucune catégorie.
+Constat de la story 4.1 (`node tests/contenu.js`) : plusieurs catégories n'avaient aucun élément aux niveaux 4 et 5 ; réglé en 4.2 (mots à trous), 4.3 (indices) et 4.6 (emojis). Après la 4.6, toutes les catégories sauf les 15 catégories photo sont à l'objectif ; après la 4.8, les 42 le sont. Le domaine « Langue et mots » n'a aucune catégorie.
 
 ## Ordre de passage
 0.1 → 0.2 → 0.3 → 1.1 → 1.2 → 1.3 → 1.4 → E2 → E3 (3.1 seule) → E4.

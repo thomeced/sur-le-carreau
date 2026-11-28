@@ -51,7 +51,7 @@
 1|tomate
 1|orange > Orange (fruit)
 1|raisin
-1|pomme de terre
+1|pomme de terre > File:Картопляні бульби 04.jpg
 2|ananas
 2|cerise
 2|poire
@@ -73,15 +73,15 @@
 4|figue
 4|betterave
 4|mangue
-4|asperge
-4|myrtille
+4|asperge > File:Asparagus-Bundle.jpg
+4|myrtille > File:Dish of blueberries.jpg
 4|groseille
 5|kaki > Kaki (fruit)
 5|chou romanesco > Chou romanesco
 5|navet
 5|litchi > File:Lychee fruits and seed.jpg
 5|pitaya|fruit du dragon > Pitaya
-5|panais
+5|panais > File:Parsnip.jpg
 5|physalis
 5|ramboutan
 ## pho_transports | Transports | P18
@@ -91,7 +91,7 @@
 1|bus|autobus > Autobus
 1|train
 1|métro
-1|ambulance
+1|ambulance > File:Iveco military ambulance, ILA 2024, Schoenefeld (ILA44552).jpg
 1|scooter
 2|moto|motocyclette > Motocyclette
 2|hélicoptère
@@ -99,7 +99,7 @@
 2|camion
 2|voilier
 2|paquebot
-2|taxi
+2|taxi > File:Taxi of Kolkata.jpg
 2|camping-car
 3|trottinette
 3|tramway
@@ -124,7 +124,7 @@
 5|trimaran
 5|hydravion
 5|brise-glace
-5|tuk-tuk|auto-rickshaw > Auto-rickshaw
+5|tuk-tuk|auto-rickshaw > File:Auto rickshaw in Ahmedabad.jpg
 ## pho_drapeaux | Drapeaux | P41
 1|France
 1|Italie
@@ -190,14 +190,14 @@
 3|fléchettes > Fléchettes
 3|dominos
 3|arc|arc et flèches > Arc (arme)
-3|corde à sauter
+3|boule de bowling|bowling > Boule de bowling
 4|crosse de hockey > Crosse de hockey sur glace
 4|kayak
 4|planche de surf > File:Surfboards on the Beach - geograph.org.uk - 7477128.jpg
 4|boules de pétanque|pétanque > File:Pétanque balls child-20080713-RM-180115.jpg
 4|club de golf > File:Golf bag and clubs.jpg
 4|palmes|palme > Palme (natation)
-4|baby-foot|babyfoot > Football de table
+4|baby-foot|babyfoot > File:FAS Foosball table 1.jpg
 4|raquettes à neige|raquette à neige > Raquette à neige
 5|boomerang
 5|bilboquet
@@ -206,7 +206,7 @@
 5|osselets > Osselets
 5|fleuret|épée > Fleuret
 5|mah-jong
-5|curling|pierre de curling > Curling
+5|curling|pierre de curling > File:Curling Stones.jpg
 ## pho_musique | Instruments de musique | P18
 1|guitare
 1|piano
@@ -215,7 +215,7 @@
 1|trompette
 1|guitare électrique
 1|flûte à bec > Flûte à bec
-1|tambourin
+1|tambourin > File:Tambourine - 1970s - Palace of the Viceroy, Tobolsk.jpg
 2|flûte traversière|flûte > File:Western Concert Flute.jpg
 2|tambour > Tambour (instrument)
 2|harpe
@@ -231,7 +231,7 @@
 3|ukulélé
 3|castagnettes > Castagnettes
 3|cymbales|cymbale > Cymbale
-3|synthétiseur
+3|synthétiseur > File:EMS VCS 3 synthesizer (1969, SN 297) & DK-1 keyboard (1969), Musée de la Musique de Paris.jpg
 4|contrebasse
 4|tuba > File:Yamaha Bass tuba YFB-822.tif
 4|banjo
@@ -246,8 +246,8 @@
 5|thérémine > Thérémine
 5|vielle à roue > Vielle à roue
 5|balalaïka
-5|steel drum|steelpan > Steelpan
-5|kora > Kora (instrument)
+5|steel drum|steelpan > File:Steelpan.jpeg
+5|kora > File:La kora, instrument rituel et mémoire vivante 01.jpg
 ## pho_outils | Outils et bricolage | P18
 1|marteau > Marteau (outil)
 1|tournevis
@@ -255,7 +255,7 @@
 1|clou > File:Double-headed nail.agr.jpg
 1|pinceau
 1|pelle > Pelle (outil)
-1|râteau > Râteau (outil)
+1|râteau > File:Rake - Tool 3 (PSF).png
 1|ciseaux
 2|pince > File:Tool-pliers.jpg
 2|échelle > File:Ladder to heaven.png
@@ -272,14 +272,14 @@
 3|équerre > Équerre (outil)
 3|tronçonneuse
 3|sécateur
-3|ponceuse
+3|ponceuse > File:Random orbit sander.jpg
 4|étau > File:An engineer's vise.jpg
 4|enclume > File:Anvil, 5 kg in a jewellery workshop.jpg
 4|serre-joint
 4|tenailles|tenaille > File:Tool-zange2 hg.jpg
 4|rabot
 4|lime > Lime (outil)
-4|burin
+4|burin > File:Differentially tempered chisel.jpg
 4|fer à souder
 5|vilebrequin > Vilebrequin (outil)
 5|pied-de-biche
@@ -297,7 +297,7 @@
 1|neige
 1|plage
 1|montagne
-1|nuage
+1|nuage > File:White Cumulus Clouds against Blue Sky (4).jpg
 2|tornade
 2|désert
 2|glacier
@@ -311,8 +311,8 @@
 3|grêle
 3|brouillard
 3|iceberg
-3|canyon
-3|marais
+3|canyon > File:Fish River Canyon, June 2018.jpg
+3|marais > File:Beautiful marsh wetland landscape.jpg
 3|falaise
 4|stalactite
 4|dune
@@ -329,7 +329,7 @@
 5|toundra
 5|méandre
 5|cheminée de fée|demoiselle coiffée > Cheminée de fée
-5|halo > Halo (optique)
+5|halo > File:Sun halo 22.jpg
 ## pho_vetements | Vêtements et accessoires | P18
 1|chapeau
 1|chaussette
@@ -338,7 +338,7 @@
 1|parapluie
 1|tee-shirt|t-shirt > T-shirt
 1|pantalon
-1|robe
+1|robe > File:Dress (AM 17186-5).jpg
 2|casquette > File:Baseball cap.jpg
 2|cravate
 2|gants|gant > Gant
@@ -346,14 +346,14 @@
 2|ceinture > Ceinture (vêtement)
 2|short
 2|pull|pull-over > Pull-over
-2|jupe
+2|jupe > File:Skirt.jpg
 3|nœud papillon > Nœud papillon
 3|bonnet > File:Beanie hat by Polo Ralph Lauren.jpg
 3|sandales|sandale > Sandale
 3|montre > Montre (horlogerie)
 3|salopette
-3|tablier
-3|pyjama
+3|tablier > File:Apron (protective wear).jpg
+3|pyjama > File:Jessie Franklin Turner lounging pajamas 1934-5 2.jpg
 3|cape > Cape (vêtement)
 4|bretelles > File:Braces (AM 1979.59-2).jpg
 4|béret
@@ -362,15 +362,15 @@
 4|sabots|sabot > Sabot (chaussure)
 4|kilt
 4|sombrero
-4|tutu
+4|tutu > File:Alexandra Danilova red swan tutu 02 (NYPL).jpg
 5|haut-de-forme|chapeau haut-de-forme > Haut-de-forme
 5|espadrilles|espadrille > Espadrille
 5|poncho
 5|éventail
 5|monocle
 5|jabot > Jabot (vêtement)
-5|fez > Fez (couvre-chef)
-5|sari
+5|fez > File:Fez.jpg
+5|sari > File:Sari on mannequin for demo.jpg
 ## pho_plats | Plats et gourmandises | P18
 1|pizza
 1|frites > Frites
@@ -444,7 +444,7 @@
 4|château de Neuschwanstein|Neuschwanstein > Château de Neuschwanstein
 4|Abou Simbel|temples d'Abou Simbel > Abou Simbel
 4|Pavillon d'or|Kinkaku-ji > Kinkaku-ji
-4|Sainte-Sophie|basilique Sainte-Sophie > Sainte-Sophie
+4|Sainte-Sophie|basilique Sainte-Sophie > File:Hagia Sophia Mars 2013.jpg
 5|château de Chambord|Chambord > Château de Chambord
 5|moaï|moaïs > Moaï
 5|Chichén Itzá
@@ -459,7 +459,7 @@
 1|Terre
 1|fusée > Fusée (astronautique)
 1|télescope > File:Refracting telescope of the Strasbourg observatory 4.png
-1|thermomètre
+1|thermomètre > File:CelsiusKelvinThermometer.jpg
 1|globe terrestre|globe > Globe terrestre
 1|ampoule|ampoule électrique > Lampe à incandescence
 2|Saturne > Saturne (planète)
@@ -591,15 +591,15 @@
 2|grille-pain > File:Toaster with molten plastic casing 2.jpg
 2|sèche-cheveux
 2|appareil photo|appareil photographique > Appareil photographique
-2|écran|moniteur > Moniteur (informatique)
+2|écran|moniteur > File:Computer monitor remix transparent.png
 2|ventilateur
 3|imprimante > File:Canon S520 ink jet printer.jpg
 3|bouilloire > Bouilloire
 3|clé USB
 3|casque audio|casque > Casque audio
 3|lave-vaisselle
-3|webcam
-3|radio-réveil
+3|webcam > File:USB webcam for PC.jpg
+3|radio-réveil > File:GE 7-4550 Clock Radio.jpg
 3|friteuse
 4|disque dur
 4|cafetière > File:Hamilton Beach home coffee maker.jpg
@@ -614,6 +614,6 @@
 5|disquette
 5|routeur > File:Wi-fi router.jpg
 5|hotte|hotte aspirante > File:California Kitchen Range Hood.jpg
-5|microprocesseur|processeur
-5|magnétophone à cassettes|lecteur de cassettes > Magnétophone à cassettes
+5|microprocesseur|processeur > File:CPUs 20240707 HOF0369 RAW-Export.png
+5|magnétophone à cassettes|lecteur de cassettes > File:Nakamichi 550 portable cassette deck (1974).jpg
 5|carte graphique
