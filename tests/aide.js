@@ -94,7 +94,14 @@ lancer('aide',async env=>{
   attendu(live==='1/polite','Bandeau : un seul nœud aria-live="polite" attendu ('+live+')');
   const taille=await jeu.evaluate(()=>parseFloat(getComputedStyle(document.getElementById('gaide')).fontSize));
   attendu(taille>=32,'Bandeau trop petit en 1920×1080 : '+taille+' px');
-  let b=await bandeau(),n=await nomEnCours();
+  let b=await bandeau(),n;
+  // Tirage du premier attaquant (story 5.5) : en mouvement réduit, pas de clignotement, la phrase reste 0,6 s.
+  attendu(b.txt==='Tirage au sort : qui attaque en premier ?','Ouverture du plateau : « '+b.txt+' »');
+  await avance(jeu,700);
+  b=await bandeau();
+  attendu(/^Joueur \d commence !$/.test(b.txt)&&b.txt.startsWith(b.gras),'Premier attaquant tiré : « '+b.txt+' »');
+  await avance(jeu,2500);
+  b=await bandeau();n=await nomEnCours();
   attendu(b.txt===n+' choisit qui attaquer (case surlignée).'&&b.gras===n,'Message 1 : « '+b.txt+' »');
 
   etape('bandeau : case d’or (état forcé)');

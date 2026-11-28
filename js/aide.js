@@ -24,6 +24,9 @@ const AIDE_TXT={
     or2:'{n} peuvent utiliser leur case d’or : +'+GOLD_SEC+' s.',
     victoire:'{n} gagne le duel : défier un voisin ou retourner sur le sol ?',
     tirage:'Retour sur le sol : un nouvel attaquant est tiré au sort…',
+    ouverture:'Tirage au sort : qui attaque en premier ?',
+    commence:'{n} commence !',
+    main:'{n} prend la main !',
     fin:'{n} a conquis tout le sol !'
   }
 };
@@ -99,7 +102,7 @@ function aideVictoire(w){AIDE.gagne={g:G,w}}
 function aideTexteGrille(){
   const B=AIDE_TXT.bandeau,nom=i=>G.players[i].name;
   if(G.over)return[B.fin,nom(G.ch)];
-  if(G.draw)return[B.tirage,''];
+  if(G.draw)return[G.drawOpen?B.ouverture:B.tirage,''];
   if(G.sel!=null){
     if(AIDE.gagne)AIDE.gagne=null;
     const or=[G.ch,G.sel].filter(q=>G.players[q].gold).map(nom);

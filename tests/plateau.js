@@ -23,7 +23,21 @@ lancer('plateau',async env=>{
   await regie.selectOption('#gmode','grid');await regie.selectOption('#gsize','4');
   await regie.click('#pdraw');await regie.click('#gosubmit');
   await jeu.waitForSelector('#grid:not([hidden])');
-  for(let k=0;k<9;k++){await jeu.clock.runFor(1000);await pause(30)} // tirage du premier attaquant, le cas échéant
+  // Tirage du premier attaquant (story 5.5) : clignotement de 6 s, puis « X commence ! » pendant 2 s.
+  await pause(100);
+  const ouv=await jeu.evaluate(()=>({draw:G.draw,ouv:G.drawOpen,aide:document.getElementById('gaide').textContent,titre:document.getElementById('gtitle').textContent}));
+  attendu(ouv.draw&&ouv.ouv&&ouv.aide==='Tirage au sort : qui attaque en premier ?'&&ouv.titre==='Tirage au sort : qui commence ?','Ouverture : '+JSON.stringify(ouv));
+  attendu(await jeu.isDisabled('#gdet')===false,'« Détails » reste utilisable pendant le tirage');
+  const regieTirage=await regie.evaluate(()=>document.getElementById('rgrid').hidden);
+  attendu(regieTirage,'La régie ne propose pas d’adversaire pendant le tirage');
+  for(let k=0;k<6;k++){await jeu.clock.runFor(1000);await pause(30)}
+  await pause(100);
+  const tire=await jeu.evaluate(()=>({draw:G.draw,aide:document.getElementById('gaide').textContent,pick:document.querySelectorAll('#gboard .pick').length}));
+  attendu(tire.draw&&/ commence !$/.test(tire.aide)&&tire.pick>=1,'Candidat tiré : '+JSON.stringify(tire));
+  const info=await regie.evaluate(()=>document.getElementById('rinfo').textContent);
+  attendu(/ commence !$/.test(info),'La régie annonce le premier attaquant : « '+info+' »');
+  for(let k=0;k<3;k++){await jeu.clock.runFor(1000);await pause(30)}
+  attendu(!(await jeu.evaluate(()=>G.draw)),'Tirage terminé après 8 s');
   await pause(200);
 
   etape('perspective');
