@@ -81,7 +81,8 @@ function isOk(v,list){v=norm(v);if(!v)return false;return list.some(r=>{r=norm(r
 const domaineDe=k=>{const d=typeof DOM_CAT!=='undefined'&&Object.prototype.hasOwnProperty.call(DOM_CAT,k)?DOM_CAT[k]:null;return d&&typeof DOMAINES!=='undefined'&&DOMAINES[d]?d:'autre'};
 const hasCat=k=>typeof k==='string'&&Object.prototype.hasOwnProperty.call(DATA,k);
 function shuffle(a){for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a}
-function show(id){['home','setup','game','grid','end','arb'].forEach(x=>$(x).hidden=x!==id)}
+// La fin de duel (#end) s'affiche dans le grand écran du duel (story 5.2) : #game reste visible.
+function show(id){['home','setup','game','grid','end','arb'].forEach(x=>$(x).hidden=x!==id&&!(id==='end'&&x==='game'))}
 
 // Temps de chaque joueur pour un duel (secondes). Le détenteur de la case d'or peut y ajouter GOLD_SEC.
 const DUEL_SEC=40;

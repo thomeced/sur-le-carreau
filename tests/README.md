@@ -17,6 +17,7 @@ node tests/niveaux.js
 node tests/contenu.js
 node tests/intro.js
 node tests/accueil.js
+node tests/duel.js
 ```
 
 Chaque test sert lui-même le dépôt (`python3 -m http.server` sur un port libre), affiche `OK …` ou `ÉCHEC …` avec la raison, et rend un code de sortie 0 ou 1. `VERBEUX=1 node tests/regie.js` affiche les étapes, pour voir où un test bloque.
@@ -37,6 +38,7 @@ Chaque test sert lui-même le dépôt (`python3 -m http.server` sur un port libr
 | `contenu.js` | Contenu et tirage : aucun élément ignoré à la validation (avertissements de la console) ; chaque catégorie de `categories.js` et `photos.js` a un domaine valide dans `DOM_CAT`, qui ne cite aucune catégorie inexistante ; tirage équilibré par domaine (`ptirer`, `pdraw`, `pfill`) sur 1 800 tirages en 2×2, 3×3 et 4×4. Masquage du mot à trous : part de lettres cachées croissante du niveau 1 au niveau 5, aucun mot entièrement caché. Affiche les quantités par catégorie et par niveau face aux objectifs d'E4 ; `node tests/contenu.js --strict` les exige. | ~1 s |
 | `intro.js` | Intro en mode funky (15 s) : 15 images (plateau, animateur en pied, 12 candidats, logo) chargées ; à 6 s la caméra a avancé (animateur plus grand, candidat le plus proche sorti du champ) ; à 12,5 s l'animateur est entier, au moins 1,6 fois plus grand, sous le logo ; « Passer l'intro » rend la main au jeu. | ~14 s |
 | `accueil.js` | Accueil (story 5.1) en 1920×1080 : logo et QR code, rien à faire défiler, aucun texte sous 28 px, état de la liaison seulement avec `?debug=1` ; bascule « Lancement » (clavier, `aria-pressed`, fond noir en sérieux, gardée après un rechargement) ; téléphone 390×844 ; en sérieux, connexion du téléphone → préparation sans intro (textes de 28 px et plus, sans défiler) ; funky choisi sur la régie pendant la préparation : retenu sans rejouer l'intro. | ~3 s |
+| `duel.js` | Duel en bandeau (story 5.2) en 1920×1080, régie en 390×844 : attente (logo, noms, consigne, « Prêts ? », chronos éteints), compte à rebours (« X commence », chiffre, chrono du joueur qui commence allumé), photo qui remplit le grand écran, « Bonne réponse » (zone verte avec la réponse, la main passe, retour au niveau après 1,4 s), fin (coupe, « … remporte le duel ! », zone violette, chrono du vainqueur allumé), « Passé » sur un mot à trous (zone rouge, étiquette « Passé · NOM −3 s », lettres manquantes révélées) ; à chaque étape, rien à faire défiler et aucun texte sous 28 px. | ~4 s |
 | `serveur.js` | Pas un test : utilitaire commun (serveur local, navigateur, collecte des erreurs, ouverture de l'écran et de la régie reliée). | |
 
 Les deux tests **échouent à la moindre erreur JavaScript ou `console.error`**, dans l'écran comme dans la régie.

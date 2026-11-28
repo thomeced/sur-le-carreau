@@ -71,8 +71,8 @@ Maquettes validées par Ced le 28 novembre 2026 : `docs/ux.md` §5, planche http
 
 | Story | Titre | Exigences | Statut |
 |---|---|---|---|
-| [5.1](5.1-accueil-refonte.md) | Socle, accueil, préparation, choix Funky ou Sérieux toujours accessible | UX §5.1 à §5.3 | En revue |
-| 5.2 | Duel en bandeau (attente, compte à rebours, réponse, fin du duel) | UX §5.5 | Brouillon |
+| [5.1](5.1-accueil-refonte.md) | Socle, accueil, préparation, choix Funky ou Sérieux toujours accessible | UX §5.1 à §5.3 | Terminée (PR #47) |
+| [5.2](5.2-duel-bandeau.md) | Duel en bandeau (attente, compte à rebours, réponse, fin du duel) | UX §5.5 | En revue |
 | 5.3 | Plateau en perspective, panneau « Détails », vague ralentie (2 à 3 s) | UX §5.4, §5.7 | Brouillon |
 | 5.4 | Régie : menu « ⋯ », configuration compacte, réponse attendue en grand | UX §5.6 | Brouillon |
 | 5.5 | Tirage au sort du premier attaquant à l'ouverture du plateau | UX §5.7 | Brouillon |

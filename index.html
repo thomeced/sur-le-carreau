@@ -5,12 +5,12 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Sur le carreau</title>
 <!-- Version des fichiers (cache de la TV) : définie ici seulement, recopiée partout par python3 tools/version.py. -->
-<meta name="slc-version" content="2026-11-28e">
+<meta name="slc-version" content="2026-11-28f">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Poppins:wght@500;600;700&family=DM+Sans:wght@400;600;700&display=swap">
-<link rel="stylesheet" href="style.css?v=2026-11-28e">
-<script src="intro.js?v=2026-11-28e"></script>
-<script src="sons.js?v=2026-11-28e"></script>
-<script src="qrcode.js?v=2026-11-28e"></script>
+<link rel="stylesheet" href="style.css?v=2026-11-28f">
+<script src="intro.js?v=2026-11-28f"></script>
+<script src="sons.js?v=2026-11-28f"></script>
+<script src="qrcode.js?v=2026-11-28f"></script>
 </head>
 <body>
 <main>
@@ -45,7 +45,7 @@
     <div class="seg hmode" role="group" aria-labelledby="hmodet"><span class="segl" id="hmodet">Lancement</span><button type="button" data-lm="funky" aria-pressed="true">Funky</button><button type="button" data-lm="serieux" aria-pressed="false">Sérieux</button></div>
     <p class="hlinks"><button type="button" class="lnk" id="hlocal">Configurer sur cet écran</button><a href="editeur.html" id="hedit">Créer mes catégories</a><a href="#arbitre">Ouvrir la régie ici</a></p>
   </div>
-  <p id="hver" class="hver">Version 2026-11-28e</p>
+  <p id="hver" class="hver">Version 2026-11-28f</p>
 </section>
 
 <section id="setup" hidden>
@@ -91,28 +91,48 @@
   </form>
 </section>
 
+<!-- Duel (story 5.2, docs/ux.md §5.5) : grand écran au centre, bandeau en bas (chronos, catégorie, réponse).
+     Étape affichée par une classe sur #game : ph-wait (attente du départ), ph-cd (3-2-1), ph-run (en cours), ph-end (fin). -->
 <section id="game" hidden>
-  <div class="arena">
-    <div class="side" id="s0"><span class="nm" id="nm0"></span><div class="tm" id="tm0"></div><div id="sc0"></div></div>
-    <div class="side" id="s1"><span class="nm" id="nm1"></span><div class="tm" id="tm1"></div><div id="sc1"></div></div>
-    <div class="center">
-      <div id="wait" class="panel" hidden>
-        <p id="wst" role="status"></p>
-        <button type="button" id="go" disabled>Démarrer le duel</button>
-        <button type="button" class="alt" id="wpair" hidden>Connecter la régie</button>
-        <button type="button" class="alt" id="wback" hidden>Retour à la grille</button>
+  <div class="dstage">
+    <div class="dscreen gscreen">
+      <p id="dgold" class="dgold" role="status"></p>
+      <div id="dwait" class="dwait">
+        <img class="dlogo" src="assets/intro/logo.webp" alt="" width="1000" height="400">
+        <p class="dvs"><span id="dvs0"></span> <span class="dvsc">contre</span> <span id="dvs1"></span></p>
+        <p id="dcons" class="dcons"></p>
+        <div id="wait" hidden>
+          <p id="wst" class="hpill" role="status"></p>
+          <div class="dwbtns">
+            <button type="button" id="go" disabled>Démarrer le duel</button>
+            <button type="button" class="alt" id="wpair" hidden>Connecter la régie</button>
+            <button type="button" class="alt" id="wback" hidden>Retour à la grille</button>
+          </div>
+        </div>
       </div>
-      <p id="dcat"></p>
-      <p id="dgold" role="status"></p>
-      <div id="who"></div>
-      <div id="card" aria-label="Image à nommer"></div>
-      <div id="msg" role="status" aria-live="polite"></div>
-      <form id="f2" class="answer" autocomplete="off">
-        <input id="ans" placeholder="Votre réponse" aria-label="Votre réponse" autocapitalize="off" autocorrect="off" spellcheck="false">
-        <button type="submit">Valider</button>
-      </form>
-      <button type="button" class="alt" id="pass">Passer (−3 s)</button>
+      <div id="dcd" class="dcd" aria-hidden="true"><p id="dcdw" class="dcdw"></p><p id="dcdn" class="dcdn"></p></div>
+      <div id="card" data-big="2" aria-label="Élément à trouver"></div>
+      <section id="end" class="dend" hidden>
+        <svg class="dcup" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M8 21h8M12 17v4M7 4h10v5a5 5 0 0 1-10 0z"/><path d="M17 5h3v2a3 3 0 0 1-3 3M7 5H4v2a3 3 0 0 0 3 3"/></svg>
+        <h2 id="win"></h2>
+        <p id="res"></p>
+        <button type="button" id="again">Nouvelle partie</button>
+      </section>
     </div>
+    <div class="dband">
+      <div class="side" id="s0"><span class="nm" id="nm0"></span><div class="tm" id="tm0"></div><div class="sc" id="sc0"></div></div>
+      <div class="dmid">
+        <p id="dcat" class="dtab"></p>
+        <div id="dans" class="dans"><span id="dtag" class="dtag"></span><span id="dtxt" class="dtxt"></span></div>
+      </div>
+      <div class="side" id="s1"><span class="nm" id="nm1"></span><div class="tm" id="tm1"></div><div class="sc" id="sc1"></div></div>
+    </div>
+    <div class="sr"><div id="who"></div><div id="msg" role="status" aria-live="polite"></div></div>
+    <form id="f2" class="answer" autocomplete="off">
+      <input id="ans" placeholder="Votre réponse" aria-label="Votre réponse" autocapitalize="off" autocorrect="off" spellcheck="false">
+      <button type="submit">Valider</button>
+    </form>
+    <button type="button" class="alt" id="pass">Passer (−3 s)</button>
   </div>
 </section>
 
@@ -210,28 +230,21 @@
   </div>
 </section>
 
-<section id="end" hidden>
-  <div class="panel">
-    <h2 id="win"></h2>
-    <p id="res"></p>
-    <button type="button" id="again">Nouvelle partie</button>
-  </div>
-</section>
 </main>
 
-<script src="categories.js?v=2026-11-28e"></script>
-<script src="photos.js?v=2026-11-28e"></script>
-<script src="perso.js?v=2026-11-28e"></script>
-<script src="js/base.js?v=2026-11-28e"></script>
-<script src="js/liaison.js?v=2026-11-28e"></script>
-<script src="js/duel.js?v=2026-11-28e"></script>
-<script src="js/accueil.js?v=2026-11-28e"></script>
-<script src="js/grille.js?v=2026-11-28e"></script>
-<script src="js/choix-categories.js?v=2026-11-28e"></script>
-<script src="js/plateau.js?v=2026-11-28e"></script>
-<script src="js/plateau-lite.js?v=2026-11-28e"></script>
-<script src="js/regie.js?v=2026-11-28e"></script>
-<script src="js/aide.js?v=2026-11-28e"></script>
-<script src="js/main.js?v=2026-11-28e"></script>
+<script src="categories.js?v=2026-11-28f"></script>
+<script src="photos.js?v=2026-11-28f"></script>
+<script src="perso.js?v=2026-11-28f"></script>
+<script src="js/base.js?v=2026-11-28f"></script>
+<script src="js/liaison.js?v=2026-11-28f"></script>
+<script src="js/duel.js?v=2026-11-28f"></script>
+<script src="js/accueil.js?v=2026-11-28f"></script>
+<script src="js/grille.js?v=2026-11-28f"></script>
+<script src="js/choix-categories.js?v=2026-11-28f"></script>
+<script src="js/plateau.js?v=2026-11-28f"></script>
+<script src="js/plateau-lite.js?v=2026-11-28f"></script>
+<script src="js/regie.js?v=2026-11-28f"></script>
+<script src="js/aide.js?v=2026-11-28f"></script>
+<script src="js/main.js?v=2026-11-28f"></script>
 </body>
 </html>
