@@ -44,8 +44,6 @@ button.alt{background:transparent;border:2px solid var(--line);color:var(--ink);
 @media(prefers-reduced-motion:reduce){#msg.ko{animation:none}.side{transition:none}}
 .answer{display:flex;gap:8px;max-width:460px;margin:8px auto}
 .answer input{flex:1;font-size:1.2rem}
-#end .panel{max-width:520px}
-#end h2{font:400 2rem/1.1 var(--disp);margin:0 0 8px}
 #acard{font-size:clamp(4rem,18vw,7rem);text-align:center}
 #aans{font-weight:700;font-size:1.3rem;min-height:1.6em}
 #pcode{font:700 2.8rem/1 var(--disp);letter-spacing:.2em;color:var(--p1);margin:6px 0 4px}
@@ -63,17 +61,16 @@ button.alt{background:transparent;border:2px solid var(--line);color:var(--ink);
 .arbadge.on{border-color:var(--ok)}
 .pair .panel{text-align:center}
 /* Petits écrans : on laisse la place du badge (et du bouton son) au-dessus du contenu. */
-@media(max-width:760px){html.slc-badge #setup,html.slc-badge #game,html.slc-badge #grid,html.slc-badge #end{padding-top:46px}}
+@media(max-width:760px){html.slc-badge #setup,html.slc-badge #game,html.slc-badge #grid{padding-top:46px}}
 .big{display:block;width:100%;margin:10px 0;padding:22px;font-size:1.4rem}
 .good{background:var(--ok);box-shadow:0 0 18px rgba(61,220,151,.45)}
 .skip{background:var(--ko);box-shadow:0 0 18px rgba(255,107,107,.45)}
 button:disabled{opacity:.4;cursor:not-allowed}
 .slc-snd-btn{position:fixed;top:calc(10px + env(safe-area-inset-top,0px));right:10px;z-index:50;width:40px;height:40px;padding:0;font-size:1.1rem;line-height:1;background:rgba(4,8,36,.7);border:2px solid var(--line);color:var(--ink);box-shadow:none}
 button,.nm,#who,#aans,label{font-family:var(--disp);font-weight:600}
-h1,.tm,#end h2{font-weight:700}
+h1,.tm{font-weight:700}
 h1{font-size:clamp(2.2rem,8vw,4rem);line-height:1.1}
 .tm{font-size:clamp(2.4rem,8vw,4rem);line-height:1.15}
-#end h2{font-size:1.8rem}
 .nm{font-size:1rem}
 #aans{font-size:1.15rem}
 .big{font-size:1.25rem}
@@ -294,3 +291,94 @@ html.slc-arb main{padding-top:12px}
 /* Version des fichiers, en petit dans le coin de l'accueil (toujours visible, sans défiler) : pour vérifier ce que la TV a chargé. */
 .hver{position:fixed;right:12px;bottom:8px;margin:0;font-size:.75rem;opacity:.5;pointer-events:none}
 @media(max-width:600px){.hver{position:static;margin:12px 0 0;text-align:center}}
+
+/* ---------- Duel en bandeau (story 5.2, docs/ux.md §5.5) ----------
+   Grand écran au centre (photo, mot, compte à rebours, attente, fin), bandeau en bas : chronos des deux joueurs,
+   onglet de la catégorie, zone de réponse. Tailles en vw calées sur une TV 1920 px de large. */
+#game{--dw:min(calc(100vw - 48px),1760px);width:var(--dw);margin-left:calc(50% - var(--dw)/2)}
+.dstage{position:relative;isolation:isolate;display:flex;flex-direction:column;align-items:center;gap:clamp(10px,.73vw,14px);height:calc(100vh - 52px);min-height:520px}
+/* Colonnes néon violettes de part et d'autre de la scène (comme sur le plateau de la référence). */
+.dstage::before,.dstage::after{content:"";position:absolute;top:0;bottom:24%;width:clamp(6px,.73vw,14px);background:#7A3FD8;box-shadow:0 0 2vw .4vw rgba(162,77,255,.7);z-index:-1}
+.dstage::before{left:calc(50% - min(37.5vw,720px) - 3.6vw)}
+.dstage::after{right:calc(50% - min(37.5vw,720px) - 3.6vw)}
+html.lite .dstage::before,html.lite .dstage::after{box-shadow:none}
+html.slc-serieux .dstage::before,html.slc-serieux .dstage::after{display:none}
+.dscreen{position:relative;width:min(100%,75vw,1440px);flex:1 1 auto;min-height:0;box-sizing:border-box;padding:clamp(10px,1.15vw,22px);display:flex;align-items:center;justify-content:center;overflow:hidden}
+#game .dwait,#game .dcd,#game #card{display:none}
+#game.ph-wait .dwait,#game.ph-cd .dcd,#game.ph-run #card{display:flex}
+#game.ph-end #card{display:none}
+.dgold{position:absolute;top:clamp(8px,.83vw,16px);left:50%;transform:translateX(-50%);z-index:2;margin:0;padding:.35em .9em;border-radius:999px;background:#FFC53D;color:#101B4D;font:700 clamp(.95rem,1.46vw,1.75rem)/1.2 var(--disp);white-space:nowrap}
+.dgold:empty{display:none}
+/* Attente du départ : logo, qui contre qui, consigne du type, état et boutons (aussi sur le téléphone). */
+.dwait{flex-direction:column;align-items:center;justify-content:center;gap:clamp(10px,1.4vw,28px);text-align:center;height:100%;width:100%}
+.dlogo{width:min(31vw,62vh,600px);height:auto;filter:drop-shadow(0 0 2vw rgba(255,197,61,.4))}
+html.lite .dlogo{filter:none}
+.dvs{margin:0;font:800 clamp(1.6rem,3.33vw,4rem)/1.1 var(--disp)}
+#dvs0{color:var(--p1)}#dvs1{color:var(--p2)}
+.dvsc{font-size:.62em;color:#B9C8FF;margin:0 .35em}
+.dcons{margin:0;max-width:30em;font:700 clamp(1.1rem,2.1vw,2.6rem)/1.3 var(--disp)}
+#wait{display:flex;flex-direction:column;align-items:center;gap:clamp(10px,.94vw,18px)}
+#wait .hpill{align-self:center}
+.dwbtns{display:flex;gap:14px;flex-wrap:wrap;justify-content:center}
+.dwbtns button{font:700 clamp(1rem,1.46vw,1.75rem)/1 var(--disp);padding:.6em 1.1em}
+#game button:focus-visible{outline:clamp(3px,.31vw,6px) solid var(--p1);outline-offset:clamp(3px,.31vw,6px)}
+/* Compte à rebours : « X commence » et un grand chiffre blanc, qui arrive en grossissant légèrement. */
+.dcd{flex-direction:column;align-items:center;justify-content:center;height:100%}
+.dcdw{margin:0;font:700 clamp(1.3rem,2.3vw,2.8rem)/1.2 var(--disp);color:#DDE5FF}
+.dcdn{margin:0;font:800 clamp(8rem,17.7vw,22rem)/1 var(--disp);color:#fff;font-variant-numeric:tabular-nums}
+.dcdn.pop{animation:dpop .55s ease-out}
+@keyframes dpop{from{transform:scale(.82);opacity:0}to{transform:scale(1);opacity:1}}
+@media(prefers-reduced-motion:reduce){.dcdn.pop{animation:none}}
+html.lite .dcdn.pop{animation:none}
+/* Élément en jeu : remplit le grand écran. */
+#game #card{width:100%;height:100%;align-items:center;justify-content:center;margin:0;padding:0;background:none;border:0;box-shadow:none;border-radius:8px;font-size:min(16vw,34vh);line-height:1.1}
+#game #card.mot,#game #card.ind,#game #card.env{font-size:16px}
+#game #card>*{max-width:100%}
+#game #card.pho img{display:block;width:100%;height:100%;max-height:none;object-fit:contain;border-radius:8px}
+#game #card .slcm-l.r{background:#FF9A8F;border-color:#FF9A8F;color:#101B4D}
+/* Fin du duel, dans le grand écran. */
+.dend{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:clamp(10px,1.25vw,24px);text-align:center;height:100%;width:100%;padding:0 4%;box-sizing:border-box}
+.dcup{width:clamp(70px,7.3vw,140px);height:auto;fill:none;stroke:var(--p1);stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+#win{margin:0;font:800 clamp(2rem,5vw,6rem)/1.05 var(--disp);color:var(--p1)}
+#res{margin:0;max-width:34em;font:600 clamp(1.1rem,2.1vw,2.6rem)/1.3 var(--disp)}
+#again{font:700 clamp(1rem,1.46vw,1.75rem)/1 var(--disp);padding:.6em 1.2em}
+/* Bandeau : chronos (nom et « trouvés » en haut, chrono en dessous), onglet de la catégorie, zone de réponse. */
+.dband{width:100%;max-width:1700px;display:flex;align-items:flex-end;gap:clamp(8px,.73vw,14px);flex:0 0 auto}
+#game .side{flex:0 0 clamp(150px,20.8vw,400px);display:grid;grid-template-columns:minmax(0,1fr) auto;grid-template-areas:"n s" "t t";padding:0;border:0;background:none;box-shadow:none;border-radius:0;text-align:center;align-self:auto}
+#game .nm,#game .sc{display:flex;align-items:center;height:clamp(36px,3.23vw,62px);background:#26326E;color:#B9C4F2;font:800 clamp(1rem,1.875vw,2.25rem)/1 var(--disp);white-space:nowrap}
+#game .nm{grid-area:n;justify-content:center;max-width:none;overflow:hidden;text-overflow:ellipsis;letter-spacing:.06em;text-transform:uppercase;padding:0 .4em;border-radius:12px 0 0 0}
+#game .sc{grid-area:s;padding:0 .6em;border-radius:0 12px 0 0;font-size:clamp(.95rem,1.46vw,1.75rem);font-weight:600}
+#game .tm{grid-area:t;margin:0;height:clamp(80px,7.8vw,150px);display:flex;align-items:center;justify-content:center;box-sizing:border-box;background:#050A2C;border:4px solid #26326E;border-top:0;border-radius:0 0 12px 12px;font:800 clamp(3rem,6.67vw,8rem)/1 var(--disp);color:rgba(244,246,255,.45);opacity:1}
+#game .side.on .nm,#game .side.on .sc{background:var(--c);color:#101B4D}
+#game .side.on .tm{border-color:var(--c);color:var(--c);background:#071340;box-shadow:0 0 2.6vw var(--c55)}
+#game .side.low .tm{color:var(--ko)}
+#game.ph-wait .side.on .nm,#game.ph-wait .side.on .sc{background:#26326E;color:#B9C4F2}
+#game.ph-wait .side.on .tm{border-color:#26326E;color:rgba(244,246,255,.45);background:#050A2C;box-shadow:none}
+/* Fin du duel : le chrono du vainqueur reste allumé, celui du perdant (qui avait la main à 0 s) s'estompe. */
+#game.ph-end .side.on{opacity:.5}
+#game.ph-end .side.on .nm,#game.ph-end .side.on .sc{background:#26326E;color:#B9C4F2}
+#game.ph-end .side.on .tm{border-color:#26326E;background:#050A2C;box-shadow:none}
+#game.ph-end .side:not(.on) .nm,#game.ph-end .side:not(.on) .sc{background:var(--c);color:#101B4D}
+#game.ph-end .side:not(.on) .tm{border-color:var(--c);color:var(--c);background:#071340}
+html.lite #game .side.on .tm{box-shadow:none}
+.dmid{flex:1 1 auto;min-width:0;display:flex;flex-direction:column;align-items:center;gap:clamp(12px,1.1vw,22px)}
+.dtab{margin:0;min-width:min(100%,29vw);max-width:100%;box-sizing:border-box;padding:0 1.2em;height:clamp(36px,3.23vw,62px);display:flex;align-items:center;justify-content:center;background:#7A3FD8;border-radius:12px;font:700 clamp(1rem,1.875vw,2.25rem)/1 var(--disp);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.dans{position:relative;align-self:stretch;height:clamp(70px,7.4vw,142px);display:flex;align-items:center;justify-content:center;box-sizing:border-box;padding:0 1em;border-radius:12px;background:#0B1550;border:3px solid #3A2A8A;transition:background-color .2s}
+.dtxt{font:700 clamp(1.1rem,2.1vw,2.6rem)/1.05 var(--disp);color:#B9C4F2;text-align:center;overflow:hidden;max-height:2.1em}
+.dans.run .dtxt{font-size:clamp(1rem,1.67vw,2rem);font-weight:600;color:#8E9BD6}
+.dans.good,.dans.pass,.dans.end{border-color:transparent}
+.dans.good .dtxt,.dans.pass .dtxt,.dans.end .dtxt{font-size:clamp(1.4rem,3.75vw,4.5rem);font-weight:800;color:#fff}
+.dans.good{background:linear-gradient(#22C17A,#14965C);box-shadow:0 0 2.6vw rgba(61,220,151,.55)}
+.dans.pass{background:linear-gradient(#FF7A6B,#D9483B);box-shadow:0 0 2.6vw rgba(255,107,107,.5)}
+.dans.end{background:linear-gradient(#9B5CFF,#6A2FD0);box-shadow:0 0 2.6vw rgba(162,77,255,.55)}
+html.lite .dans{box-shadow:none}
+.dtag{position:absolute;top:0;left:50%;transform:translate(-50%,-50%);font:800 clamp(.8rem,1.46vw,1.75rem)/1 var(--disp);letter-spacing:.08em;text-transform:uppercase;padding:.35em .8em;border-radius:999px;background:#fff;white-space:nowrap}
+.dtag:empty{display:none}
+.dans.good .dtag{color:#14965C}.dans.pass .dtag{color:#C23A2E}.dans.end .dtag{color:#6A2FD0}
+@media(prefers-reduced-motion:reduce){.dans{transition:none}}
+#game .answer,#game #pass{width:min(100%,600px)}
+@media(max-width:700px){
+  .dband{flex-wrap:wrap;justify-content:center}
+  .dmid{order:-1;flex-basis:100%}
+  #game .side{flex:1 1 40%}
+}

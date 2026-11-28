@@ -36,7 +36,7 @@ function paintCard(el,type,disp,img){
   el.textContent=disp;
 }
 function showCard(){
-  if(!S.started){$('card').className='';$('card').textContent='?';return}
+  if(!S.started){$('card').className='';$('card').textContent='';return}
   paintCard($('card'),S.type,S.disp,S.cur[3]&&S.cur[3].img);
 }
 function flash(cls,txt){$('msg').className=cls;$('msg').textContent=txt;clearTimeout(flashT);flashT=setTimeout(()=>{$('msg').className='';$('msg').textContent=''},1000)}
@@ -48,7 +48,44 @@ function render(){
     $('s'+i).classList.toggle('on',S.turn===i);
     $('s'+i).classList.toggle('low',S.t[i]<=5000);
   }
-  $('who').textContent='À '+S.names[S.turn]+' de jouer (niveau '+S.lvl+')';
+  $('who').textContent=S.counting?'Départ dans '+S.count+'…':'À '+S.names[S.turn]+' de jouer (niveau '+S.lvl+')';
+  dphase();bandRender();
+}
+/* Duel en bandeau (story 5.2, docs/ux.md §5.5). Étape du duel en classe sur #game (ph-wait, ph-cd, ph-run, ph-end) ;
+   zone de réponse du bandeau (#dans) : « Prêts ? », « Départ dans 3… », niveau en cours, puis la réponse après une
+   bonne réponse (vert) ou un « Passé » (rouge), et le vainqueur à la fin (violet). */
+const repTxt=it=>{const a=String(it&&it[1]||'').split('|')[0].trim();return a.charAt(0).toUpperCase()+a.slice(1)};
+function dphase(){
+  const g=$('game'),ph=S.over?'end':S.counting?'cd':S.started?'run':'wait';
+  if(g.dataset.ph!==ph){g.dataset.ph=ph;g.className='ph-'+ph}
+}
+let bandT=0;
+function bandSet(k,tag,txt,ms){
+  S.band={k,tag,txt};clearTimeout(bandT);
+  const me=S;if(ms)bandT=setTimeout(()=>{if(me.band&&me.band.k===k){me.band=null;if(me===S)bandRender()}},ms);
+  bandRender();
+}
+function bandRender(){
+  if(!S)return;
+  const b=S.band;let k='',tag='',txt='';
+  if(S.over){k='end';tag='Fin du duel';txt=S.names[S.turn^1]+' gagne'}
+  else if(b){k=b.k;tag=b.tag;txt=b.txt}
+  else if(S.counting)txt='Départ dans '+S.count+'…';
+  else if(!S.started)txt='Prêts ?';
+  else{k='run';txt='Niveau '+S.lvl+' · à '+S.names[S.turn]+' de répondre'}
+  const d=$('dans'),c='dans'+(k?' '+k:'');
+  if(d.className!==c)d.className=c;
+  if($('dtag').textContent!==tag)$('dtag').textContent=tag;
+  if($('dtxt').textContent!==txt)$('dtxt').textContent=txt;
+}
+// « Passé » sur un mot à trous : le mot complet s'affiche, les lettres qui manquaient en couleur.
+function revele(){
+  if(S.type!=='trous'||!window.SLC_PERSO)return;
+  const a=String(S.cur[1]).split('|')[0].toUpperCase(),d=[...String(S.disp)];
+  if([...a].length!==d.length)return;
+  paintCard($('card'),'trous',a);
+  const spans=[...$('card').querySelectorAll('.slcm-l,.slcm-p')];let n=0;
+  [...a].forEach((c,i)=>{if(/\s/.test(c))return;const sp=spans[n++];if(sp&&d[i]==='_')sp.classList.add('r')});
 }
 function push(){
   if(!(S&&S.oral&&S.link))return;
@@ -61,7 +98,7 @@ const snd=(n,a)=>{try{window.SLC_SND&&SLC_SND.play(n,a)}catch(e){}};
 function finish(){
   snd('end');S.over=true;clearInterval(S.h);clearInterval(S.cd);
   const w=S.turn^1;
-  $('win').textContent=S.names[w]+' remporte le duel';
+  $('win').textContent=S.names[w]+' remporte le duel !';S.band=null;
   let res=S.names[0]+' : '+S.sc[0]+' trouvé'+(S.sc[0]>1?'s':'')+'. '+S.names[1]+' : '+S.sc[1]+' trouvé'+(S.sc[1]>1?'s':'')+'.';
   if(S.pid&&G){
     S.winP=S.pid[w];S.loseP=S.pid[w^1];
@@ -71,7 +108,7 @@ function finish(){
     $('again').textContent='Retour à la grille';
   }else $('again').textContent='Nouvelle partie';
   $('res').textContent=res;
-  show('end');push();
+  show('end');render();push();
 }
 function tick(){
   const n=performance.now(),s0=Math.ceil(S.t[S.turn]/1000);S.t[S.turn]-=n-S.last;S.last=n;
@@ -83,17 +120,23 @@ function tick(){
 function launch(){
   if(!S||S.started||S.counting||S.over)return;
   S.counting=true;S.count=3;$('go').disabled=true;$('wait').hidden=true;
-  const step=()=>{snd('beep');$('card').className='';$('card').textContent=S.count;$('who').textContent='Départ dans '+S.count+'…';push()};
+  const step=()=>{
+    snd('beep');$('card').className='';$('card').textContent='';$('who').textContent='Départ dans '+S.count+'…';
+    $('dcdw').textContent=S.names[S.turn]+' commence';
+    const n=$('dcdn');n.textContent=S.count;n.classList.remove('pop');void n.offsetWidth;n.classList.add('pop'); // le chiffre arrive en grossissant
+    render();push();
+  };
   step();
   S.cd=setInterval(()=>{S.count--;if(S.count>0)return step();clearInterval(S.cd);S.counting=false;S.count=0;begin()},1000);
 }
-function begin(){snd('go');S.started=true;showCard();S.last=performance.now();S.h=setInterval(tick,100);$('wait').hidden=true;push();$('ans').focus()}
-function good(){snd('good');S.sc[S.turn]++;S.joues++;S.turn^=1;card();flash('ok','Bonne réponse');render();push()}
+function begin(){snd('go');S.started=true;dphase();showCard();S.last=performance.now();S.h=setInterval(tick,100);$('wait').hidden=true;push();$('ans').focus()}
+function good(){const r=repTxt(S.cur);snd('good');S.sc[S.turn]++;S.joues++;S.turn^=1;card();flash('ok','Bonne réponse');bandSet('good','Bonne réponse',r,1400);render();push()}
 function skip(){
   if(!S.started||S.lock||S.over)return;
   S.lock=true;S.joues++;S.t[S.turn]-=3000;
   if(S.t[S.turn]<=0){S.t[S.turn]=0;render();return finish()}
   snd('pass');clearTimeout(flashT);$('msg').className='';$('msg').textContent='C\'était : '+S.cur[1].split('|')[0]+' (−3 s)';
+  bandSet('pass','Passé · '+S.names[S.turn]+' −3 s',repTxt(S.cur),1300);revele();
   render();push();
   setTimeout(()=>{if(S.over)return;S.lock=false;card();$('msg').textContent='';render();push();$('ans').focus()},1300);
 }

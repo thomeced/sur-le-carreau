@@ -325,5 +325,9 @@ Chaque chantier est prévu dans sa propre conversation du projet, sur sa propre 
 - Ced ne voyait pas toujours le choix Funky ou Sérieux : l'écran de lancement n'apparaissait qu'une fois par onglet (`slc-lance`). Remplacé par une bascule « Lancement » toujours visible sur l'accueil et dans la configuration (écran et régie) ; le mode retenu s'applique à la connexion du téléphone. Intro en vraie vidéo (MP4) écartée pour l'instant.
 - Nouveau test `tests/accueil.js`. Version `2026-11-28e`.
 
+## Duel en bandeau (story 5.2, 28 novembre 2026)
+- D'après une photo de l'émission fournie par Ced : plus de barre en haut, grand écran au centre, bandeau en bas (chronos des deux joueurs, onglet de la catégorie, zone de réponse). Étapes : attente (logo, « A contre B », consigne), compte à rebours (« X commence », grand chiffre blanc), en cours, bonne réponse (zone verte avec la réponse), « Passé » (zone rouge, lettres manquantes révélées sur un mot à trous), fin dans le grand écran (coupe, zone violette).
+- Nouveau test `tests/duel.js`. Version `2026-11-28f`.
+
 ## Comment reprendre dans un nouveau projet Claude
 Reliez le dépôt GitHub (référence du code) et gardez ce document dans le projet, puis demandez par exemple : « Lis le document de contexte et reprends le jeu : ajoute l'éditeur de catégories. » Le fichier `sur-le-carreau.html` du projet est la version autonome du jeu (catégories incluses) ; la référence reste le dépôt.

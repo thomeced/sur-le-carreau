@@ -68,9 +68,9 @@
   function renderEnv(el,disp){
     el.textContent='';
     const q=document.createElement('p');q.className='slcenv';q.textContent='« '+String(disp).trim()+' »';
-    const W=el.clientWidth||320,L=Math.max(8,String(disp).length+4);
+    const W=el.clientWidth||320,L=Math.max(8,String(disp).length+4),K=+(el.dataset.big||1);
     // Vise deux lignes au plus pour les titres longs, sans dépasser 52 px.
-    q.style.fontSize=Math.max(18,Math.min(52,Math.floor(W*.9*2/(L*.58)),Math.floor(W/9)))+'px';
+    q.style.fontSize=Math.max(18,Math.min(52*K,Math.floor(W*.9*2/(L*.58)),Math.floor(W/9)))+'px';
     el.appendChild(q);
   }
   // Affiche un mot masqué en tuiles, à une taille qui tient dans la largeur de l'élément.
@@ -80,8 +80,8 @@
     // Un mot composé de plus de 12 caractères peut passer à la ligne après ses traits d'union (story 4.2 :
     // « Alpes-de-Haute-Provence » débordait sur un téléphone).
     const words=String(disp).split(/\s+/).filter(Boolean).flatMap(w=>[...w].length>12&&w.includes('-')?w.replace(/-/g,'-\u0001').split('\u0001').filter(Boolean):[w]),L=Math.max(1,...words.map(w=>[...w].length));
-    const W=el.clientWidth||320;
-    box.style.fontSize=Math.max(14,Math.min(46,Math.floor(W*.88/(L*1.22))))+'px';
+    const W=el.clientWidth||320,K=+(el.dataset.big||1); // data-big : grand écran du duel (TV), tailles maximales agrandies
+    box.style.fontSize=Math.max(14,Math.min(46*K,Math.floor(W*.88/(L*1.22))))+'px';
     words.forEach(w=>{
       const g=document.createElement('span');g.className='slcm-w';
       [...w].forEach(c=>{
@@ -98,9 +98,9 @@
   function renderInd(el,disp){
     el.textContent='';
     const lines=String(disp).split('\n').map(x=>x.trim()).filter(Boolean),ul=document.createElement('ul');ul.className='slcind';
-    const L=Math.max(1,...lines.map(x=>x.length)),W=el.clientWidth||320;
+    const L=Math.max(1,...lines.map(x=>x.length)),W=el.clientWidth||320,K=+(el.dataset.big||1);
     // Taille qui fait tenir l'indice le plus long sur deux lignes au plus.
-    ul.style.fontSize=Math.max(15,Math.min(34,Math.floor(W*.85*2/(L*.55+8)),Math.floor(W/14)))+'px';
+    ul.style.fontSize=Math.max(15,Math.min(34*Math.min(K,1.8),Math.floor(W*.85*2/(L*.55+8)),Math.floor(W/14)))+'px';
     lines.forEach(t=>{const li=document.createElement('li');li.textContent=t;ul.appendChild(li)});
     ul.setAttribute('aria-label','Indices : '+lines.join(' ; '));
     el.appendChild(ul);
