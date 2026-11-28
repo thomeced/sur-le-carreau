@@ -231,6 +231,19 @@ html.slc-guide body{overflow:hidden}
 #rinfo{font:600 1.05rem/1.4 var(--disp);text-align:center;margin:8px 0}
 #rinfo:empty{display:none}
 #rctl{display:grid;gap:8px;margin-top:14px}
+/* Choix en grille sur la régie (story 2.8) */
+#rlance{display:grid;gap:4px}
+#rlance .big{margin:4px 0}
+.rnote{font-size:.85rem;opacity:.8}
+#rback,#ragain{display:block;width:100%;margin:8px 0}
+#rgrid{display:grid;gap:10px;margin:10px 0}
+#rgrid h3{margin:4px 0 0;font:600 1rem/1.3 var(--disp);opacity:.85}
+#rgrid p{margin:0}
+.rfoes{display:grid;gap:8px}
+.rfoes button{background:#3D78EA;color:#fff;box-shadow:none;text-align:left;padding:14px 16px;min-height:56px;font-size:1.1rem;line-height:1.3}
+.rfoes button small{display:block;font-weight:500;font-size:.9rem;opacity:.85}
+.rfoes button.gold{background:#F2C44E;color:#101B4D}
+#rgrid .rgold[aria-pressed="true"]{background:#F2C44E;color:#101B4D;border-color:#F2C44E}
 html.slc-arb #setup{padding-top:0}
 @media(max-width:420px){.steps{gap:4px 6px;font-size:.8rem}.steps li{padding:3px 8px}}
 html.slc-arb main{padding-top:12px}

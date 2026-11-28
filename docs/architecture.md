@@ -98,6 +98,7 @@ Rien d'autre de nouveau : pas de mémoire des éléments déjà vus (écartée p
 ### 5.4 Messages entre l'écran et la régie
 - `act` : nouveau verdict `bad` (« Mauvaise réponse », QCM seulement). L'écran le traite comme « Passé » (réponse révélée, −3 s), et compte l'élément dans `S.joues`. Comme aujourd'hui, chaque verdict porte l'élément concerné, pour ignorer les doubles clics.
 - `st` : ajoute `extra` selon le type (`choix` pour le QCM, `lignes` pour la devinette) et `qcm: true` pour que la régie affiche le bouton rouge.
+- Story 2.8 (écran passif) : `gs` porte aussi `grid` (attaquant, adversaires possibles avec nom, catégorie, icône et case d'or ; adversaire choisi ; usage de la case d'or ; « retourner sur le sol » possible), `back`, `again` et `lance` ; `cmd` accepte un paramètre `p` et de nouvelles commandes : `sel`, `unsel`, `or`, `duel`, `sol`, `back`, `grille`, `lance` (`funky` ou `serieux`). L'écran les applique avec les mêmes conditions que ses propres boutons (`gridCmd`, `lanceDistant` dans `js/accueil.js`).
 - Pas de nouveau sujet de message. Le bandeau d'aide (EF5) et les cartes (EF1) sont calculés sur l'écran du jeu seul ; le guide (EF3) vit sur le téléphone seul.
 
 ### 5.5 Aide (E1), dans `js/aide.js`
@@ -123,6 +124,7 @@ Inchangé : branche `main` → GitHub Pages (racine). Une story = une branche = 
 |---|---|
 | `tests/fumee.js` | accueil, « Configurer sur cet écran », partie 2×2 complète jusqu'au vainqueur ; aucune erreur en console. Sert de non-régression à chaque story, à commencer par la story 0. |
 | `tests/regie.js` | écran + régie dans deux onglets (`BroadcastChannel`) : configuration depuis la régie, verdicts, « Mauvaise réponse » en QCM |
+| `tests/regie-grille.js` | lancement et partie 2×2 entière depuis la régie (story 2.8) |
 | `tests/types.js` | rendu du QCM, du Gros plan (zoom puis dézoom), de la Devinette (bloc et révélée), en 1440×900 et 390×844 |
 | `tests/lite.js` | `?lite=1` : la vague ne colore que les cases capturées (comparaison des couleurs de chaque case avant et après) |
 | `tests/niveaux.js` | `LVL_CURVE` : niveau des éléments tirés selon le nombre d'éléments joués |

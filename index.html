@@ -5,12 +5,12 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Sur le carreau</title>
 <!-- Version des fichiers (cache de la TV) : définie ici seulement, recopiée partout par python3 tools/version.py. -->
-<meta name="slc-version" content="2026-11-28b">
+<meta name="slc-version" content="2026-11-28c">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Poppins:wght@500;600;700&family=DM+Sans:wght@400;600;700&display=swap">
-<link rel="stylesheet" href="style.css?v=2026-11-28b">
-<script src="intro.js?v=2026-11-28b"></script>
-<script src="sons.js?v=2026-11-28b"></script>
-<script src="qrcode.js?v=2026-11-28b"></script>
+<link rel="stylesheet" href="style.css?v=2026-11-28c">
+<script src="intro.js?v=2026-11-28c"></script>
+<script src="sons.js?v=2026-11-28c"></script>
+<script src="qrcode.js?v=2026-11-28c"></script>
 </head>
 <body>
 <main>
@@ -40,7 +40,7 @@
     </div>
   </div>
   <p class="hlinks"><button type="button" class="lnk" id="hlocal">Configurer sur cet écran</button><a href="editeur.html" id="hedit">Créer mes catégories</a><a href="#arbitre">Ouvrir la régie sur cet appareil</a></p>
-  <p id="hver" class="hver">Version 2026-11-28b</p>
+  <p id="hver" class="hver">Version 2026-11-28c</p>
 </section>
 
 <section id="setup" hidden>
@@ -165,6 +165,11 @@
   </form>
   <div id="rwait" class="panel" hidden>
     <p id="rwmsg" role="status" aria-live="polite"></p>
+    <div id="rlance" hidden>
+      <button type="button" class="big" id="rfunky">🎬 Mode funky</button>
+      <button type="button" class="big alt" id="rserieux">Mode sérieux</button>
+      <p class="rnote">Le mode sérieux, sans intro, convient mieux aux TV. En mode funky lancé d’ici, le son du générique peut rester coupé.</p>
+    </div>
     <button type="button" id="rwbtn" hidden></button>
     <p id="rwlk" class="plnk"></p>
     <button type="button" class="alt" id="rchange">Changer d’écran</button>
@@ -173,6 +178,9 @@
     <p id="rinfo" role="status" aria-live="polite"></p>
     <p id="atype" class="panel" hidden></p>
     <button type="button" class="big" id="rgo" hidden>Démarrer le duel</button>
+    <button type="button" class="alt" id="rback" hidden>Changer d’adversaire</button>
+    <button type="button" class="big" id="ragain" hidden>Retour à la grille</button>
+    <div id="rgrid" hidden></div>
     <div id="rduel">
     <div class="row2">
       <div class="side" id="a0"><span class="nm"></span><div class="tm"></div></div>
@@ -203,19 +211,19 @@
 </section>
 </main>
 
-<script src="categories.js?v=2026-11-28b"></script>
-<script src="photos.js?v=2026-11-28b"></script>
-<script src="perso.js?v=2026-11-28b"></script>
-<script src="js/base.js?v=2026-11-28b"></script>
-<script src="js/liaison.js?v=2026-11-28b"></script>
-<script src="js/duel.js?v=2026-11-28b"></script>
-<script src="js/accueil.js?v=2026-11-28b"></script>
-<script src="js/grille.js?v=2026-11-28b"></script>
-<script src="js/choix-categories.js?v=2026-11-28b"></script>
-<script src="js/plateau.js?v=2026-11-28b"></script>
-<script src="js/plateau-lite.js?v=2026-11-28b"></script>
-<script src="js/regie.js?v=2026-11-28b"></script>
-<script src="js/aide.js?v=2026-11-28b"></script>
-<script src="js/main.js?v=2026-11-28b"></script>
+<script src="categories.js?v=2026-11-28c"></script>
+<script src="photos.js?v=2026-11-28c"></script>
+<script src="perso.js?v=2026-11-28c"></script>
+<script src="js/base.js?v=2026-11-28c"></script>
+<script src="js/liaison.js?v=2026-11-28c"></script>
+<script src="js/duel.js?v=2026-11-28c"></script>
+<script src="js/accueil.js?v=2026-11-28c"></script>
+<script src="js/grille.js?v=2026-11-28c"></script>
+<script src="js/choix-categories.js?v=2026-11-28c"></script>
+<script src="js/plateau.js?v=2026-11-28c"></script>
+<script src="js/plateau-lite.js?v=2026-11-28c"></script>
+<script src="js/regie.js?v=2026-11-28c"></script>
+<script src="js/aide.js?v=2026-11-28c"></script>
+<script src="js/main.js?v=2026-11-28c"></script>
 </body>
 </html>

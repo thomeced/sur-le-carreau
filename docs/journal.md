@@ -304,5 +304,12 @@ Chaque chantier est prévu dans sa propre conversation du projet, sur sa propre 
 ## Story 2.7 : mode allégé, Samsung en mode ordinateur et choix mémorisé (novembre 2026)
 - Test du 28/11 avec la version `2026-11-28a` : toujours « mode allégé : non ». La TV s'annonçait cette fois `X11; Linux i686 … SamsungBrowser/7.0 Chrome/120 … Safari` (sans `SMART-TV` ni `Tizen`). `SLC_TV` reconnaît aussi `SamsungBrowser` sans `Mobile` (les téléphones Samsung restent exclus) ; `?lite=1` est mémorisé sur l'appareil (`slc-lite`), `?lite=0` l'efface. Version `2026-11-28b`.
 
+## Choix en grille sur la régie (story 2.8, 28 novembre 2026)
+- Test de Ced sur la TV avec `2026-11-28b` : la vague ne déborde plus (mode allégé détecté). Mais l'intro est saccadée et la télécommande pénible (lancement, cases, boutons sous le plateau). Ced : « ça serait bien que la régie puisse sélectionner les duels ».
+- La régie propose « Mode funky » ou « Mode sérieux » quand l'écran de lancement est affiché, puis, en grille, les adversaires possibles en grands boutons (nom, icône et catégorie, case d'or), « Retourner sur le sol », la case d'or, « Lancer le duel », « Changer d'adversaire » (aussi avant « Démarrer le duel ») et « Retour à la grille » après chaque duel. Les boutons de l'écran restent utilisables.
+- Pas de nouveau sujet de message : `gs` porte l'état de la grille (`gridState`), `cmd` accepte un paramètre (`gridCmd`, `lanceDistant`).
+- Nouveau test `tests/regie-grille.js` : une partie 2×2 entière jouée depuis la régie. Version `2026-11-28c`.
+- Reste ouvert : l'intro saccadée sur la TV (le mode sérieux l'évite).
+
 ## Comment reprendre dans un nouveau projet Claude
 Reliez le dépôt GitHub (référence du code) et gardez ce document dans le projet, puis demandez par exemple : « Lis le document de contexte et reprends le jeu : ajoute l'éditeur de catégories. » Le fichier `sur-le-carreau.html` du projet est la version autonome du jeu (catégories incluses) ; la référence reste le dépôt.
