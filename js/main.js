@@ -1,7 +1,8 @@
 // Sur le carreau : démarrage, chargé en dernier (régie ou écran du jeu selon l'adresse).
 if(isArb){
   document.documentElement.classList.add('slc-arb');
-  ['sh1','toedit','tocredits','tophone'].forEach(id=>$(id).hidden=true);
+  ['lead','toedit','tocredits','tophone'].forEach(id=>$(id).hidden=true);
+  $('sh1').textContent='Préparez la partie'; // story 5.4
   $('arb').insertBefore($('setup'),$('rl'));
   show('arb');
   let saved='';try{saved=localStorage.getItem('slc-arb-code')||''}catch(e){}

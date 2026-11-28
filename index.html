@@ -5,12 +5,12 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Sur le carreau</title>
 <!-- Version des fichiers (cache de la TV) : définie ici seulement, recopiée partout par python3 tools/version.py. -->
-<meta name="slc-version" content="2026-11-28g">
+<meta name="slc-version" content="2026-11-28h">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Poppins:wght@500;600;700&family=DM+Sans:wght@400;600;700&display=swap">
-<link rel="stylesheet" href="style.css?v=2026-11-28g">
-<script src="intro.js?v=2026-11-28g"></script>
-<script src="sons.js?v=2026-11-28g"></script>
-<script src="qrcode.js?v=2026-11-28g"></script>
+<link rel="stylesheet" href="style.css?v=2026-11-28h">
+<script src="intro.js?v=2026-11-28h"></script>
+<script src="sons.js?v=2026-11-28h"></script>
+<script src="qrcode.js?v=2026-11-28h"></script>
 </head>
 <body>
 <main>
@@ -45,7 +45,7 @@
     <div class="seg hmode" role="group" aria-labelledby="hmodet"><span class="segl" id="hmodet">Lancement</span><button type="button" data-lm="funky" aria-pressed="true">Funky</button><button type="button" data-lm="serieux" aria-pressed="false">Sérieux</button></div>
     <p class="hlinks"><button type="button" class="lnk" id="hlocal">Configurer sur cet écran</button><a href="editeur.html" id="hedit">Créer mes catégories</a><a href="#arbitre">Ouvrir la régie ici</a></p>
   </div>
-  <p id="hver" class="hver">Version 2026-11-28g</p>
+  <p id="hver" class="hver">Version 2026-11-28h</p>
 </section>
 
 <section id="setup" hidden>
@@ -75,12 +75,14 @@
         <ul id="pwarn" class="pwarn"></ul>
         <div class="pbtns">
           <button type="button" class="alt" id="pdraw">🎲 Nouveau tirage</button>
+          <button type="button" class="alt" id="padd" aria-expanded="false" aria-controls="ppool" hidden>Ajouter…</button>
           <button type="button" id="pfill">Compléter au hasard</button>
           <button type="button" id="ptrim">Retirer au hasard</button>
         </div>
         <p id="perr" class="perr"></p>
         <div id="ppool" class="ppool"></div>
       </div>
+      <button type="button" class="alt" id="gnbtn" aria-expanded="false" aria-controls="gnames" hidden>Saisir les noms</button>
       <div id="gnames" class="gnames"></div>
     </div>
     <p id="gowhy" hidden></p>
@@ -171,10 +173,19 @@
 
 <!-- Régie (téléphone) : connexion à l'écran, configuration (#setup, partagé avec l'écran du jeu) et arbitrage. -->
 <section id="arb" hidden>
-  <h1>Régie</h1>
-  <ol class="steps" id="rsteps" aria-label="Étapes"><li>1. Connexion</li><li>2. Configuration</li><li>3. Partie</li></ol>
-  <p id="rscreen"></p>
-  <button type="button" id="rhelp" class="rhelp" aria-label="Aide : guide de l’arbitre" aria-haspopup="dialog">?</button>
+  <!-- Régie refaite en story 5.4 (docs/ux.md §5.6) : en-tête (logo, écran relié, aide, menu « ⋯ »), étapes en barre fine. -->
+  <div class="rtop">
+    <img class="rlogo" src="assets/intro/logo.webp" alt="" width="1000" height="400">
+    <p id="rscreen" class="rpill"></p>
+    <button type="button" id="rhelp" class="rhelp" aria-label="Aide : guide de l’arbitre" aria-haspopup="dialog">?</button>
+    <button type="button" id="rmenu" class="rmenu" aria-label="Menu : arrêter la partie, changer d’écran" aria-haspopup="true" aria-expanded="false" aria-controls="rmenup" hidden><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><circle cx="5" cy="12" r="2.2"/><circle cx="12" cy="12" r="2.2"/><circle cx="19" cy="12" r="2.2"/></svg></button>
+    <div id="rmenup" class="rmenup" hidden>
+      <button type="button" class="alt" id="rquit" hidden>Arrêter la partie</button>
+      <button type="button" class="alt" id="rchange">Changer d’écran</button>
+    </div>
+  </div>
+  <h1 class="sr">Régie</h1>
+  <ol class="steps rbar" id="rsteps" aria-label="Étapes"><li>Connexion</li><li>Configuration</li><li>Partie</li></ol>
   <!-- Guide de l'arbitre (js/aide.js) : 3 pages par-dessus la régie, qui continue de tourner dessous. -->
   <div id="rguide" class="rguide" role="dialog" aria-modal="true" aria-labelledby="rgt" hidden>
     <button type="button" class="alt rgskip" id="rgskip">Passer</button>
@@ -207,7 +218,6 @@
     </div>
     <button type="button" id="rwbtn" hidden></button>
     <p id="rwlk" class="plnk"></p>
-    <button type="button" class="alt" id="rchange">Changer d’écran</button>
   </div>
   <div id="rl" hidden>
     <p id="rinfo" role="status" aria-live="polite"></p>
@@ -217,21 +227,26 @@
     <button type="button" class="big" id="ragain" hidden>Retour à la grille</button>
     <div id="rgrid" hidden></div>
     <div id="rduel">
-    <div class="row2">
+    <p id="avs" class="avs"><span id="avs0"></span> <span class="avsc">contre</span> <span id="avs1"></span></p>
+    <div class="row2 achr">
       <div class="side" id="a0"><span class="nm"></span><div class="tm"></div></div>
       <div class="side" id="a1"><span class="nm"></span><div class="tm"></div></div>
     </div>
-    <p id="actx"></p>
+    <div class="ahead">
+      <div id="acard" class="center" aria-label="Élément affiché sur l’écran"></div>
+      <div class="ameta"><p id="actx"></p><p id="aqui"></p></div>
+    </div>
     <p id="agold"></p>
-    <div id="acard" class="center" aria-label="Image en cours"></div>
-    <p id="aans" role="status"></p>
-    <button type="button" class="big good" id="bok" disabled>Bonne réponse</button>
-    <button type="button" class="big skip" id="bpass" disabled>Passé (−3 s)</button>
+    <div id="arep" class="arep" hidden><span class="arepl">Réponse attendue</span><b id="arept"></b><span id="arepv"></span></div>
+    <p id="aans" class="sr" role="status"></p>
+    <div class="abtns">
+      <button type="button" class="big good" id="bok" disabled>Bonne réponse</button>
+      <button type="button" class="big skip" id="bpass" disabled>Passé (−3 s)</button>
+    </div>
     <p id="ast" role="status"></p>
     </div>
     <div id="rctl">
       <button type="button" id="rnew" hidden>Nouvelle partie</button>
-      <button type="button" class="alt" id="rquit" hidden>Arrêter la partie</button>
     </div>
     <p id="alk" class="plnk" role="status"></p>
   </div>
@@ -239,19 +254,19 @@
 
 </main>
 
-<script src="categories.js?v=2026-11-28g"></script>
-<script src="photos.js?v=2026-11-28g"></script>
-<script src="perso.js?v=2026-11-28g"></script>
-<script src="js/base.js?v=2026-11-28g"></script>
-<script src="js/liaison.js?v=2026-11-28g"></script>
-<script src="js/duel.js?v=2026-11-28g"></script>
-<script src="js/accueil.js?v=2026-11-28g"></script>
-<script src="js/grille.js?v=2026-11-28g"></script>
-<script src="js/choix-categories.js?v=2026-11-28g"></script>
-<script src="js/plateau.js?v=2026-11-28g"></script>
-<script src="js/plateau-lite.js?v=2026-11-28g"></script>
-<script src="js/regie.js?v=2026-11-28g"></script>
-<script src="js/aide.js?v=2026-11-28g"></script>
-<script src="js/main.js?v=2026-11-28g"></script>
+<script src="categories.js?v=2026-11-28h"></script>
+<script src="photos.js?v=2026-11-28h"></script>
+<script src="perso.js?v=2026-11-28h"></script>
+<script src="js/base.js?v=2026-11-28h"></script>
+<script src="js/liaison.js?v=2026-11-28h"></script>
+<script src="js/duel.js?v=2026-11-28h"></script>
+<script src="js/accueil.js?v=2026-11-28h"></script>
+<script src="js/grille.js?v=2026-11-28h"></script>
+<script src="js/choix-categories.js?v=2026-11-28h"></script>
+<script src="js/plateau.js?v=2026-11-28h"></script>
+<script src="js/plateau-lite.js?v=2026-11-28h"></script>
+<script src="js/regie.js?v=2026-11-28h"></script>
+<script src="js/aide.js?v=2026-11-28h"></script>
+<script src="js/main.js?v=2026-11-28h"></script>
 </body>
 </html>

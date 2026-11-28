@@ -181,7 +181,8 @@ function gridState(){
   return{ch:G.ch,name:P[G.ch].name,sel:G.sel,
     foes:gfoes().map(q=>[q,P[q].name,...cat(q),!!P[q].gold]),
     gold:G.sel==null?[]:[G.ch,G.sel].filter(q=>P[q].gold).map(q=>[q,P[q].name,G.use.has(q)]),
-    sol:G.sel==null&&gdrawPool().pool.length>0,hold:!!P[G.ch].gold,streak:P[G.ch].streak||0};
+    sol:G.sel==null&&gdrawPool().pool.length>0,hold:!!P[G.ch].gold,streak:P[G.ch].streak||0,
+    mini:{n:G.size,c:G.cells.map(c=>c.owner),or:P.map(p=>p.alive&&p.gold?1:0)}}; // mini-plateau de la régie (story 5.4)
 }
 const persoList=()=>Object.keys(DATA).filter(k=>DATA[k].perso).map(k=>[k,DATA[k].label,DATA[k].type,DATA[k].items.length]);
 let GSK='',GST=0;

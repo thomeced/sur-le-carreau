@@ -9,7 +9,18 @@ function arbRender(){
   $('ast').textContent='';
   const t=R.t.slice();if(R.started&&!R.over)t[R.turn]-=performance.now()-R.at;
   for(let i=0;i<2;i++){const s=$('a'+i);s.querySelector('.nm').textContent=R.names[i];s.querySelector('.tm').textContent=Math.ceil(Math.max(0,t[i])/1000);s.classList.toggle('on',R.turn===i&&!R.over);s.classList.toggle('low',t[i]<=5000)}
-  $('actx').textContent=R.cat?'Catégorie : '+R.cat:'';$('agold').textContent=R.gold||'';
+  // Story 5.4 : « A contre B » avant le départ ; catégorie et niveau à côté de la vignette ; réponse attendue en grand.
+  const avant=!R.started&&!R.count;
+  $('avs').hidden=!avant;if(avant){$('avs0').textContent=R.names[0];$('avs1').textContent=R.names[1]}
+  $('acard').hidden=avant;$('rduel').querySelector('.abtns').hidden=!R.started; // verdicts seulement une fois le duel parti
+  const ctx=R.cat?(R.cat+(R.started&&!R.over?' · niveau '+R.lvl:'')):'';if($('actx').textContent!==ctx)$('actx').textContent=ctx;
+  const qui=R.over?'Duel terminé':R.count?'Départ dans '+R.count+'…':!R.started?'':'À '+R.names[R.turn]+' de répondre';
+  if($('aqui').textContent!==qui)$('aqui').textContent=qui;
+  $('agold').textContent=R.gold||'';
+  const rep=R.started&&!R.over&&R.card?R.card[1].split('|').map(x=>x.trim()):null;
+  $('arep').hidden=!rep;
+  if(rep){const a=rep[0].charAt(0).toUpperCase()+rep[0].slice(1),v=rep.length>1?'Aussi accepté : '+rep.slice(1).join(' / '):'';
+    if($('arept').textContent!==a)$('arept').textContent=a;if($('arepv').textContent!==v)$('arepv').textContent=v}
   // Consigne à annoncer aux joueurs : en grand avant le départ, réduite à une ligne (icône, type) pendant le duel.
   $('atype').hidden=!R.consigne;
   if(R.consigne)arbConsigne(!R.started||!!R.count);
@@ -36,7 +47,8 @@ const cmd=(c,p)=>{if(L)L.send('cmd',p==null?{c}:{c,p})};
 function arbView(){
   const fresh=GS&&Date.now()-GSAT<9000,ph=GS&&GS.phase;
   const v=!RCODE?'code':!GS?'wait':ph==='prep'?'cfg':ph==='play'||ph==='over'?'play':'wait';
-  $('rscreen').textContent=RCODE?'Écran '+RCODE+(fresh?' · relié ✓':' · connexion…'):'';
+  $('rscreen').textContent=RCODE?'Écran '+RCODE+(fresh?' ✓':' · connexion…'):'';$('rscreen').classList.toggle('on',!!fresh);
+  $('rmenu').hidden=!RCODE;if(!RCODE)menuOpen(false);
   $('rj').hidden=v!=='code';$('rwait').hidden=v!=='wait';$('setup').hidden=v!=='cfg';$('rl').hidden=v!=='play';
   setSteps($('rsteps'),!GS?0:v==='play'?2:1);
   let m='',b='';
@@ -54,7 +66,7 @@ function arbView(){
   $('rwbtn').hidden=!b;$('rwbtn').textContent=b;
   if(v==='play'){
     $('rduel').hidden=!GS.duel;
-    const inf=GS.duel?'':GS.info||'';if($('rinfo').textContent!==inf)$('rinfo').textContent=inf;
+    const inf=GS.duel||(GS.grid&&!GS.grid.over&&!GS.grid.draw)?'':GS.info||'';if($('rinfo').textContent!==inf)$('rinfo').textContent=inf;
     $('rgo').hidden=!GS.wait;$('rnew').hidden=ph!=='over';$('rquit').hidden=ph!=='play';
     $('rback').hidden=!GS.back;$('ragain').hidden=!GS.again;
   }
@@ -72,8 +84,17 @@ function gridView(g){
   if(!g||g.over||g.draw)return;
   const el=(t,txt,cl)=>{const e=document.createElement(t);if(txt!=null)e.textContent=txt;if(cl)e.className=cl;return e};
   const btn=(txt,cl,f,on)=>{const b=el('button',txt,cl);b.type='button';b.dataset.f=f;b.onclick=on;return b};
+  // Mini-plateau aux couleurs de la TV (story 5.4) : où sont le joueur en cours et ses adversaires possibles.
+  if(g.mini){
+    const m=el('div',null,'rmini'),foes=g.foes.map(x=>x[0]);m.style.gridTemplateColumns='repeat('+g.mini.n+',minmax(0,1fr))';
+    m.setAttribute('role','img');m.setAttribute('aria-label','Plateau : '+g.name+' en violet, adversaires possibles en bleu clair');
+    g.mini.c.forEach(o=>{const c=el('span');c.className=o===g.ch?'me':o===g.sel?'sel':g.mini.or[o]?'or':foes.includes(o)?'foe':'';m.append(c)});
+    const top=el('div',null,'rgtop');top.append(m);
+    const h=el('h3',null);h.append(el('span',g.name,'rme'),g.sel==null?' choisit son adversaire':' défie son adversaire');
+    top.append(h);box.append(top);
+  }
   if(g.sel==null){
-    box.append(el('h3','Adversaires possibles :'));
+    box.append(el('p','Touchez l’adversaire annoncé par le joueur :','rtip'));
     const l=el('div',null,'rfoes');
     for(const[q,name,label,icone,gold]of g.foes){
       const b=btn(name,gold?'gold':'','sel'+q,()=>cmd('sel',q));
@@ -86,7 +107,7 @@ function gridView(g){
     if(g.sol)box.append(btn('Retourner sur le sol','alt','sol',()=>cmd('sol')));
   }else{
     const f=g.foes.find(x=>x[0]===g.sel);
-    box.append(el('h3',g.name+' défie '+(f?f[1]+' en « '+f[2]+' »':'son adversaire')));
+    box.append(el('p',g.name+' défie '+(f?f[1]+' en « '+f[2]+' »':'son adversaire')+'.','rtip'));
     for(const[q,name,on]of g.gold){
       const b=btn((on?'★ ':'☆ ')+name+' utilise sa case d’or (+'+GOLD_SEC+' s)','alt rgold','or'+q,()=>cmd('or',q));
       b.setAttribute('aria-pressed',on?'true':'false');box.append(b);
@@ -153,7 +174,42 @@ $('rback').onclick=()=>cmd('back');
 $('ragain').onclick=()=>cmd('grille');
 if(isArb)document.querySelectorAll('[data-lm]').forEach(b=>b.onclick=()=>{cmd('lance',b.dataset.lm);document.querySelectorAll('[data-lm]').forEach(x=>x.setAttribute('aria-pressed',x.dataset.lm===b.dataset.lm?'true':'false'))});
 $('rnew').onclick=()=>cmd('new');
-$('rquit').onclick=()=>{if(confirm('Arrêter la partie en cours ?'))cmd('quit')};
+$('rquit').onclick=()=>{menuOpen(false);if(confirm('Arrêter la partie en cours ?'))cmd('quit')};
 $('rchange').onclick=()=>{try{localStorage.removeItem('slc-arb-code')}catch(e){}location.hash='#arbitre'};
+/* Menu « ⋯ » (story 5.4) : « Arrêter la partie » et « Changer d'écran », à l'écart des boutons de jeu. */
+function menuOpen(on){$('rmenup').hidden=!on;$('rmenu').setAttribute('aria-expanded',String(!!on))}
+$('rmenu').onclick=e=>{e.stopPropagation();menuOpen($('rmenup').hidden);if(!$('rmenup').hidden){const b=[...$('rmenup').querySelectorAll('button')].find(x=>!x.hidden);if(b)b.focus()}};
+document.addEventListener('click',e=>{if(!$('rmenup').hidden&&!$('rmenup').contains(e.target))menuOpen(false)});
+document.addEventListener('keydown',e=>{if(e.key==='Escape'&&!$('rmenup').hidden){menuOpen(false);$('rmenu').focus()}});
+/* Configuration compacte sur le téléphone (story 5.4) : mode et taille en boutons côte à côte (les listes restent,
+   masquées, et gardent toute la logique), 6 catégories visibles puis « Voir les N autres », liste d'ajout derrière
+   « Ajouter… », noms des joueurs derrière « Saisir les noms ». */
+if(isArb){
+  const seg=(sel,lab)=>{
+    const s=$(sel),box=document.createElement('div');box.className='seg segw';box.setAttribute('role','group');box.setAttribute('aria-label',lab);
+    s.classList.add('sr');s.closest('label').after(box);
+    const build=()=>{box.textContent='';[...s.options].forEach(o=>{
+      const b=document.createElement('button');b.type='button';b.textContent=sel==='gsize'?o.value+'×'+o.value:o.textContent;b.disabled=o.disabled;
+      b.setAttribute('aria-pressed',String(o.value===s.value));
+      b.onclick=()=>{if(s.value===o.value)return;s.value=o.value;s.dispatchEvent(new Event('change'));build()};box.append(b)})};
+    s.addEventListener('change',build);new MutationObserver(build).observe(s,{childList:true});build();
+    return build;
+  };
+  seg('gmode','Mode de jeu');seg('gsize','Taille de la grille');
+  let PALL=false,PADD=false,GNOMS=false;
+  const compact=()=>{
+    const chips=[...$('pchosen').querySelectorAll('.chip')],cache=!PALL&&chips.length>7;
+    chips.forEach((c,i)=>c.hidden=cache&&i>=6);
+    $('pchosen').querySelectorAll('.pgroup').forEach(g=>g.hidden=[...g.querySelectorAll('.chip')].every(c=>c.hidden));
+    let m=$('pmore');if(!m){m=document.createElement('button');m.type='button';m.id='pmore';m.className='lnk pmore';m.onclick=()=>{PALL=!PALL;pickRender()}}
+    $('pchosen').after(m);m.hidden=chips.length<=7;m.textContent=PALL?'Voir moins':'Voir les '+(chips.length-6)+' autres';
+    $('padd').hidden=false;$('ppool').hidden=!PADD;$('padd').setAttribute('aria-expanded',String(PADD));$('padd').textContent=PADD?'Fermer la liste':'Ajouter…';
+  };
+  const pr=pickRender;pickRender=function(f){pr(f);compact()};
+  $('padd').onclick=()=>{PADD=!PADD;compact();if(PADD){const b=$('ppool').querySelector('button');if(b)b.focus()}};
+  const noms=()=>{$('gnbtn').hidden=false;$('gnames').hidden=!GNOMS;$('gnbtn').setAttribute('aria-expanded',String(GNOMS));$('gnbtn').textContent=GNOMS?'Masquer les noms':'Saisir les noms'};
+  $('gnbtn').onclick=()=>{GNOMS=!GNOMS;noms();if(GNOMS){const i=$('gnames').querySelector('input');if(i)i.focus()}};
+  noms();pickRender();
+}
 // Retour depuis la régie : on quitte #arbitre (la page se recharge sur l'écran d'accueil).
 $('arback').onclick=()=>{location.hash=''};
