@@ -8,6 +8,8 @@
    - navigateur récent sans paramètre : pas de mode allégé, pas de cadre ?debug ;
    - ?lite=1&debug=1 : mode allégé, panneaux sans flou et à fond opaque, cadre de débogage (version, moteur, mode) ;
    - navigateur sans color-mix() (simulé) : mode allégé détecté tout seul, sans paramètre ;
+   - TV récente avec color-mix() (user agent de la TV Samsung de Ced, Tizen 8.0, story 2.6) : mode allégé quand même,
+     « TV détectée » dans le cadre ?debug ; ?lite=0 l'empêche ;
    - vague de capture en mode allégé (story 2.2), sur une grille 2×2 : pas de clip-path ni de dessin hors des cases,
      seules les cases capturées changent de couleur, avec un délai qui grandit avec la distance, et toutes finissent
      à la couleur du gagnant ; pas de flou SVG sur le plateau. */
@@ -60,6 +62,19 @@ lancer('lite',async env=>{
   await p3.goto(env.url+'index.html?mode=serieux&debug=1');
   e=await etat(p3);
   attendu(e.lite&&e.classe&&e.debug.includes('color-mix : non')&&e.debug.includes('mode allégé : oui')&&!e.debug.includes('forcé'),'Navigateur sans color-mix : '+JSON.stringify(e));
+
+  // TV récente (story 2.6) : la TV Samsung de Ced a color-mix() (Chromium 120) mais ignore le clip-path de la vague.
+  const UA_TV='Mozilla/5.0 (SMART-TV; Linux; Tizen 8.0) AppleWebKit/537.36 (KHTML, like Gecko) SamsungBrowser/7.0 Chrome/120.0.6099.5 TV Safari/537.36';
+  const p4=await env.page('TV Tizen 8');
+  await p4.addInitScript(ua=>Object.defineProperty(navigator,'userAgent',{get:()=>ua}),UA_TV);
+  await p4.goto(env.url+'index.html?mode=serieux&debug=1');
+  e=await etat(p4);
+  attendu(e.lite&&e.classe&&e.debug.includes('color-mix : oui')&&e.debug.includes('mode allégé : oui (TV détectée)'),'TV Tizen 8 avec color-mix : '+JSON.stringify(e));
+  const p5=await env.page('TV, ?lite=0');
+  await p5.addInitScript(ua=>Object.defineProperty(navigator,'userAgent',{get:()=>ua}),UA_TV);
+  await p5.goto(env.url+'index.html?mode=serieux&lite=0');
+  e=await etat(p5);
+  attendu(!e.lite&&!e.classe,'?lite=0 sur une TV : mode allégé non attendu ('+JSON.stringify(e)+')');
 
   etape('vague case par case (?lite=1)');
   const {jeu}=await ouvrirEcranEtRegie(env,{params:'&lite=1'});

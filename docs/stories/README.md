@@ -29,7 +29,8 @@ Statuts : Brouillon · Prête · En cours · En revue · Terminée · Reportée
 | [2.2](2.2-vague-lite.md) | Vague de capture case par case (`js/plateau-lite.js`) | EF7 | Terminée |
 | [2.3](2.3-prechargement-photos.md) | Préchargement des 3 photos suivantes | ENF2 | Terminée |
 | [2.4](2.4-intro-visuels.md) | Nouveaux visuels de l'intro (plateau, animateur, candidats, logo) | EF9 | En revue |
-| [2.5](2.5-test-reel.md) | Checklist de test réel `docs/test-reel.md` (test fait par Ced) | EF10 | Ordinateur + téléphone en wifi : OK (27/11) ; TV Samsung et réseau mobile à faire |
+| [2.5](2.5-test-reel.md) | Checklist de test réel `docs/test-reel.md` (test fait par Ced) | EF10 | Ordinateur + téléphone en wifi : OK (27/11) ; TV Samsung : vague encore débordante (27/11), corrigé en 2.6, à retester ; réseau mobile à faire |
+| [2.6](2.6-lite-tv.md) | Mode allégé sur les TV récentes (détection par le user agent) | EF7 | Terminée |
 
 ## E3 Nouveaux types et progressivité
 Objectif (revu par Ced le 27/11) : un duel monte réellement jusqu'aux niveaux 4 et 5. Les nouveaux types (QCM, Devinette, Gros plan) sont reportés en évolution future : « on est bien en termes de types de jeu ».

@@ -6,7 +6,7 @@
 ## 1. Contraintes qui structurent tout
 - **100 % statique**, publié tel quel par GitHub Pages ; aucun outil de build, aucune dépendance npm à l'exécution (ENF3).
 - **Navigateur minimal visé : Chromium M94**, celui des TV Samsung 2023 (Tizen 7.0), dont la TV de Ced (TQ55S95C). Source : tableau « Web Engine Specifications » de Samsung Developers. Une mise à jour de Tizen peut l'avoir fait monter, mais on ne compte pas dessus.
-- Constaté sur cette TV : `clip-path` sur le SVG ignoré, pas de `color-mix()` (arrivé en M111), animations SVG coûteuses.
+- Constaté sur cette TV : `clip-path` sur le SVG ignoré, animations SVG coûteuses. **Test réel du 28/11/2026** (`?debug=1`) : la TV de Ced est en fait sous **Tizen 8.0, Samsung Internet 7.0, Chromium 120** ; elle gère `color-mix()` mais ignore toujours le `clip-path` de la vague. La présence de `color-mix()` ne suffit donc pas à repérer une TV : le mode allégé se déclenche aussi sur le user agent (§5.1, story 2.6). M94 reste la cible minimale, pour les TV plus anciennes.
 
 ### Ce qu'on s'interdit (ou qu'on n'utilise qu'avec un secours)
 | Fonction | Disponible depuis | Règle |
@@ -80,7 +80,7 @@ Rien d'autre de nouveau : pas de mémoire des éléments déjà vus (écartée p
 ## 5. Flux principaux
 
 ### 5.1 Mode allégé de la TV (E2)
-- `const LITE = !CSS.supports('color', 'color-mix(in srgb, red, blue)') || /[?&]lite=1/.test(location.search)` (le paramètre sert aux tests et au dépannage).
+- `LITE` vrai si le navigateur n'a pas `color-mix()`, **ou si c'est une TV connectée** (`SLC_TV` : user agent contenant `SMART-TV`, `SmartTV`, `Tizen`, `Web0S`, `webOS`, `HbbTV`, `NetCast` ou `BRAVIA` ; story 2.6), ou avec `?lite=1` ; `?lite=0` l'empêche (dépannage). Les paramètres servent aux tests et au dépannage.
 - En mode allégé : `gcapture` délègue à `js/plateau-lite.js`. Chaque case capturée passe à la couleur du gagnant par une transition CSS sur `fill`, avec un délai proportionnel à sa distance (en cases) au bord du duel : environ 90 ms par case, pour une durée totale proche de la vague actuelle. Ni `clip-path`, ni `#gglow`, ni contours recalculés.
 - Toujours (allégé ou non) : chaque `color-mix()` du CSS est précédé d'une déclaration de secours en couleur pleine ; `backdrop-filter` reçoit un fond opaque de secours. (Story 2.1 : le seul `color-mix()`, qui contenait `var()`, a été remplacé par des couleurs précalculées ; un secours placé avant une valeur avec `var()` ne sert pas. `tests/lite.js` vérifie qu'aucun `color-mix()` n'arrive sans secours.)
 - `?debug=1` affiche dans un coin le navigateur détecté (user agent) et l'état de `LITE`, pour que Ced vérifie la TV d'un coup d'œil.
