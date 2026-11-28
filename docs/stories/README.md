@@ -74,8 +74,8 @@ Maquettes validées par Ced le 28 novembre 2026 : `docs/ux.md` §5, planche http
 | [5.1](5.1-accueil-refonte.md) | Socle, accueil, préparation, choix Funky ou Sérieux toujours accessible | UX §5.1 à §5.3 | Terminée (PR #47) |
 | [5.2](5.2-duel-bandeau.md) | Duel en bandeau (attente, compte à rebours, réponse, fin du duel) | UX §5.5 | Terminée (PR #48) |
 | [5.3](5.3-plateau-perspective.md) | Plateau en perspective, panneau « Détails », vague ralentie (2 à 3 s) | UX §5.4, §5.7 | Terminée (PR #49) |
-| [5.4](5.4-regie.md) | Régie : menu « ⋯ », configuration compacte, réponse attendue en grand | UX §5.6 | En revue |
-| 5.5 | Tirage au sort du premier attaquant à l'ouverture du plateau | UX §5.7 | Brouillon |
+| [5.4](5.4-regie.md) | Régie : menu « ⋯ », configuration compacte, réponse attendue en grand | UX §5.6 | Terminée (PR #50) |
+| [5.5](5.5-tirage-ouverture.md) | Tirage au sort du premier attaquant à l'ouverture du plateau | UX §5.7 | En revue |
 
 ## Ordre de passage
 0.1 → 0.2 → 0.3 → 1.1 → 1.2 → 1.3 → 1.4 → E2 → E3 (3.1 seule) → E4.

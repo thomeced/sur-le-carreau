@@ -23,7 +23,7 @@ function gproj(n,Wd,Ht,K){
 }
 /* Couleurs du plateau : un bleu unique pour toutes les cases, violet pour le joueur en cours,
    bleu clair pour les adversaires qu'il peut défier, plus clair encore pour l'adversaire choisi. */
-const GC={gold:'#E0AC22',goldSel:'#F2C44E',base:'#2457D6',me:'#7A3FD8',foe:'#5B95F5',sel:'#A9C8FF',pick:'#BFD3FF',flash:['#4F86F7','#6E9BFF','#3F74E8','#8DB0FF','#5A8FFF']};
+const GC={gold:'#E0AC22',goldSel:'#F2C44E',base:'#2457D6',me:'#7A3FD8',foe:'#5B95F5',sel:'#A9C8FF',pick:'#7A3FD8',flash:['#4F86F7','#6E9BFF','#3F74E8','#8DB0FF','#5A8FFF']};
 // Le détenteur de la case d'or garde son territoire en jaune (plus clair s'il est l'adversaire choisi).
 function gfill(o,foes){
   if(G.players[o].gold&&!G.over)return G.sel===o?GC.goldSel:GC.gold;
@@ -195,8 +195,17 @@ function gdraw(){
   if(G.draw||G.over||gAnimT)return;
   const{pool,fresh}=gdrawPool();if(!pool.length)return;
   G.players[G.ch].streak=0;G.note='';
+  gtirage(pool,fresh,false);
+}
+/* Tirage du premier attaquant à l'ouverture du plateau (story 5.5) : même animation, parmi tous les candidats. */
+function gdrawOpen(){
+  if(G.draw||G.over)return;
+  gtirage(G.players.map((_,i)=>i),true,true);
+}
+// Clignotement aléatoire puis mise en avant du candidat tiré, qui devient le joueur en cours. ouv : tirage d'ouverture.
+function gtirage(pool,fresh,ouv){
   const g0=G,pick=pool[Math.floor(Math.random()*pool.length)],reduce=matchMedia('(prefers-reduced-motion: reduce)').matches;
-  G.draw=true;G.drawFresh=fresh;G.sel=null;gridRender();
+  G.draw=true;G.drawOpen=ouv;G.drawFresh=fresh;G.sel=null;gridRender();
   const V0=GV,T=reduce?600:6000,H=2000,t0=performance.now();
   const cellsOf=o=>G.cells.map((c,i)=>c.owner===o?i:-1).filter(i=>i>=0);
   const paint=(o,col)=>cellsOf(o).forEach(i=>{const z=V0.zones[i];z.style.transition='none';z.setAttribute('fill',col)});
@@ -207,13 +216,16 @@ function gdraw(){
     if(!alive())return;
     clear();paint(pick,GC.pick);cellsOf(pick).forEach(i=>V0.zones[i].classList.add('pick'));
     V0.E.forEach(e=>{const a=e.a>=0&&G.cells[e.a].owner===pick,b=e.b>=0&&G.cells[e.b].owner===pick;e.ol.classList.toggle('on',a!==b)});
-    $('gtitle').textContent=G.players[pick].name+' prend la main !';
+    $('gtitle').textContent=G.players[pick].name+(ouv?' commence !':' prend la main !');
+    aideBandeau([ouv?AIDE_TXT.bandeau.commence:AIDE_TXT.bandeau.main,G.players[pick].name]);
+    if(typeof gsSend==='function')gsSend();
     snd('impact');
-    G.drawT=setTimeout(()=>{if(!alive())return;G.draw=false;G.drawT=null;G.ch=pick;G.sel=null;gridRender()},H);
+    G.drawT=setTimeout(()=>{if(!alive())return;G.draw=false;G.drawOpen=false;G.drawT=null;G.ch=pick;G.sel=null;gridRender()},H);
   };
   const step=()=>{
     if(!alive())return;
-    const el=performance.now()-t0;if(el>=T||reduce)return land();
+    const el=performance.now()-t0;if(el>=T)return land();
+    if(reduce){G.drawT=setTimeout(step,T-el);return} // mouvement réduit : pas de clignotement, la phrase du tirage reste 0,6 s
     clear();
     const n=pool.length>3&&Math.random()<.35?2:1,lit=[];
     for(let m=0;m<n;m++){
@@ -228,8 +240,8 @@ function gdraw(){
 function gbtn(txt,cls,fn){const b=document.createElement('button');b.type='button';b.textContent=txt;if(cls)b.className=cls;b.onclick=fn;return b}
 function gridRender(){
   const alive=G.players.filter(p=>p.alive).length,tg=G.over||G.draw?[]:gtargets();
-  $('gtitle').textContent=G.over?G.players[G.ch].name+' remporte la partie !':G.draw?'Retour sur le sol…':G.players[G.ch].name+' choisit son adversaire';
-  $('ghint').textContent=G.over?'Toutes les cases lui appartiennent.':G.draw?'Tirage au sort parmi les candidats '+(G.drawFresh?'qui n’ont pas encore joué.':'en lice.'):'Territoire de '+G.players[G.ch].name+' : '+(G.players[G.ch].gold?'jaune (case d’or)':'violet')+'. Adversaires possibles : bleu clair.'+G.players.filter((q,i)=>q.alive&&q.gold&&i!==G.ch).map(q=>' En jaune : '+q.name+' (case d’or).').join('');
+  $('gtitle').textContent=G.over?G.players[G.ch].name+' remporte la partie !':G.draw?(G.drawOpen?'Tirage au sort : qui commence ?':'Retour sur le sol…'):G.players[G.ch].name+' choisit son adversaire';
+  $('ghint').textContent=G.over?'Toutes les cases lui appartiennent.':G.draw?(G.drawOpen?'Tirage au sort du premier attaquant parmi tous les candidats.':'Tirage au sort parmi les candidats '+(G.drawFresh?'qui n’ont pas encore joué.':'en lice.')):'Territoire de '+G.players[G.ch].name+' : '+(G.players[G.ch].gold?'jaune (case d’or)':'violet')+'. Adversaires possibles : bleu clair.'+G.players.filter((q,i)=>q.alive&&q.gold&&i!==G.ch).map(q=>' En jaune : '+q.name+' (case d’or).').join('');
   if(G.sel==null)G.use.clear();else for(const q of G.use)if(q!==G.ch&&q!==G.sel)G.use.delete(q);
   $('gnote').textContent=G.over?'':G.note;
   if(gAnimT){cancelAnimationFrame(gAnimT);gAnimT=null}
@@ -242,7 +254,7 @@ function gridRender(){
   if(G.over){
     p.append(gbtn('Nouvelle partie','',backToStart));
   }else if(G.draw){
-    const t=document.createElement('p');t.textContent='Tirage au sort d’un candidat…';p.append(t);
+    const t=document.createElement('p');t.textContent=G.drawOpen?'Tirage au sort du premier attaquant…':'Tirage au sort d’un candidat…';p.append(t);
   }else if(G.sel!=null){
     const a=G.players[G.ch],d=G.players[G.sel],t=document.createElement('p');
     const dc=DATA[G.cells[G.sel].cat];

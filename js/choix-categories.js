@@ -159,7 +159,8 @@ function startGrid(o){
   const size=o.size,n=size*size,names=o.names;
   const keys=shuffle(o.keys.slice());
   G={size,n,players:names.map(name=>({name,alive:true,streak:0,gold:false})),cells:names.map((_,i)=>({cat:keys[i%keys.length],owner:i})),
-     ch:Math.floor(Math.random()*n),sel:null,anim:null,draw:false,drawT:null,played:new Set(),use:new Set(),note:'',seed:Math.floor(Math.random()*4294967296),shape:null,over:false,T:DUEL_SEC*1000,oral:true};
+     ch:0,sel:null,anim:null,draw:false,drawOpen:false,drawT:null,played:new Set(),use:new Set(),note:'',seed:Math.floor(Math.random()*4294967296),shape:null,over:false,T:DUEL_SEC*1000,oral:true};
   S=null;
-  show('grid');gridRender();
+  show('grid');
+  gdrawOpen(); // premier attaquant tiré au sort, avec l'animation de « Retourner sur le sol » (story 5.5)
 }
