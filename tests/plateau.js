@@ -60,10 +60,12 @@ lancer('plateau',async env=>{
   });
   attendu(tailles.devant>=40&&tailles.fond>=28,'Taille des noms (px à l’écran) : '+JSON.stringify(tailles));
 
-  etape('barre du haut et place');
-  attendu(await jeu.evaluate(()=>{const i=document.querySelector('.glogo');return i.complete&&i.naturalWidth>0}),'Logo absent de la barre du haut');
+  etape('plateau épuré et place');
+  const epure=await jeu.evaluate(()=>({barre:!!document.querySelector('#grid .gtop,#grid .glogo'),badge:document.getElementById('arbadge').getBoundingClientRect().height,haut:document.querySelector('#gboard svg').getBoundingClientRect().top}));
+  attendu(!epure.barre&&!epure.badge,'Plateau épuré : ni barre du haut, ni logo, ni badge de la régie reliée '+JSON.stringify(epure));
+  attendu(epure.haut<80,'Le plateau doit commencer en haut de l’écran : '+JSON.stringify(epure));
   const n=await jeu.evaluate(()=>G.players[G.ch].name);
-  attendu((await jeu.textContent('#gaide'))===n+' choisit qui attaquer (case surlignée).','Phrase de la barre : '+await jeu.textContent('#gaide'));
+  attendu((await jeu.textContent('#gaide'))===n+' choisit qui attaquer (case surlignée).','Phrase de l’étape (lecteurs d’écran) : '+await jeu.textContent('#gaide'));
   attendu(!await jeu.evaluate(()=>document.documentElement.scrollHeight>innerHeight+1),'Le plateau déborde en 1920×1080');
 
   etape('Détails');

@@ -92,8 +92,8 @@ lancer('aide',async env=>{
   const nomEnCours=()=>jeu.evaluate(()=>G.players[G.ch].name);
   const live=await jeu.evaluate(()=>[...document.querySelectorAll('#grid [aria-live]')].filter(e=>e.id==='gaide').length+'/'+document.getElementById('gaide').getAttribute('aria-live'));
   attendu(live==='1/polite','Bandeau : un seul nœud aria-live="polite" attendu ('+live+')');
-  const taille=await jeu.evaluate(()=>parseFloat(getComputedStyle(document.getElementById('gaide')).fontSize));
-  attendu(taille>=32,'Bandeau trop petit en 1920×1080 : '+taille+' px');
+  // Plateau épuré (Ced, 28/11) : plus de barre du haut, la phrase reste pour les lecteurs d'écran.
+  attendu(await jeu.evaluate(()=>document.getElementById('gaide').classList.contains('sr')),'La phrase de l’étape doit être masquée visuellement (classe sr)');
   let b=await bandeau(),n;
   // Tirage du premier attaquant (story 5.5) : en mouvement réduit, pas de clignotement, la phrase reste 0,6 s.
   attendu(b.txt==='Tirage au sort : qui attaque en premier ?','Ouverture du plateau : « '+b.txt+' »');

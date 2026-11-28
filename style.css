@@ -94,7 +94,7 @@ html{overflow-x:hidden}
 #dgold{margin:4px 0;font-weight:700;color:var(--p1)}
 #dgold:empty{display:none}
 #dcat{font-weight:600}
-.gboard{position:relative;width:min(100%,84vw,calc((100vh - 52px - clamp(56px,5.8vw,112px) - 40px)/.54));margin:clamp(10px,1.6vw,30px) auto 0}
+.gboard{position:relative;width:min(100%,88vw,calc((100vh - 52px - 40px)/.54));margin:clamp(10px,1.6vw,30px) auto 0}
 .gboard svg{display:block;width:100%;height:auto;overflow:visible;font-family:var(--disp);-webkit-tap-highlight-color:transparent}
 .gz{stroke:none;transition:fill .45s ease;outline:none}
 .gz.t{cursor:pointer}
@@ -389,12 +389,10 @@ html.lite .dans{box-shadow:none}
   background:radial-gradient(circle,rgba(232,238,255,.9) 0 .22vw,transparent .3vw) 0 0/1.9vw 5.5vh}
 #grid::before{left:1.5vw}#grid::after{right:1.5vw}
 html.slc-serieux #grid::before,html.slc-serieux #grid::after{display:none}
-.gtop{align-self:stretch;display:flex;align-items:center;gap:clamp(12px,1.67vw,32px);min-height:clamp(56px,5.8vw,112px);margin:-20px calc(50% - 50vw) 0;padding:0 clamp(150px,15vw,300px) 0 clamp(12px,2.1vw,40px);
-  background:linear-gradient(rgba(3,4,14,.92),rgba(3,4,14,.6));border-bottom:2px solid rgba(242,196,78,.45)}
-.glogo{width:clamp(100px,12.5vw,240px);height:auto;flex:0 0 auto}
-/* Badge de la régie : à droite de la barre du haut pendant le plateau (le logo est à gauche). */
-body:has(#grid:not([hidden])) .arbadge{left:auto;right:clamp(64px,4.2vw,80px);top:calc(clamp(56px,5.8vw,112px)/2 - 20px)}
-#gnote{position:absolute;top:clamp(46px,5.1vw,98px);left:50%;transform:translateX(-50%);z-index:3;margin:0;max-width:90%;padding:.4em 1em;border-radius:999px;background:rgba(3,4,14,.88);
+/* Plateau épuré (Ced, 28/11) : plus de barre du haut ; la phrase de l'étape (#gaide) reste pour les lecteurs d'écran.
+   Badge de la régie masqué tant qu'elle est reliée ; il réapparaît (« non connectée ») si elle se déconnecte. */
+body:has(#grid:not([hidden])) .arbadge.on{display:none}
+#gnote{position:absolute;top:0;left:50%;transform:translateX(-50%);z-index:3;margin:0;max-width:90%;padding:.4em 1em;border-radius:999px;background:rgba(3,4,14,.88);
   font:700 clamp(1rem,1.46vw,1.75rem)/1.25 var(--disp);color:var(--p1);text-align:center}
 .gdet{position:fixed;right:clamp(16px,2.1vw,40px);bottom:clamp(14px,1.9vw,36px);z-index:20;display:flex;gap:.5em;align-items:center;
   font:700 clamp(1rem,1.46vw,1.75rem)/1 var(--disp);padding:.55em 1em;border-radius:999px;background:rgba(3,4,14,.85);border:3px solid rgba(255,255,255,.4);color:var(--ink);box-shadow:none}
@@ -407,7 +405,7 @@ body:has(#grid:not([hidden])) .arbadge{left:auto;right:clamp(64px,4.2vw,80px);to
 .gdetails #ghint,.gdetails #gstat{margin:0}
 .gdetails button{font:700 clamp(1rem,1.46vw,1.75rem)/1.1 var(--disp)}
 .gpart{display:grid;gap:12px;align-content:start;justify-items:start}
-@media(max-width:760px){.gdetails{grid-template-columns:1fr;max-height:70vh;overflow:auto}.gtop{padding-right:12px;margin-top:26px}#gnote{position:static;transform:none;margin:8px 0 0}}
+@media(max-width:760px){.gdetails{grid-template-columns:1fr;max-height:70vh;overflow:auto}#gnote{position:static;transform:none;margin:8px 0 0}}
 @media(prefers-reduced-motion:reduce){.gdet svg{transition:none}}
 
 /* ---------- Régie refaite (story 5.4, docs/ux.md §5.6) ---------- */
