@@ -298,6 +298,9 @@ Chaque chantier est prévu dans sa propre conversation du projet, sur sa propre 
 ## Story 4.6 : emojis à 40 éléments (novembre 2026)
 - Les 5 catégories emoji passent à 40 rébus, 8 par niveau (84 nouveaux ; avant : 19 à 30, niveaux 1 à 3 seulement). Emojis récents évités pour la TV. 27 catégories sur 42 à l'objectif : il ne reste que les photos. Aucun changement de code. Version `2026-11-27r`.
 
+## Story 4.7 : liste des photos à 40 par catégorie (novembre 2026)
+- `tools/photos-commons/liste.txt` : 225 éléments de plus, 3 par niveau et par catégorie, pour 40 par catégorie (8 par niveau). Les 375 lignes existantes ne changent pas. Articles Wikipédia non vérifiables en ligne (Wikimedia bloqué) : la recherche de secours du script et la relecture de Ced en 4.8 y pallient. Aucun changement de code ni de `photos.js`.
+
 ## Story 2.6 : mode allégé sur les TV récentes (novembre 2026)
 - Test réel du 27-28/11 sur la TV de Ced : la vague débordait encore. `?debug=1` : Tizen 8.0, Samsung Internet 7.0, Chromium 120, `color-mix()` pris en charge, donc mode allégé non déclenché ; le `clip-path` de la vague reste ignoré. Le mode allégé se déclenche maintenant aussi sur le user agent d'une TV (`SLC_TV`) ; `?lite=0` l'empêche. `tests/lite.js` simule le user agent de la TV. Version `2026-11-28a`.
 
