@@ -116,4 +116,6 @@ async function ouvrirEcranEtRegie(env,{horloge=true,guide=false,params='',lancem
 // Étapes affichées seulement avec VERBEUX=1 (pour trouver où un test bloque).
 const etape=txt=>{if(process.env.VERBEUX)console.log('· '+txt)};
 
-module.exports={demarrer,lancer,pause,etape,ouvrirEcranEtRegie,RACINE};
+// Plateau (story 5.3) : les boutons « Lancer le duel », « Retourner sur le sol »… sont dans le panneau « Détails », fermé par défaut.
+async function ouvrirDetails(jeu){if(await jeu.isHidden('#gdetails'))await jeu.click('#gdet')}
+module.exports={demarrer,lancer,pause,etape,ouvrirEcranEtRegie,ouvrirDetails,RACINE};

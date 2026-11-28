@@ -5,12 +5,12 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Sur le carreau</title>
 <!-- Version des fichiers (cache de la TV) : définie ici seulement, recopiée partout par python3 tools/version.py. -->
-<meta name="slc-version" content="2026-11-28f">
+<meta name="slc-version" content="2026-11-28g">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Poppins:wght@500;600;700&family=DM+Sans:wght@400;600;700&display=swap">
-<link rel="stylesheet" href="style.css?v=2026-11-28f">
-<script src="intro.js?v=2026-11-28f"></script>
-<script src="sons.js?v=2026-11-28f"></script>
-<script src="qrcode.js?v=2026-11-28f"></script>
+<link rel="stylesheet" href="style.css?v=2026-11-28g">
+<script src="intro.js?v=2026-11-28g"></script>
+<script src="sons.js?v=2026-11-28g"></script>
+<script src="qrcode.js?v=2026-11-28g"></script>
 </head>
 <body>
 <main>
@@ -45,7 +45,7 @@
     <div class="seg hmode" role="group" aria-labelledby="hmodet"><span class="segl" id="hmodet">Lancement</span><button type="button" data-lm="funky" aria-pressed="true">Funky</button><button type="button" data-lm="serieux" aria-pressed="false">Sérieux</button></div>
     <p class="hlinks"><button type="button" class="lnk" id="hlocal">Configurer sur cet écran</button><a href="editeur.html" id="hedit">Créer mes catégories</a><a href="#arbitre">Ouvrir la régie ici</a></p>
   </div>
-  <p id="hver" class="hver">Version 2026-11-28f</p>
+  <p id="hver" class="hver">Version 2026-11-28g</p>
 </section>
 
 <section id="setup" hidden>
@@ -136,15 +136,22 @@
   </div>
 </section>
 
+<!-- Plateau (story 5.3, docs/ux.md §5.4) : barre du haut (logo, phrase de l'étape), plateau en perspective,
+     détails (prochain duel, légende, joueurs en lice, boutons) derrière le bouton « Détails ». -->
 <section id="grid" hidden>
-  <h2 id="gtitle"></h2>
-  <p id="gaide" class="gaide" aria-live="polite"></p>
-  <p id="ghint"></p>
+  <div class="gtop">
+    <img class="glogo" src="assets/intro/logo.webp" alt="Sur le carreau" width="1000" height="400">
+    <p id="gaide" class="gaide" aria-live="polite"></p>
+  </div>
+  <h2 id="gtitle" class="sr"></h2>
   <p id="gnote" role="status" aria-live="polite"></p>
   <div id="gboard" class="gboard"></div>
-  <div id="gpanel" class="panel gpanel"></div>
-  <p id="gstat" role="status"></p>
-  <button type="button" class="alt" id="gquit">Quitter la partie</button>
+  <button type="button" id="gdet" class="gdet" aria-expanded="false" aria-controls="gdetails"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M6 15l6-6 6 6"/></svg><span id="gdett">Détails</span></button>
+  <div id="gdetails" class="gdetails" hidden>
+    <div id="gpanel" class="gpanel"></div>
+    <p id="ghint"></p>
+    <div class="gpart"><p id="gstat" role="status"></p><button type="button" class="alt" id="gquit">Quitter la partie</button></div>
+  </div>
 </section>
 
 <!-- Reconnexion de la régie pendant une partie (badge « Régie »). Au départ, le code s'affiche sur l'écran d'accueil (#home). -->
@@ -232,19 +239,19 @@
 
 </main>
 
-<script src="categories.js?v=2026-11-28f"></script>
-<script src="photos.js?v=2026-11-28f"></script>
-<script src="perso.js?v=2026-11-28f"></script>
-<script src="js/base.js?v=2026-11-28f"></script>
-<script src="js/liaison.js?v=2026-11-28f"></script>
-<script src="js/duel.js?v=2026-11-28f"></script>
-<script src="js/accueil.js?v=2026-11-28f"></script>
-<script src="js/grille.js?v=2026-11-28f"></script>
-<script src="js/choix-categories.js?v=2026-11-28f"></script>
-<script src="js/plateau.js?v=2026-11-28f"></script>
-<script src="js/plateau-lite.js?v=2026-11-28f"></script>
-<script src="js/regie.js?v=2026-11-28f"></script>
-<script src="js/aide.js?v=2026-11-28f"></script>
-<script src="js/main.js?v=2026-11-28f"></script>
+<script src="categories.js?v=2026-11-28g"></script>
+<script src="photos.js?v=2026-11-28g"></script>
+<script src="perso.js?v=2026-11-28g"></script>
+<script src="js/base.js?v=2026-11-28g"></script>
+<script src="js/liaison.js?v=2026-11-28g"></script>
+<script src="js/duel.js?v=2026-11-28g"></script>
+<script src="js/accueil.js?v=2026-11-28g"></script>
+<script src="js/grille.js?v=2026-11-28g"></script>
+<script src="js/choix-categories.js?v=2026-11-28g"></script>
+<script src="js/plateau.js?v=2026-11-28g"></script>
+<script src="js/plateau-lite.js?v=2026-11-28g"></script>
+<script src="js/regie.js?v=2026-11-28g"></script>
+<script src="js/aide.js?v=2026-11-28g"></script>
+<script src="js/main.js?v=2026-11-28g"></script>
 </body>
 </html>

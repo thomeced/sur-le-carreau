@@ -19,6 +19,7 @@ const AIDE_TXT={
   // Bandeau du plateau (spec UX §3.2). {n} : nom(s) du joueur, affiché en gras.
   bandeau:{
     choix:'{n} choisit qui attaquer (case surlignée).',
+    defie:'{n} défie {d} en « {c} ».',
     or:'{n} peut utiliser sa case d’or : +'+GOLD_SEC+' s.',
     or2:'{n} peuvent utiliser leur case d’or : +'+GOLD_SEC+' s.',
     victoire:'{n} gagne le duel : défier un voisin ou retourner sur le sol ?',
@@ -103,7 +104,7 @@ function aideTexteGrille(){
     if(AIDE.gagne)AIDE.gagne=null;
     const or=[G.ch,G.sel].filter(q=>G.players[q].gold).map(nom);
     if(or.length)return[or.length>1?B.or2:B.or,or.join(' et ')];
-    return[B.choix,nom(G.ch)];
+    return[B.defie.replace('{d}',nom(G.sel)).replace('{c}',DATA[G.cells[G.sel].cat].label),nom(G.ch)];
   }
   if(AIDE.gagne&&AIDE.gagne.g===G&&AIDE.gagne.w===G.ch)return[B.victoire,nom(G.ch)];
   return[B.choix,nom(G.ch)];

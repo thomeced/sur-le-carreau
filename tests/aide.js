@@ -9,7 +9,7 @@
    minuterie), et en mouvement réduit : 9 s par carte, sans fondu.
    Bandeau (grille 2×2 lancée par la régie) : un seul nœud aria-live, texte ≥ 32 px, phrases « choisit qui attaquer »,
    case d'or (état forcé : impossible à obtenir en 2×2), « gagne le duel », tirage au sort, « a conquis tout le sol ». */
-const {lancer,ouvrirEcranEtRegie,pause,etape}=require('./serveur.js');
+const {lancer,ouvrirEcranEtRegie,pause,etape,ouvrirDetails}=require('./serveur.js');
 
 // État visible des cartes sur l'écran du jeu.
 const cartes=page=>page.evaluate(()=>{
@@ -108,6 +108,7 @@ lancer('aide',async env=>{
   // Joue un duel de la grille : premier adversaire, démarrage, chronos vidés, retour à la grille.
   const duel=async()=>{
     await jeu.locator('#gboard path.gz.t').first().dispatchEvent('click');
+    await ouvrirDetails(jeu);
     await jeu.getByRole('button',{name:'Lancer le duel'}).click();
     await jeu.waitForSelector('#game:not([hidden])');
     for(let k=0;k<20&&await jeu.isDisabled('#go');k++){await avance(jeu,1000);await pause(30)}
@@ -124,6 +125,7 @@ lancer('aide',async env=>{
   attendu(b.txt===n+' gagne le duel : défier un voisin ou retourner sur le sol ?'&&b.gras===n,'Message 3 : « '+b.txt+' »');
 
   etape('bandeau : retour sur le sol');
+  await ouvrirDetails(jeu);
   await jeu.getByRole('button',{name:'Retourner sur le sol'}).click();
   b=await bandeau();
   attendu(b.txt==='Retour sur le sol : un nouvel attaquant est tiré au sort…','Message 4 : « '+b.txt+' »');

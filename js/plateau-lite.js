@@ -4,13 +4,13 @@
    et ses flous. Ici, seules les cases capturées changent de couleur : chacune passe à la couleur du gagnant par une
    transition CSS sur fill, avec un délai qui grandit avec sa distance (en cases) au bord du duel (ox, oy).
    Rien n'est dessiné hors des cases. fin() est celle de gcapture (repeint le plateau et libère gAnimT). */
-const LITE_PAS=90,LITE_FONDU=450; // ms de délai par case de distance ; durée de la transition de chaque case
+const LITE_PAS=260,LITE_FONDU=700; // ms de délai par case de distance ; durée de la transition de chaque case (vague ralentie en story 5.3)
 function gcaptureLite(A,V0,ox,oy,col,fin){
   V0.gt.classList.add('wait');
   snd('capture');
   let fin_ms=0;
   const zs=A.cells.map(i=>{
-    const c=V0.cells[i],d=Math.max(0,Math.hypot((c.cx-ox)/V0.sx,(c.cy-oy)/V0.sy)-.5),delai=Math.round(d*LITE_PAS);
+    const c=V0.cells[i],d=Math.max(0,Math.hypot((c.cx-ox)/c.w,(c.cy-oy)/c.h)-.5),delai=Math.round(d*LITE_PAS);
     fin_ms=Math.max(fin_ms,delai+LITE_FONDU);
     const z=V0.zones[i];z.style.transition='fill '+LITE_FONDU+'ms ease '+delai+'ms';z.setAttribute('fill',col);
     return z;

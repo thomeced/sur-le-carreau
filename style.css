@@ -78,15 +78,14 @@ h1{font-size:clamp(2.2rem,8vw,4rem);line-height:1.1}
 #arb{max-width:520px;margin:0 auto}
 .fields{display:grid;gap:14px}
 .gnames{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:10px}
-#grid{max-width:760px;margin:0 auto}
 #gtitle{font:700 clamp(1.4rem,5vw,2rem)/1.2 var(--disp);margin:0 0 4px;overflow-wrap:anywhere}
 #ghint,#gstat,#dcat{margin:4px 0}
 /* Bandeau d'aide du plateau (js/aide.js) : une ligne lisible à 3 m (32 px sur une TV 1920 px). */
 /* Bandeau sur toute la largeur de l'écran (pour tenir sur une ligne), centré ; html coupe le débordement horizontal
    (la largeur 100vw compte la barre de défilement d'un ordinateur). */
 html{overflow-x:hidden}
-.gaide{font:600 clamp(1.05rem,1.7vw,2.4rem)/1.3 var(--disp);width:100vw;box-sizing:border-box;margin:6px 0 10px calc(50% - 50vw);padding:.3em 24px;min-height:1.9em;text-align:center;background:var(--tile);border-top:1px solid var(--line);border-bottom:1px solid var(--line);transition:opacity .18s ease}
-.gaide strong{color:var(--p1);font-weight:700}
+.gaide{flex:1 1 auto;margin:0;font:700 clamp(1.15rem,2.1vw,2.5rem)/1.15 var(--disp);text-align:center;transition:opacity .18s ease}
+.gaide strong{color:#C9A6FF;font-weight:800}
 .gaide.out{opacity:0}
 @media(prefers-reduced-motion:reduce){.gaide{transition:none}}
 #gnote{margin:4px 0;min-height:0;font-weight:700;color:var(--p1)}
@@ -95,14 +94,14 @@ html{overflow-x:hidden}
 #dgold{margin:4px 0;font-weight:700;color:var(--p1)}
 #dgold:empty{display:none}
 #dcat{font-weight:600}
-.gboard{margin:12px 0;position:relative}
+.gboard{position:relative;width:min(100%,84vw,calc((100vh - 52px - clamp(56px,5.8vw,112px) - 40px)/.54));margin:clamp(10px,1.6vw,30px) auto 0}
 .gboard svg{display:block;width:100%;height:auto;overflow:visible;font-family:var(--disp);-webkit-tap-highlight-color:transparent}
 .gz{stroke:none;transition:fill .45s ease;outline:none}
 .gz.t{cursor:pointer}
 .ge{fill:none;stroke-linecap:round;stroke-linejoin:round;pointer-events:none;transition:stroke .5s,stroke-width .5s,stroke-opacity .5s}
 .ge.in{stroke:#fff;stroke-opacity:.16;stroke-width:1}
-.ge.fr{stroke:#fff;stroke-opacity:.95;stroke-width:2.6}
-.ge.bd{stroke:#fff;stroke-opacity:.85;stroke-width:3}
+.ge.fr{stroke:#fff;stroke-opacity:.95;stroke-width:4}
+.ge.bd{stroke:#fff;stroke-opacity:.9;stroke-width:4}
 .go{fill:none;stroke:#fff;stroke-width:5;stroke-linecap:round;pointer-events:none;opacity:0;transition:opacity .5s}
 .go.on{opacity:1}
 .gt{fill:none;stroke:none;pointer-events:none}
@@ -382,3 +381,33 @@ html.lite .dans{box-shadow:none}
   .dmid{order:-1;flex-basis:100%}
   #game .side{flex:1 1 40%}
 }
+
+/* ---------- Plateau en perspective (story 5.3, docs/ux.md §5.4) ----------
+   Toute la largeur, barre du haut (logo, phrase de l'étape), plateau en perspective dessiné par js/plateau.js,
+   détails derrière le bouton « Détails ». */
+#grid{--gw:min(calc(100vw - 48px),1760px);width:var(--gw);margin-left:calc(50% - var(--gw)/2);position:relative;min-height:calc(100vh - 52px);display:flex;flex-direction:column;align-items:center}
+/* Points lumineux sur les côtés (projecteurs). */
+#grid::before,#grid::after{content:"";position:fixed;top:16vh;bottom:22vh;width:7vw;z-index:-1;pointer-events:none;opacity:.55;
+  background:radial-gradient(circle,rgba(232,238,255,.9) 0 .22vw,transparent .3vw) 0 0/1.9vw 5.5vh}
+#grid::before{left:1.5vw}#grid::after{right:1.5vw}
+html.slc-serieux #grid::before,html.slc-serieux #grid::after{display:none}
+.gtop{align-self:stretch;display:flex;align-items:center;gap:clamp(12px,1.67vw,32px);min-height:clamp(56px,5.8vw,112px);margin:-20px calc(50% - 50vw) 0;padding:0 clamp(150px,15vw,300px) 0 clamp(12px,2.1vw,40px);
+  background:linear-gradient(rgba(3,4,14,.92),rgba(3,4,14,.6));border-bottom:2px solid rgba(242,196,78,.45)}
+.glogo{width:clamp(100px,12.5vw,240px);height:auto;flex:0 0 auto}
+/* Badge de la régie : à droite de la barre du haut pendant le plateau (le logo est à gauche). */
+body:has(#grid:not([hidden])) .arbadge{left:auto;right:clamp(64px,4.2vw,80px);top:calc(clamp(56px,5.8vw,112px)/2 - 20px)}
+#gnote{position:absolute;top:clamp(46px,5.1vw,98px);left:50%;transform:translateX(-50%);z-index:3;margin:0;max-width:90%;padding:.4em 1em;border-radius:999px;background:rgba(3,4,14,.88);
+  font:700 clamp(1rem,1.46vw,1.75rem)/1.25 var(--disp);color:var(--p1);text-align:center}
+.gdet{position:fixed;right:clamp(16px,2.1vw,40px);bottom:clamp(14px,1.9vw,36px);z-index:20;display:flex;gap:.5em;align-items:center;
+  font:700 clamp(1rem,1.46vw,1.75rem)/1 var(--disp);padding:.55em 1em;border-radius:999px;background:rgba(3,4,14,.85);border:3px solid rgba(255,255,255,.4);color:var(--ink);box-shadow:none}
+.gdet svg{width:1em;height:1em;fill:none;stroke:currentColor;stroke-width:2.6;stroke-linecap:round;stroke-linejoin:round;transition:transform .2s}
+.gdet.on svg{transform:rotate(180deg)}
+#grid button:focus-visible{outline:clamp(3px,.31vw,6px) solid var(--p1);outline-offset:clamp(3px,.31vw,6px)}
+.gdetails{position:fixed;left:clamp(12px,2.1vw,40px);right:clamp(12px,2.1vw,40px);bottom:clamp(70px,6.25vw,120px);z-index:19;box-sizing:border-box;
+  display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:clamp(14px,2.1vw,40px);padding:clamp(14px,1.5vw,28px) clamp(16px,1.9vw,36px);
+  background:rgba(4,8,36,.96);border:3px solid rgba(242,196,78,.6);border-radius:20px;font:600 clamp(1rem,1.46vw,1.75rem)/1.3 var(--disp);text-align:left}
+.gdetails #ghint,.gdetails #gstat{margin:0}
+.gdetails button{font:700 clamp(1rem,1.46vw,1.75rem)/1.1 var(--disp)}
+.gpart{display:grid;gap:12px;align-content:start;justify-items:start}
+@media(max-width:760px){.gdetails{grid-template-columns:1fr;max-height:70vh;overflow:auto}.gtop{padding-right:12px;margin-top:26px}#gnote{position:static;transform:none;margin:8px 0 0}}
+@media(prefers-reduced-motion:reduce){.gdet svg{transition:none}}

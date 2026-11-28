@@ -141,5 +141,5 @@ D'après la photo de l'émission fournie par Ced : plus de barre en haut ; grand
 
 ### 5.7 Plus tard (après la refonte)
 - Intro en vraie vidéo (MP4) pour supprimer les saccades sur la TV : écartée pour l'instant (Ced, 28/11).
-- Vague de capture plus lente (environ 2 à 3 s, à régler sur la TV), dans la story du plateau en perspective.
+- Vague de capture plus lente : faite en story 5.3 (2 à 3 s ; 260 ms par case en mode allégé), à régler sur la TV.
 - Tirage au sort du premier attaquant à l'ouverture du plateau, avec la même animation que « Retourner sur le sol » (story séparée).
