@@ -334,5 +334,9 @@ Chaque chantier est prévu dans sa propre conversation du projet, sur sa propre 
 - Vague de capture ralentie à 2 à 3 s (Ced la trouvait trop rapide) ; en mode allégé, 260 ms par case.
 - Nouveau test `tests/plateau.js`. Version `2026-11-28g`.
 
+## Régie refaite (story 5.4, 28 novembre 2026)
+- En-tête avec menu « ⋯ » (« Arrêter la partie » n'est plus à côté des boutons de jeu), configuration compacte (boutons côte à côte, 6 catégories puis « Voir les autres », listes repliées), mini-plateau pour choisir l'adversaire, réponse attendue en 40 px et grands boutons de verdict.
+- Nouveau test `tests/regie-ui.js`. Version `2026-11-28h`.
+
 ## Comment reprendre dans un nouveau projet Claude
 Reliez le dépôt GitHub (référence du code) et gardez ce document dans le projet, puis demandez par exemple : « Lis le document de contexte et reprends le jeu : ajoute l'éditeur de catégories. » Le fichier `sur-le-carreau.html` du projet est la version autonome du jeu (catégories incluses) ; la référence reste le dépôt.

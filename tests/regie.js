@@ -60,7 +60,7 @@ lancer('regie',async env=>{
 
   etape('guide : plus affiché après un rechargement');
   await regie.reload();
-  await regie.waitForFunction(()=>/relié ✓/.test(document.getElementById('rscreen').textContent),null,{timeout:20000});
+  await regie.waitForFunction(()=>document.getElementById('rscreen').classList.contains('on'),null,{timeout:20000});
   await pause(300);
   attendu(!(await guide(regie)).ouvert,'Le guide revient après un rechargement');
 

@@ -62,7 +62,8 @@ lancer('aide',async env=>{
   attendu(st.mode===null&&!st.t&&!st.f&&st.cache,'Carrousel pas arrêté au lancement : '+JSON.stringify(st));
 
   etape('arrêt de la partie : redémarrage avec une seule minuterie');
-  await regie.waitForSelector('#rquit:not([hidden])');
+  await regie.waitForSelector('#rquit:not([hidden])',{state:'attached'});
+  await regie.click('#rmenu'); // « Arrêter la partie » est dans le menu « ⋯ » (story 5.4)
   await regie.click('#rquit');
   await jeu.waitForFunction(()=>!document.getElementById('hcards').hidden);
   await avance(jeu,6500);
