@@ -61,8 +61,8 @@ Epic terminé avec la story 3.1.
 | 4.4 | 4 nouvelles catégories QCM | EF18, EF20 | Reportée avec la 3.2 |
 | [4.5](4.5-nouvelles-categories.md) | Séries et dessins animés (indices), Sports en vrac, Musique (les 3 Devinettes sont reportées avec la 3.3) | EF18, EF20 | Terminée |
 | [4.6](4.6-emojis.md) | Emojis : 5 catégories à 40 éléments, niveaux 1 à 5 | EF19 | Terminée |
-| 4.7 | Photos : `liste.txt` à 40 par catégorie (préparation par Claude ; les 2 catégories Gros plan sont reportées avec la 3.5) | EF19 | Brouillon |
-| 4.8 | Photos : téléchargement et relecture (Ced, sur son Mac), intégration et crédits | EF19, EF22 | Brouillon |
+| [4.7](4.7-photos-liste.md) | Photos : `liste.txt` à 40 par catégorie (préparation par Claude ; les 2 catégories Gros plan sont reportées avec la 3.5) | EF19 | Terminée (liste à relire par Ced) |
+| [4.8](4.8-photos-telechargement.md) | Photos : téléchargement et relecture (Ced, sur son Mac), intégration et crédits | EF19, EF22 | En attente de Ced (téléchargement) |
 
 Constat de la story 4.1 (`node tests/contenu.js`) : plusieurs catégories n'avaient aucun élément aux niveaux 4 et 5 ; réglé en 4.2 (mots à trous), 4.3 (indices) et 4.6 (emojis). Après la 4.6, toutes les catégories sauf les 15 catégories photo sont à l'objectif. Le domaine « Langue et mots » n'a aucune catégorie.
 
