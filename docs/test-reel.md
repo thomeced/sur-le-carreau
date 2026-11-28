@@ -54,7 +54,7 @@ Si tu n'as pas le temps de tout faire : ces 6 points disent déjà l'essentiel.
 | A3.6 | Les photos s'affichent sur la TV sans attente visible | | |
 | A3.7 | Les chronos de la TV et du téléphone restent d'accord (à 1 s près) | | |
 | A3.8 | Verdicts : délai entre le toucher et la TV : … (instantané / moins d'1 s / plus) | | |
-| A3.9 | Vague de capture à la fin du duel (sur la TV, case par case depuis la story 2.2) : **plus de débordement hors des cases ?** fluide ou saccadée ? durée suffisante ? | | |
+| A3.9 | Vague de capture à la fin du duel (sur la TV, case par case depuis la story 2.2) : **plus de débordement hors des cases ?** fluide ou saccadée ? durée suffisante ? | ❌ 27/11 (version `2026-11-27r`) | La vague déborde encore : `?debug=1` montre Tizen 8.0, Chromium 120, « color-mix : oui · mode allégé : non ». Le mode allégé ne se déclenchait pas. Corrigé en story 2.6 (TV détectée par le user agent) : **à retester**, `?debug=1` doit afficher « mode allégé : oui (TV détectée) ». |
 | A3.10 | « Retourner sur le sol » : tirage au sort animé, fluide | | |
 | A3.11 | Partie jusqu'au bout : « … a conquis tout le sol ! », puis retour à la configuration sur le téléphone | | |
 

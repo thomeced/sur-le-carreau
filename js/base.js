@@ -4,7 +4,11 @@ const $=id=>document.getElementById(id);
 /* Mode allégé (TV Samsung : Chromium 94 de Tizen) : navigateur sans color-mix() (arrivé en Chromium 111), ou ?lite=1
    dans l'adresse (tests, dépannage). Il signale un navigateur ancien ou lent : flou des panneaux coupé (classe lite),
    et vague de capture simplifiée (story 2.2). */
-const LITE=!(window.CSS&&CSS.supports&&CSS.supports('color','color-mix(in srgb, red, blue)'))||/[?&]lite=1(&|$)/.test(location.search);
+/* Mode allégé : navigateur sans color-mix(), ou TV connectée (story 2.6 : la TV Samsung de Ced, Tizen 8.0 et Chromium 120,
+   gère color-mix() mais ignore toujours le clip-path qui découpe la vague : elle débordait). ?lite=1 le force, ?lite=0 l'empêche. */
+const SLC_TV=/SMART-TV|SmartTV|Tizen|Web0S|webOS|HbbTV|NetCast|BRAVIA/i.test(navigator.userAgent);
+const LITE=/[?&]lite=0(&|$)/.test(location.search)?false:
+  !(window.CSS&&CSS.supports&&CSS.supports('color','color-mix(in srgb, red, blue)'))||SLC_TV||/[?&]lite=1(&|$)/.test(location.search);
 if(LITE)document.documentElement.classList.add('lite');
 /* Types de catégories : « emoji » (par défaut), « trous » (mot à trous), « photo » et « indices ». Chaque élément est
    ramené à [clé unique, "réponse|variante", niveau, {img, thumb} pour une photo, {clues} pour des indices]. Pour un mot à trous,
