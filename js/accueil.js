@@ -19,6 +19,8 @@ const onmsg=(topic,d)=>{
     lastHi=Date.now();
     if(d.c==='go'){if(S&&S.oral&&S.link&&!S.started&&!S.counting&&!S.over&&!$('game').hidden)launch()}
     else if(d.c==='new'||d.c==='quit'||d.c==='prep')toPrep();
+    else if(d.c==='lance')lanceDistant(d.p);
+    else gridCmd(d);
     gsSend(true);
   }
 };
@@ -146,12 +148,43 @@ function ginfo(){
   if(S&&!$('game').hidden)return S.names[0]+' contre '+S.names[1]+' · '+S.cat;
   return'';
 }
+/* Choix en grille envoyés par la régie (story 2.8) : l'écran du jeu reste passif, la télécommande n'est plus utile.
+   Mêmes conditions que les boutons de l'écran, qui restent utilisables. */
+function gridCmd(d){
+  if(!G||G.over)return;
+  const onGrid=!$('grid').hidden&&!G.draw,p=+d.p;
+  if(d.c==='sel'&&onGrid&&gfoes().includes(p)){G.sel=p;gridRender()}
+  else if(d.c==='unsel'&&onGrid&&G.sel!=null){G.sel=null;gridRender()}
+  else if(d.c==='or'&&onGrid&&G.sel!=null&&(p===G.ch||p===G.sel)&&G.players[p].gold){G.use.has(p)?G.use.delete(p):G.use.add(p);gridRender()}
+  else if(d.c==='duel'&&onGrid&&G.sel!=null)startGridDuel();
+  else if(d.c==='sol'&&onGrid&&G.sel==null&&gdrawPool().pool.length)gdraw();
+  else if(d.c==='back'&&!$('wback').hidden&&!$('game').hidden)$('wback').onclick();
+  else if(d.c==='grille'&&S&&S.pid&&S.over&&!$('end').hidden&&S.winP!=null)gridAfterDuel();
+}
+// Funky ou Sérieux choisi sur le téléphone : même effet que le bouton de l'écran de lancement.
+function lanceDistant(m){
+  if(HOMEST!=='launch')return;
+  const b=document.querySelector(m==='funky'?'.slcl-funky':'.slcl-serious');if(b)b.click();
+}
+// État de la grille pour la régie : qui a la main, adversaires possibles, choix en cours, case d'or.
+function gridState(){
+  if(!G||$('grid').hidden)return null;
+  if(G.over)return{over:1};
+  if(G.draw)return{draw:1};
+  const P=G.players,cat=q=>{const c=DATA[G.cells[q].cat]||{};return[c.label||'',c.type?(TYPES[c.type]||{}).icone||'':'']};
+  return{ch:G.ch,name:P[G.ch].name,sel:G.sel,
+    foes:gfoes().map(q=>[q,P[q].name,...cat(q),!!P[q].gold]),
+    gold:G.sel==null?[]:[G.ch,G.sel].filter(q=>P[q].gold).map(q=>[q,P[q].name,G.use.has(q)]),
+    sol:G.sel==null&&gdrawPool().pool.length>0,hold:!!P[G.ch].gold,streak:P[G.ch].streak||0};
+}
 const persoList=()=>Object.keys(DATA).filter(k=>DATA[k].perso).map(k=>[k,DATA[k].label,DATA[k].type,DATA[k].items.length]);
 let GSK='',GST=0;
 function gsSend(force){
   if(isArb||!LINK)return;
   const d={phase:gphase(),code:LCODE,info:ginfo(),win:/Windows/.test(navigator.userAgent),perso:persoList(),
-    duel:!!(S&&!S.over&&!$('game').hidden),wait:!!(S&&S.oral&&S.link&&!S.started&&!S.counting&&!S.over&&!$('game').hidden)};
+    duel:!!(S&&!S.over&&!$('game').hidden),wait:!!(S&&S.oral&&S.link&&!S.started&&!S.counting&&!S.over&&!$('game').hidden),
+    grid:gridState(),back:!!(S&&S.pid&&!S.started&&!S.counting&&!S.over&&!$('game').hidden),again:!!(S&&S.pid&&S.over&&!$('end').hidden&&S.winP!=null),
+    lance:HOMEST==='launch'&&!$('home').hidden&&!!document.querySelector('.slcl')};
   const k=JSON.stringify(d);
   if(!force&&k===GSK&&Date.now()-GST<3000)return;
   GSK=k;GST=Date.now();LINK.send('gs',d);

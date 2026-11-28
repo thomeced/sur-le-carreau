@@ -241,7 +241,7 @@ function gridRender(){
     });
     p.append(gbtn('Lancer le duel','',startGridDuel),gbtn('Changer d’adversaire','alt',()=>{G.sel=null;gridRender()}));
   }else{
-    const t=document.createElement('p');t.textContent='Touchez une case bleu clair pour défier son joueur, ou retournez sur le sol pour laisser la main à un autre candidat.';
+    const t=document.createElement('p');t.textContent='Choisissez l’adversaire sur le téléphone de l’arbitre (ou touchez une case bleu clair), ou retournez sur le sol pour laisser la main à un autre candidat.';
     p.append(t);
     const me=G.players[G.ch],k=me.streak||0,s=document.createElement('p');
     s.textContent=(me.gold?'★ '+me.name+' détient la case d’or (+'+GOLD_SEC+' s, à utiliser avant un duel). ':'')+
@@ -251,6 +251,7 @@ function gridRender(){
   }
   $('gstat').textContent=alive+' joueur'+(alive>1?'s':'')+' en lice';
   aideBandeau(aideTexteGrille()); // bandeau d'aide (js/aide.js)
+  gsSend(); // la régie suit les choix en grille (story 2.8)
 }
 function startGridDuel(){
   // On attaque un joueur : le duel se joue dans sa catégorie d'origine (celle de sa case de départ).

@@ -13,7 +13,7 @@ const AIDE_TXT={
   // « Mauvaise réponse (QCM seulement) » s'ajoutera à la page « Jugez » avec le QCM (story 3.2).
   guide:[
     {titre:'Vous êtes l’arbitre',texte:'Les joueurs répondent à voix haute ; c’est vous qui décidez.'},
-    {titre:'Configurez',texte:'Choisissez le mode, les joueurs et les catégories, puis lancez la partie.'},
+    {titre:'Configurez',texte:'Choisissez le mode, les joueurs et les catégories, puis lancez la partie. En grille, vous choisissez aussi les duels.'},
     {titre:'Jugez',texte:'Pendant un duel, touchez le bouton qui correspond à la réponse du joueur :',mini:true}
   ],
   // Bandeau du plateau (spec UX §3.2). {n} : nom(s) du joueur, affiché en gras.

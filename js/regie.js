@@ -31,7 +31,7 @@ function arbConsigne(grand){
 function act(a){if(!L||!R||cool)return;L.send('act',{a,c:R.card[0]});cool=true;arbRender();setTimeout(()=>{cool=false;arbRender()},700)}
 $('bok').onclick=()=>act('ok');
 $('bpass').onclick=()=>act('pass');
-const cmd=c=>{if(L)L.send('cmd',{c})};
+const cmd=(c,p)=>{if(L)L.send('cmd',p==null?{c}:{c,p})};
 // Vue de la régie : code, attente, configuration ou partie, d'après l'étape de l'écran du jeu.
 function arbView(){
   const fresh=GS&&Date.now()-GSAT<9000,ph=GS&&GS.phase;
@@ -43,15 +43,54 @@ function arbView(){
   if(v==='wait'){
     if(!GS)m='Connexion à l’écran '+RCODE+'…';
     else if(ph==='local'){m='La partie se configure sur l’écran du jeu.';b='Configurer depuis le téléphone'}
-    else m='Connecté ✓ Sur l’écran du jeu, choisissez « Mode funky » ou « Mode sérieux ».';
+    else if(GS.lance)m='Connecté ✓ Choisissez le lancement (ici ou sur l’écran du jeu) :';
+    else m='Connecté ✓ Lancement sur l’écran du jeu…';
   }
+  $('rlance').hidden=!(v==='wait'&&GS&&GS.lance);
   if($('rwmsg').textContent!==m)$('rwmsg').textContent=m;
   $('rwbtn').hidden=!b;$('rwbtn').textContent=b;
   if(v==='play'){
     $('rduel').hidden=!GS.duel;
     const inf=GS.duel?'':GS.info||'';if($('rinfo').textContent!==inf)$('rinfo').textContent=inf;
     $('rgo').hidden=!GS.wait;$('rnew').hidden=ph!=='over';$('rquit').hidden=ph!=='play';
+    $('rback').hidden=!GS.back;$('ragain').hidden=!GS.again;
   }
+  gridView(v==='play'&&!GS.duel&&GS.grid);
+}
+/* Choix en grille (story 2.8) : la régie choisit l'adversaire, la case d'or, lance le duel ou retourne sur le sol.
+   L'écran du jeu applique (gridCmd) et renvoie son état ; on ne reconstruit que si l'état a changé (focus gardé). */
+let RGK='';
+function gridView(g){
+  const box=$('rgrid'),k=g?JSON.stringify(g):'';
+  box.hidden=!g||g.over||g.draw;
+  if(k===RGK)return;
+  const fid=document.activeElement&&box.contains(document.activeElement)?document.activeElement.dataset.f:null;
+  RGK=k;box.textContent='';
+  if(!g||g.over||g.draw)return;
+  const el=(t,txt,cl)=>{const e=document.createElement(t);if(txt!=null)e.textContent=txt;if(cl)e.className=cl;return e};
+  const btn=(txt,cl,f,on)=>{const b=el('button',txt,cl);b.type='button';b.dataset.f=f;b.onclick=on;return b};
+  if(g.sel==null){
+    box.append(el('h3','Adversaires possibles :'));
+    const l=el('div',null,'rfoes');
+    for(const[q,name,label,icone,gold]of g.foes){
+      const b=btn(name,gold?'gold':'','sel'+q,()=>cmd('sel',q));
+      b.append(el('small',(icone?icone+' ':'')+label+(gold?' · ★ case d’or':'')));
+      b.setAttribute('aria-label','Défier '+name+' en '+label);l.append(b);
+    }
+    box.append(l);
+    if(g.hold)box.append(el('p','★ '+g.name+' détient la case d’or (+'+GOLD_SEC+' s).'));
+    else if(g.streak)box.append(el('p','Série : '+g.streak+' victoire'+(g.streak>1?'s':'')+' d’affilée, encore '+(GOLD_STREAK-g.streak)+' pour la case d’or.'));
+    if(g.sol)box.append(btn('Retourner sur le sol','alt','sol',()=>cmd('sol')));
+  }else{
+    const f=g.foes.find(x=>x[0]===g.sel);
+    box.append(el('h3',g.name+' défie '+(f?f[1]+' en « '+f[2]+' »':'son adversaire')));
+    for(const[q,name,on]of g.gold){
+      const b=btn((on?'★ ':'☆ ')+name+' utilise sa case d’or (+'+GOLD_SEC+' s)','alt rgold','or'+q,()=>cmd('or',q));
+      b.setAttribute('aria-pressed',on?'true':'false');box.append(b);
+    }
+    box.append(btn('Lancer le duel','big','duel',()=>cmd('duel')),btn('Changer d’adversaire','alt','unsel',()=>cmd('unsel')));
+  }
+  const again=fid&&box.querySelector('[data-f="'+fid+'"]');if(again)again.focus();
 }
 // Catégories perso : créées sur l'ordinateur du jeu, la régie n'en reçoit que la liste (clé, nom, type, nombre).
 function persoSync(list){
@@ -107,6 +146,10 @@ $('rj').onsubmit=e=>{
 $('rc').oninput=()=>$('rc').setCustomValidity('');
 $('rwbtn').onclick=()=>cmd('prep');
 $('rgo').onclick=()=>cmd('go');
+$('rback').onclick=()=>cmd('back');
+$('ragain').onclick=()=>cmd('grille');
+$('rfunky').onclick=()=>cmd('lance','funky');
+$('rserieux').onclick=()=>cmd('lance','serieux');
 $('rnew').onclick=()=>cmd('new');
 $('rquit').onclick=()=>{if(confirm('Arrêter la partie en cours ?'))cmd('quit')};
 $('rchange').onclick=()=>{try{localStorage.removeItem('slc-arb-code')}catch(e){}location.hash='#arbitre'};

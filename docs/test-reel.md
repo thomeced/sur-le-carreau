@@ -32,8 +32,8 @@ Si tu n'as pas le temps de tout faire : ces 6 points disent déjà l'essentiel.
 | A1.3 | Le téléphone ouvre la régie et le **guide de l'arbitre** s'affiche (1re fois sur ce téléphone) | | |
 | A1.4 | Guide : glisser d'une page à l'autre, « Suivant », « C'est parti » ; textes compréhensibles | | |
 | A1.5 | « Écran XXXX · relié ✓ » sur le téléphone ; « Régie connectée » sur la TV. Temps de connexion : … s | | |
-| A1.6 | La TV propose Funky ou Sérieux ; choix possible à la télécommande | | |
-| A1.7 | Mode funky : l'intro se joue, avec le son, sans saccade | | |
+| A1.6 | La TV propose Funky ou Sérieux ; choix possible à la télécommande (depuis la story 2.8, aussi sur le téléphone) | ❌ 28/11 (`2026-11-28b`) | Télécommande pénible. Story 2.8 : boutons « Mode funky » et « Mode sérieux » sur le téléphone ; à retester. |
+| A1.7 | Mode funky : l'intro se joue, avec le son, sans saccade | ❌ 28/11 (`2026-11-28b`, TV) | Intro saccadée sur la TV Samsung. Depuis la story 2.8, le lancement se choisit aussi sur le téléphone : préférer le mode sérieux sur la TV. |
 
 ### A2. Préparation
 | # | Vérification | Résultat | Remarques |
@@ -48,13 +48,13 @@ Si tu n'as pas le temps de tout faire : ces 6 points disent déjà l'essentiel.
 |---|---|---|---|
 | A3.1 | Plateau lisible : noms et catégories dans les cases | | |
 | A3.2 | Bandeau d'aide sous le titre, lisible à 3 m, sur une ligne | | |
-| A3.3 | Choix de l'adversaire à la télécommande (flèches et OK) | | |
+| A3.3 | Choix de l'adversaire à la télécommande (flèches et OK) | ❌ 28/11 (`2026-11-28b`) | Navigation difficile (lancement, cases, boutons sous le plateau). Story 2.8 : tous les choix se font sur le téléphone ; à retester avec la régie. |
 | A3.4 | Téléphone : consigne « Annoncez : … » en grand avant le duel | | |
 | A3.5 | « Démarrer le duel » depuis le téléphone ; compte à rebours 3-2-1 sur la TV | | |
 | A3.6 | Les photos s'affichent sur la TV sans attente visible | | |
 | A3.7 | Les chronos de la TV et du téléphone restent d'accord (à 1 s près) | | |
 | A3.8 | Verdicts : délai entre le toucher et la TV : … (instantané / moins d'1 s / plus) | | |
-| A3.9 | Vague de capture à la fin du duel (sur la TV, case par case depuis la story 2.2) : **plus de débordement hors des cases ?** fluide ou saccadée ? durée suffisante ? | ❌ 27/11 (`2026-11-27r`), ❌ 28/11 (`2026-11-28a`) | 27/11 : Tizen 8.0, Chromium 120, « color-mix : oui · mode allégé : non » ; corrigé en 2.6 (TV repérée par le user agent). 28/11 : toujours « mode allégé : non », la TV s'annonçait cette fois comme un ordinateur (`X11; Linux i686 … SamsungBrowser/7.0`). Corrigé en 2.7 (SamsungBrowser hors téléphone, et `?lite=1` mémorisé) : **à retester**, `?debug=1` doit afficher « mode allégé : oui ». |
+| A3.9 | Vague de capture à la fin du duel (sur la TV, case par case depuis la story 2.2) : **plus de débordement hors des cases ?** fluide ou saccadée ? durée suffisante ? | ❌ 27/11 (`2026-11-27r`), ❌ 28/11 (`2026-11-28a`), ✅ 28/11 (`2026-11-28b`) | Débordement corrigé par le mode allégé, détecté sur la TV depuis la story 2.7 (la TV s'annonçait tantôt `SMART-TV; Linux; Tizen 8.0`, tantôt `X11; Linux i686 … SamsungBrowser/7.0`). OK au test de Ced le 28/11. |
 | A3.10 | « Retourner sur le sol » : tirage au sort animé, fluide | | |
 | A3.11 | Partie jusqu'au bout : « … a conquis tout le sol ! », puis retour à la configuration sur le téléphone | | |
 

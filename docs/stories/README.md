@@ -29,9 +29,10 @@ Statuts : Brouillon · Prête · En cours · En revue · Terminée · Reportée
 | [2.2](2.2-vague-lite.md) | Vague de capture case par case (`js/plateau-lite.js`) | EF7 | Terminée |
 | [2.3](2.3-prechargement-photos.md) | Préchargement des 3 photos suivantes | ENF2 | Terminée |
 | [2.4](2.4-intro-visuels.md) | Nouveaux visuels de l'intro (plateau, animateur, candidats, logo) | EF9 | En revue |
-| [2.5](2.5-test-reel.md) | Checklist de test réel `docs/test-reel.md` (test fait par Ced) | EF10 | Ordinateur + téléphone en wifi : OK (27/11) ; TV Samsung : vague encore débordante (27 et 28/11), corrigé en 2.6 puis 2.7, à retester ; réseau mobile à faire |
+| [2.5](2.5-test-reel.md) | Checklist de test réel `docs/test-reel.md` (test fait par Ced) | EF10 | Ordinateur + téléphone en wifi : OK (27/11) ; TV Samsung : vague corrigée (2.6, 2.7, OK le 28/11) ; intro saccadée et télécommande pénible (28/11), choix déplacés sur la régie en 2.8 ; réseau mobile à faire |
 | [2.6](2.6-lite-tv.md) | Mode allégé sur les TV récentes (détection par le user agent) | EF7 | Terminée ; insuffisant au test du 28/11 |
 | [2.7](2.7-lite-samsung.md) | Mode allégé : Samsung en user agent « ordinateur », `?lite=1` mémorisé | EF7 | Terminée |
+| [2.8](2.8-regie-grille.md) | Choix en grille et lancement depuis la régie (écran passif, sans télécommande) | EF7, EF10 | Terminée (PR #44) |
 
 ## E3 Nouveaux types et progressivité
 Objectif (revu par Ced le 27/11) : un duel monte réellement jusqu'aux niveaux 4 et 5. Les nouveaux types (QCM, Devinette, Gros plan) sont reportés en évolution future : « on est bien en termes de types de jeu ».

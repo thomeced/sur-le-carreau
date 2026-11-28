@@ -97,10 +97,11 @@ const pause=ms=>new Promise(r=>setTimeout(r,ms));
 /* Ouvre l'écran du jeu puis la régie reliée (onglet `#arbitre=CODE`, code lu dans #hcode).
    Attend que la régie affiche « relié ✓ ». guide: true laisse le guide de l'arbitre s'ouvrir (1re connexion). params : paramètres en plus dans l'adresse de l'écran (ex. '&lite=1'). L'horloge est simulée (clock de Playwright, commune à tous les onglets
    du contexte) : le temps s'écoule normalement, mais le test peut l'avancer d'un coup (vider les chronos) ou l'arrêter. */
-async function ouvrirEcranEtRegie(env,{horloge=true,guide=false,params=''}={}){
+// lancement: true ouvre l'écran sans ?mode=serieux : l'écran de lancement (Funky ou Sérieux) s'affiche à la connexion.
+async function ouvrirEcranEtRegie(env,{horloge=true,guide=false,params='',lancement=false}={}){
   const jeu=await env.page('jeu');
   if(horloge)await jeu.clock.install();
-  await jeu.goto(env.url+'index.html?mode=serieux'+params);
+  await jeu.goto(env.url+'index.html?mode='+(lancement?'choix':'serieux')+params);
   await jeu.waitForFunction(()=>/^[A-Z0-9]{4}$/.test(document.getElementById('hcode').textContent));
   const code=await jeu.textContent('#hcode');
   const regie=await env.page('régie');
