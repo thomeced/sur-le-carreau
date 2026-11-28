@@ -109,7 +109,7 @@ Maquettes : planche Design « Sur le carreau — Accueil TV » (https://claude.a
 - Sol bleu vif (`#2457D6`), lignes blanches de 4 px, liseré violet néon autour (`#C07BFF`, halo `#A24DFF` flou hors mode allégé), points lumineux sur les côtés (projecteurs), rang du fond légèrement assombri.
 - Couleurs : joueur en cours `#7A3FD8`, adversaires possibles `#5B95F5`, adversaire choisi `#A9C8FF` avec contour blanc épais, case d'or `#E0AC22`.
 - Étiquettes droites, centrées sur la case d'origine, taille réduite avec la profondeur : nom 44 px et catégorie 30 px au premier rang, environ 33 et 23 px au dernier en 4×4 (plus grand en 3×3 et 2×2).
-- Barre du haut (112 px) : petit logo, phrase de l'étape (remplace le titre et le bandeau d'aide actuels, 44 px, `aria-live`), pastille « Régie reliée ».
+- Pas de barre du haut (Ced, 28/11 : plateau épuré, il prend toute la hauteur) : la phrase de l'étape reste pour les lecteurs d'écran (`aria-live`, masquée visuellement) et sur la régie ; la couleur violette montre qui a la main ; badge de la régie masqué tant qu'elle est reliée.
 - Plus de colonne d'informations à droite : bouton « Détails » en bas à droite (atteignable à la télécommande) qui ouvre un panneau en bas de l'écran, sur trois colonnes : prochain duel (qui contre qui, catégorie, type), légende des couleurs avec la case d'or, joueurs en lice avec « Lancer le duel » et « Changer ».
 - La vague de capture suit les polygones en perspective.
 
